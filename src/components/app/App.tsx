@@ -85,8 +85,8 @@ const App: FC = () => {
         const sortedByDate = raceArrayMutable.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
         const baseRace = sortedByDate.splice(0, 1)[0];
 
-        const fastestRemainingRace = raceArrayMutable.find(() =>
-          Math.min(...raceArrayMutable.map((race) => race.time)),
+        const fastestRemainingRace = raceArrayMutable.find(
+          (race) => race.time === Math.min(...raceArrayMutable.map((race) => race.time)),
         );
 
         const deltaInSeconds = fastestRemainingRace?.time - baseRace.time || 0;
