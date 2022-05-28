@@ -20,12 +20,16 @@ export const Input = styled.input<InputProps>`
   margin-bottom: 20px;
   margin-top: 5px;
   border: none;
+  border-radius: none;
+  box-shadow: none;
+  outline: none;
   border-bottom: ${({ error }) => (error ? '1px solid #D30703' : '1px solid black')};
 `;
 
 export const StyledDatePicker = styled(Input)`
   font-family: 'Roboto', Open-Sans, Helvetica, Sans-Serif;
   padding: 1px 5px;
+  background-color: white;
 `;
 
 export const Select = styled.select`

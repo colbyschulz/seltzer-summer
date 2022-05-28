@@ -13,7 +13,7 @@ export default createGlobalStyle`
  
 
   #root {
-    min-height: 100vh;
+    min-height: 100%;
     width: 100vw;
     display: flex;
     flex-direction: column;
@@ -23,8 +23,18 @@ export default createGlobalStyle`
     border: none;
   }
 
-  input {border:0;outline:0;}
+  input {
+    outline:0 !important;
+    border-left: 0 !important;
+    border-right: 0 !important;
+    border-radius: 0 !important;
+    border-top: 0 !important;
+
+    // -webkit-appearance: none;
+    box-shadow: none !important;
+  }
   input:focus {outline:none}
+
 
   input::-webkit-calendar-picker-indicator{
     display: none;

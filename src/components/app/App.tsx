@@ -203,7 +203,7 @@ const App: FC = () => {
                                 <Input
                                   error={touched.minutes && !!errors.minutes}
                                   placeholder="Mins"
-                                  type="text"
+                                  type="number"
                                   {...field}
                                   style={{ width: '65px' }}
                                 />
@@ -217,7 +217,7 @@ const App: FC = () => {
                                 <Input
                                   error={touched.seconds && !!errors.seconds}
                                   placeholder="Secs"
-                                  type="text"
+                                  type="number"
                                   {...field}
                                   style={{ width: '100%' }}
                                 />
