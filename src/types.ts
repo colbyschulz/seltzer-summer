@@ -6,6 +6,8 @@ export interface TableRecord {
     distance: string;
     name: string;
     time: string;
+    raceName: string;
+    date: string;
   };
   id?: string;
 }

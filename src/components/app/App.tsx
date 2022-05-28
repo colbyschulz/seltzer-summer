@@ -34,10 +34,12 @@ const validationSchema = Yup.object().shape({
   raceName: Yup.string().required('Required'),
   minutes: Yup.string()
     .required('Required')
+    .max(2)
     .matches(/(1[0-9]|[2-5][0-9])/, ''),
   seconds: Yup.string()
     .required('Required')
-    .matches(/(0[0-9]|[1-5][0-9])$/, ''),
+    .max(2)
+    .matches(/(0[0-9]|[1-5][0-9])/, ''),
   date: Yup.string().required('Required'),
 });
 
@@ -84,7 +86,9 @@ const App: FC = () => {
             onSubmit={(values: FormValues, { resetForm }) => {
               const recordValues: TableRecord = {
                 fields: {
-                  name: `${values.firstName} ${values.lastName}`,
+                  date: values.date,
+                  raceName: values.raceName,
+                  name: `${values.firstName} ${values.lastName}`.toLowerCase(),
                   distance: values.distance || '5k',
                   time: `${values.minutes}:${values.seconds}`,
                 },
