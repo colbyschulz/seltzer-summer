@@ -10,7 +10,10 @@ const queryClient = new QueryClient();
 ReactDOM.render(
   <QueryClientProvider client={queryClient}>
     <GlobalCSS />
-    <img style={{ width: '100%', height: '100%', objectFit: 'contain' }} src={Seltzer} />
+    <div style={{ alignSelf: 'center' }}>
+      {/* <img style={{ height: '100%', objectFit: 'contain', alignSelf: 'center' }} src={Seltzer} /> */}
+      <img style={{ maxWidth: '100%' }} src={Seltzer} />
+    </div>
 
     <App />
   </QueryClientProvider>,
