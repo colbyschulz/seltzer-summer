@@ -9,11 +9,13 @@ export default createGlobalStyle`
     width: 100%;
     min-height: 100%;
   }
-
- 
-
   #root {
-    min-height: 100%;
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+   
+    max-height: 100vh;
+    max-height: -webkit-fill-available;
+    height: 100vh;
     width: 100vw;
     display: flex;
     flex-direction: column;

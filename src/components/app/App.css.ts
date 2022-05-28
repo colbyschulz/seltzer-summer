@@ -4,6 +4,9 @@ export const AppWrapper = styled.div`
   margin: 0 20px;
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overflow-y: hidden;
 `;
 
 export const FormWrapper = styled.div`
