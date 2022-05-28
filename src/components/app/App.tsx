@@ -1,9 +1,12 @@
-import { Field, Form, Formik } from 'formik';
+import { Field, FieldProps, Form, Formik } from 'formik';
 import React, { FC } from 'react';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { createRecord, getRecords } from '../../reactQuery/api';
 import { queryKeys } from '../../reactQuery/queryKeys';
 import { DistanceOption, TableRecord } from '../../types';
+import RecordTable from '../recordTable/RecordTable';
+import Button from '@material-ui/core/Button';
+import { AppWrapper, FormWrapper, Input, InputWrapper, Select } from './App.css';
 
 interface FormValues {
   firstName: string;
@@ -16,45 +19,15 @@ interface FormValues {
 const App: FC = () => {
   const queryClient = useQueryClient();
   const { data: records, isLoading } = useQuery(queryKeys.records, () => getRecords());
-  const { mutate: createRecordMutation, isLoading: createRecrodLoading } = useMutation(createRecord, {
+  const { mutate: createRecordMutation, isLoading: createRecordLoading } = useMutation(createRecord, {
     onSuccess: () => {
       queryClient.invalidateQueries(queryKeys.records);
     },
   });
 
-  const renderTable = () => {
-    if (isLoading) {
-      return <div>Loading...</div>;
-    }
-
-    const body = records.map(({ id, fields: { name, distance, time } }: TableRecord) => (
-      <tr key={id}>
-        <td>{name}</td>
-        <td>{distance}</td>
-        <td>{time}</td>
-      </tr>
-    ));
-
-    return (
-      <table>
-        <thead>
-          <tr>
-            <td>Name</td>
-            <td>Distance</td>
-            <td>Time</td>
-          </tr>
-        </thead>
-        <tbody>{body}</tbody>
-      </table>
-    );
-  };
-
-  console.log(records);
-
   return (
-    <div>
-      Seltzer Summer
-      {renderTable()}
+    <AppWrapper>
+      <RecordTable records={records} />
       <Formik
         initialValues={{
           firstName: '',
@@ -64,7 +37,6 @@ const App: FC = () => {
           distance: '',
         }}
         onSubmit={(values: FormValues, { resetForm }) => {
-          console.log(values);
           const recordValues: TableRecord = {
             fields: {
               name: `${values.firstName} ${values.lastName}`,
@@ -76,23 +48,85 @@ const App: FC = () => {
           resetForm();
         }}
       >
-        <Form>
-          <label htmlFor="firstName">First Name</label>
-          <Field id="firstName" name="firstName" placeholder="Seltzer" />
+        {({ values, handleChange, handleBlur, handleSubmit }) => (
+          <Form>
+            <FormWrapper>
+              {/* <div style={{ display: 'flex' }}> */}
+              <Field name="firstName" id="firstName">
+                {({
+                  field, // { name, value, onChange, onBlur }
+                  form: { touched, errors }, // also values, setXXXX, handleXXXX, dirty, isValid, status, etc.
+                  meta,
+                }: FieldProps) => (
+                  <InputWrapper>
+                    <label htmlFor="firstName">First Name</label>
+                    <Input type="text" placeholder="Seltzer" {...field} />
+                    {meta.touched && meta.error && <div>{meta.error}</div>}
+                  </InputWrapper>
+                )}
+              </Field>
 
-          <label htmlFor="lastName">Last Name</label>
-          <Field id="lastName" name="lastName" placeholder="Enthusiast" />
+              <Field name="lastName" id="lastName">
+                {({
+                  field, // { name, value, onChange, onBlur }
+                  form: { touched, errors }, // also values, setXXXX, handleXXXX, dirty, isValid, status, etc.
+                  meta,
+                }: FieldProps) => (
+                  <InputWrapper>
+                    <label htmlFor="lastName">Last Name</label>
+                    <Input type="text" placeholder="Enthusiast" {...field} />
+                    {meta.touched && meta.error && <div>{meta.error}</div>}
+                  </InputWrapper>
+                )}
+              </Field>
+              {/* </div> */}
 
-          <label htmlFor="minutes">Minutes</label>
-          <Field id="minutes" name="minutes" pattern="[0-9]*" />
+              {/* <div style={{ display: 'flex' }}> */}
+              <InputWrapper style={{ alignSelf: 'flexStart' }}>
+                <label htmlFor="distance">Distance</label>
+                <Select name="distance" id="distance" onChange={handleChange} value={values.distance}>
+                  <option key="default" value=""></option>
+                  <option key="1 mile" value="1 mile">
+                    1 Mile
+                  </option>
+                  <option key="5k" value="5k">
+                    5k
+                  </option>
+                  <option key="10k" value="10k">
+                    10k
+                  </option>
+                </Select>
+              </InputWrapper>
 
-          <label htmlFor="seconds">Seconds</label>
-          <Field id="seconds" name="seconds" pattern="[0-9]*" />
+              <Field name="minutes" id="minutes">
+                {({ field, form: { touched, errors }, meta }: FieldProps) => (
+                  <InputWrapper>
+                    <label htmlFor="minutes">Minutes</label>
+                    <Input type="text" {...field} />
+                    {meta.touched && meta.error && <div>{meta.error}</div>}
+                  </InputWrapper>
+                )}
+              </Field>
 
-          <button type="submit">Submit</button>
-        </Form>
+              <Field name="seconds" id="seconds">
+                {({ field, form: { touched, errors }, meta }: FieldProps) => (
+                  <InputWrapper>
+                    <label htmlFor="seconds">Seconds</label>
+                    <Input type="text" {...field} />
+                    {meta.touched && meta.error && <div>{meta.error}</div>}
+                  </InputWrapper>
+                )}
+              </Field>
+              {/* </div> */}
+
+              <Button color="primary" type="submit">
+                Submit
+              </Button>
+            </FormWrapper>
+          </Form>
+        )}
       </Formik>
-    </div>
+    </AppWrapper>
   );
 };
 
