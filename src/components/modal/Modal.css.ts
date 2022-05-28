@@ -22,10 +22,12 @@ export const ModalCard = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  // justify-content: center;
   background-color: white;
   padding: 15px 20px 20px 20px;
   border-radius: 5px;
+  max-height: 70%;
+  overflow-y: scroll;
 `;
 
 export const IconRow = styled.div`
