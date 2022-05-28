@@ -21,6 +21,12 @@ export default createGlobalStyle`
 
   button {
     border: none;
-    background-color: transparent;
   }
+
+  input {border:0;outline:0;}
+  input:focus {outline:none}
+
+  input::-webkit-calendar-picker-indicator{
+    display: none;
+}
 `;

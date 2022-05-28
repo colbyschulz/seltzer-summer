@@ -13,7 +13,7 @@ module.exports = {
     publicPath: '/',
   },
   resolve: {
-    extensions: ['.ts', '.tsx', '.js'],
+    extensions: ['.ts', '.tsx', '.js', '.css'],
   },
   module: {
     rules: [
@@ -24,6 +24,10 @@ module.exports = {
         options: {
           getCustomTransformers: () => ({ before: [styledComponentsTransformer] }),
         },
+      },
+      {
+        test: /\.css$/i,
+        use: ['style-loader', 'css-loader'],
       },
       // {
       //   test: /\.(jpe?g|png|gif|svg)$/i,

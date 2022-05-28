@@ -1,23 +1,51 @@
-import { Field, FieldProps, Form, Formik } from 'formik';
-import React, { FC } from 'react';
+import { Field, FieldProps, Form, Formik, FormikProps } from 'formik';
+import React, { FC, useRef } from 'react';
+import * as Yup from 'yup';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { createRecord, getRecords } from '../../reactQuery/api';
 import { queryKeys } from '../../reactQuery/queryKeys';
 import { DistanceOption, TableRecord } from '../../types';
 import RecordTable from '../recordTable/RecordTable';
-import Button from '@material-ui/core/Button';
-import { AppWrapper, FormWrapper, Input, InputWrapper, Select } from './App.css';
+import {
+  AppWrapper,
+  FormWrapper,
+  Input,
+  InputLabel,
+  InputWrapper,
+  ModalContent,
+  StyledButton,
+  StyledDatePicker,
+} from './App.css';
+import Modal from '../modal/Modal';
 
 interface FormValues {
   firstName: string;
   lastName: string;
+  raceName: string;
   minutes: string;
   seconds: string;
   distance: DistanceOption;
+  date: string;
 }
+
+const validationSchema = Yup.object().shape({
+  firstName: Yup.string().min(2, 'Too Short!').max(50, 'Too Long!').required('Required'),
+  lastName: Yup.string().min(2, 'Too Short!').max(50, 'Too Long!').required('Required'),
+  raceName: Yup.string().required('Required'),
+  minutes: Yup.string()
+    .required('Required')
+    .matches(/(1[0-9]|[2-5][0-9])/, ''),
+  seconds: Yup.string()
+    .required('Required')
+    .matches(/(0[0-9]|[1-5][0-9])$/, ''),
+  date: Yup.string().required('Required'),
+});
 
 const App: FC = () => {
   const queryClient = useQueryClient();
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const formikRef = useRef(null);
+
   const { data: records, isLoading } = useQuery(queryKeys.records, () => getRecords());
   const { mutate: createRecordMutation, isLoading: createRecordLoading } = useMutation(createRecord, {
     onSuccess: () => {
@@ -27,105 +55,185 @@ const App: FC = () => {
 
   return (
     <AppWrapper>
+      <StyledButton color="primary" onClick={() => setIsModalOpen(true)}>
+        Add Race
+      </StyledButton>
       <RecordTable records={records} />
-      <Formik
-        initialValues={{
-          firstName: '',
-          lastName: '',
-          minutes: '',
-          seconds: '',
-          distance: '',
-        }}
-        onSubmit={(values: FormValues, { resetForm }) => {
-          const recordValues: TableRecord = {
-            fields: {
-              name: `${values.firstName} ${values.lastName}`,
-              distance: values.distance || '5k',
-              time: `${values.minutes}:${values.seconds}`,
-            },
-          };
-          createRecordMutation(recordValues);
-          resetForm();
+      <Modal
+        showModal={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          if (formikRef) {
+            formikRef.current?.resetForm();
+          }
         }}
       >
-        {({ values, handleChange, handleBlur, handleSubmit }) => (
-          <Form>
-            <FormWrapper>
-              {/* <div style={{ display: 'flex' }}> */}
-              <Field name="firstName" id="firstName">
-                {({
-                  field, // { name, value, onChange, onBlur }
-                  form: { touched, errors }, // also values, setXXXX, handleXXXX, dirty, isValid, status, etc.
-                  meta,
-                }: FieldProps) => (
-                  <InputWrapper>
-                    <label htmlFor="firstName">First Name</label>
-                    <Input type="text" placeholder="Seltzer" {...field} />
-                    {meta.touched && meta.error && <div>{meta.error}</div>}
-                  </InputWrapper>
-                )}
-              </Field>
+        <ModalContent>
+          <Formik
+            initialValues={{
+              firstName: '',
+              lastName: '',
+              minutes: '',
+              seconds: '',
+              distance: '',
+              raceName: '',
+              date: '',
+            }}
+            innerRef={formikRef}
+            validationSchema={validationSchema}
+            onSubmit={(values: FormValues, { resetForm }) => {
+              const recordValues: TableRecord = {
+                fields: {
+                  name: `${values.firstName} ${values.lastName}`,
+                  distance: values.distance || '5k',
+                  time: `${values.minutes}:${values.seconds}`,
+                },
+              };
+              createRecordMutation(recordValues);
+              setIsModalOpen(false);
+              resetForm();
+            }}
+          >
+            {({ handleChange, errors, touched }) => {
+              return (
+                <Form>
+                  <FormWrapper>
+                    <div style={{ display: 'flex' }}>
+                      <Field name="firstName" id="firstName">
+                        {({ field, form: { touched, errors }, meta }: FieldProps) => (
+                          <InputWrapper>
+                            <InputLabel error={touched.firstName && !!errors.firstName} htmlFor="firstName">
+                              First Name
+                            </InputLabel>
+                            <Input
+                              type="text"
+                              placeholder="Seltzer"
+                              error={touched.firstName && !!errors.firstName}
+                              {...field}
+                            />
+                          </InputWrapper>
+                        )}
+                      </Field>
 
-              <Field name="lastName" id="lastName">
-                {({
-                  field, // { name, value, onChange, onBlur }
-                  form: { touched, errors }, // also values, setXXXX, handleXXXX, dirty, isValid, status, etc.
-                  meta,
-                }: FieldProps) => (
-                  <InputWrapper>
-                    <label htmlFor="lastName">Last Name</label>
-                    <Input type="text" placeholder="Enthusiast" {...field} />
-                    {meta.touched && meta.error && <div>{meta.error}</div>}
-                  </InputWrapper>
-                )}
-              </Field>
-              {/* </div> */}
+                      <Field name="lastName" id="lastName">
+                        {({ field, form: { touched, errors }, meta }: FieldProps) => (
+                          <InputWrapper>
+                            <InputLabel error={touched.lastName && !!errors.lastName} htmlFor="lastName">
+                              Last Name
+                            </InputLabel>
+                            <Input
+                              error={touched.lastName && !!errors.lastName}
+                              type="text"
+                              placeholder="Enthusiast"
+                              {...field}
+                            />
+                            {/* {meta.touched && errors.firstName && <div>{errors.firstName}</div>} */}
+                          </InputWrapper>
+                        )}
+                      </Field>
+                    </div>
 
-              {/* <div style={{ display: 'flex' }}> */}
-              <InputWrapper style={{ alignSelf: 'flexStart' }}>
-                <label htmlFor="distance">Distance</label>
-                <Select name="distance" id="distance" onChange={handleChange} value={values.distance}>
-                  <option key="default" value=""></option>
-                  <option key="1 mile" value="1 mile">
-                    1 Mile
-                  </option>
-                  <option key="5k" value="5k">
-                    5k
-                  </option>
-                  <option key="10k" value="10k">
-                    10k
-                  </option>
-                </Select>
-              </InputWrapper>
+                    <div style={{ display: 'flex', width: '100%' }}>
+                      <Field name="raceName" id="raceName">
+                        {({ field, form: { touched, errors }, meta }: FieldProps) => (
+                          <InputWrapper style={{ width: '100%' }}>
+                            <InputLabel error={touched.raceName && !!errors.raceName} htmlFor="raceName">
+                              Race Name
+                            </InputLabel>
+                            <Input
+                              error={touched.raceName && !!errors.raceName}
+                              type="text"
+                              placeholder="5k Ultra Marathon"
+                              {...field}
+                            />
+                          </InputWrapper>
+                        )}
+                      </Field>
+                    </div>
 
-              <Field name="minutes" id="minutes">
-                {({ field, form: { touched, errors }, meta }: FieldProps) => (
-                  <InputWrapper>
-                    <label htmlFor="minutes">Minutes</label>
-                    <Input type="text" {...field} />
-                    {meta.touched && meta.error && <div>{meta.error}</div>}
-                  </InputWrapper>
-                )}
-              </Field>
+                    {/* <InputWrapper style={{ alignSelf: 'flexStart' }}>
+                    <InputLabel htmlFor="distance">Distance</InputLabel>
+                    <Select name="distance" id="distance" onChange={handleChange} value={values.distance}>
+                      <option key="default" value=""></option>
+                      <option key="1 mile" value="1 mile">
+                        1 Mile
+                      </option>
+                      <option key="5k" value="5k">
+                        5k
+                      </option>
+                      <option key="10k" value="10k">
+                        10k
+                      </option>
+                    </Select>
+                  </InputWrapper> */}
 
-              <Field name="seconds" id="seconds">
-                {({ field, form: { touched, errors }, meta }: FieldProps) => (
-                  <InputWrapper>
-                    <label htmlFor="seconds">Seconds</label>
-                    <Input type="text" {...field} />
-                    {meta.touched && meta.error && <div>{meta.error}</div>}
-                  </InputWrapper>
-                )}
-              </Field>
-              {/* </div> */}
+                    <div style={{ display: 'flex', alignItems: 'baseline' }}>
+                      <Field name="date" id="date">
+                        {({ field, form: { touched, errors }, meta }: FieldProps) => (
+                          <InputWrapper>
+                            <InputLabel error={touched.date && !!errors.date} htmlFor="date">
+                              Date
+                            </InputLabel>
+                            <StyledDatePicker
+                              error={touched.date && !!errors.date}
+                              id="date"
+                              name="date"
+                              type="date"
+                              {...field}
+                              onChange={handleChange}
+                            />
+                          </InputWrapper>
+                        )}
+                      </Field>
 
-              <Button color="primary" type="submit">
-                Submit
-              </Button>
-            </FormWrapper>
-          </Form>
-        )}
-      </Formik>
+                      <InputWrapper>
+                        <InputLabel
+                          error={(touched.minutes && !!errors.minutes) || (touched.seconds && !!errors.seconds)}
+                        >
+                          Time
+                        </InputLabel>
+                        <div style={{ display: 'flex', alignItems: 'baseline' }}>
+                          <Field name="minutes" id="minutes">
+                            {({ field, form: { touched, errors }, meta }: FieldProps) => (
+                              <>
+                                <Input
+                                  error={touched.minutes && !!errors.minutes}
+                                  placeholder="Mins"
+                                  type="text"
+                                  {...field}
+                                  style={{ width: '65px' }}
+                                />
+                              </>
+                            )}
+                          </Field>
+                          <div>:</div>
+                          <Field name="seconds" id="seconds">
+                            {({ field, form: { touched, errors }, meta }: FieldProps) => (
+                              <>
+                                <Input
+                                  error={touched.seconds && !!errors.seconds}
+                                  placeholder="Secs"
+                                  type="text"
+                                  {...field}
+                                  style={{ width: '100%' }}
+                                />
+                              </>
+                            )}
+                          </Field>
+                        </div>
+                      </InputWrapper>
+                    </div>
+
+                    <StyledButton style={{ alignSelf: 'center', marginTop: '30px' }} type="submit">
+                      Submit
+                    </StyledButton>
+                  </FormWrapper>
+                </Form>
+              );
+            }}
+          </Formik>
+        </ModalContent>
+      </Modal>
     </AppWrapper>
   );
 };
