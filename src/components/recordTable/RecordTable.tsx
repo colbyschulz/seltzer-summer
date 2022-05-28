@@ -30,8 +30,6 @@ const RecordTable: FC<RecordTableProps> = ({ records = [] }) => {
     return accum;
   }, {} as { [key: string]: { name: string; distance: string; time: number; raceName: string; date: string }[] });
 
-  console.log(normalizedData);
-
   const enhancedData = useMemo(
     () =>
       Object.keys(normalizedData).map((name) => {
@@ -96,8 +94,6 @@ const RecordTable: FC<RecordTableProps> = ({ records = [] }) => {
         .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()) || [],
     [records, activeName],
   );
-
-  console.log(data, modalData, activeName);
 
   const modalcolumns: Array<Column<{ date: string; name: string; raceName: string; distance: string; time: string }>> =
     useMemo(
