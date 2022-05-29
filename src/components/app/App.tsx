@@ -447,7 +447,7 @@ const App: FC = () => {
         </ModalContent>
       </Modal>
       <Modal header="Races" showModal={isOpen} onClose={() => setIsOpen(false)}>
-        <MaUTable {...getModalTableProps()} padding="none">
+        <MaUTable {...getModalTableProps()} padding="none" stickyHeader>
           <TableHead>
             {modalHeaderGroups.map((headerGroup) => (
               <TableRow key={headerGroup.getHeaderGroupProps().key} {...headerGroup.getHeaderGroupProps()}>
