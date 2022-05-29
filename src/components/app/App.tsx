@@ -1,4 +1,4 @@
-import { Field, FieldProps, Form, Formik, FormikProps } from 'formik';
+import { Field, FieldProps, Form, Formik } from 'formik';
 import React, { FC, useMemo, useRef, useState } from 'react';
 import * as Yup from 'yup';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
@@ -25,6 +25,7 @@ import Modal from '../modal/Modal';
 import { Column, useTable } from 'react-table';
 import { RecordTableWrapper, StyledTableCell } from '../recordTable/recordTable.css';
 import ArrowRight from '../../assets/images/arrow-right.png';
+import { capitalize } from '../../utils';
 
 interface FormValues {
   firstName: string;
@@ -69,10 +70,12 @@ const App: FC = () => {
     const timeInSeconds = time
       .split(':')
       .reduce((accum, time, index) => (index === 0 ? accum + Number(time) * 60 : accum + Number(time)), 0);
-    if (!accum[name]) {
-      accum[name] = [{ name, distance, time: timeInSeconds, date, raceName }];
+
+    const capitalizedName = capitalize(name);
+    if (!accum[capitalizedName]) {
+      accum[capitalizedName] = [{ name: capitalizedName, distance, time: timeInSeconds, date, raceName }];
     } else {
-      accum[name].push({ name, distance, time: timeInSeconds, date, raceName });
+      accum[capitalizedName].push({ name: capitalizedName, distance, time: timeInSeconds, date, raceName });
     }
     return accum;
   }, {} as { [key: string]: { name: string; distance: string; time: number; raceName: string; date: string }[] });
@@ -92,7 +95,7 @@ const App: FC = () => {
         const deltaInSeconds = fastestRemainingRace?.time - baseRace.time || 0;
         const isFaster = deltaInSeconds.toString().includes('-');
         const minutes = Math.floor(Math.abs(deltaInSeconds) / 60).toString();
-        const seconds = (Math.abs(deltaInSeconds) % 60).toLocaleString('en-US', {
+        const seconds = (Math.abs(deltaInSeconds) % 60).toLocaleString('US', {
           minimumIntegerDigits: 2,
           useGrouping: false,
         });
@@ -111,11 +114,11 @@ const App: FC = () => {
     () =>
       enhancedData
         .sort((a, b) => a.deltaInSeconds - b.deltaInSeconds)
-        .map((record, i) => ({
-          name: record.name,
+        .map(({ name, numRaces, delta }, i) => ({
+          name,
           position: (i + 1).toString(),
-          numRaces: record.numRaces,
-          delta: record.delta,
+          numRaces,
+          delta,
           test: '',
         })),
     [records],
@@ -126,13 +129,16 @@ const App: FC = () => {
       normalizedData[activeName]
         ?.map(({ name, date, raceName, time, distance }) => {
           const minutes = Math.floor(Math.abs(time) / 60).toString();
-          const seconds = (Math.abs(time) % 60).toLocaleString('en-US', {
+          const seconds = (Math.abs(time) % 60).toLocaleString('US', {
             minimumIntegerDigits: 2,
             useGrouping: false,
           });
+
+          const [YYYY, MM, DD] = date.split('-');
+          const dateString = new Date(parseInt(YYYY), parseInt(MM) - 1, parseInt(DD));
           return {
             name,
-            date: new Date(date).toLocaleDateString('en-US'),
+            date: dateString.toLocaleDateString('US'),
             raceName,
             time: `${minutes}:${seconds}`,
             distance,
@@ -219,7 +225,7 @@ const App: FC = () => {
             {headerGroups.map((headerGroup) => (
               <TableRow key={headerGroup.getHeaderGroupProps().key} {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map((column) => (
-                  <TableCell style={{ padding: '10px' }} key={column.getHeaderProps().key} {...column.getHeaderProps()}>
+                  <TableCell style={{ padding: '12px' }} key={column.getHeaderProps().key} {...column.getHeaderProps()}>
                     {column.render('Header')}
                   </TableCell>
                 ))}
@@ -249,7 +255,7 @@ const App: FC = () => {
                         : 'black';
                     return (
                       <StyledTableCell
-                        style={{ color: cellColor, padding: '10px' }}
+                        style={{ color: cellColor, padding: '12px 8px', overflowWrap: 'break-word' }}
                         key={cell.getCellProps().key}
                         {...cell.getCellProps()}
                       >
@@ -446,7 +452,11 @@ const App: FC = () => {
             {modalHeaderGroups.map((headerGroup) => (
               <TableRow key={headerGroup.getHeaderGroupProps().key} {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map((column) => (
-                  <TableCell style={{ padding: '10px' }} key={column.getHeaderProps().key} {...column.getHeaderProps()}>
+                  <TableCell
+                    style={{ padding: '12px 8px' }}
+                    key={column.getHeaderProps().key}
+                    {...column.getHeaderProps()}
+                  >
                     {column.render('Header')}
                   </TableCell>
                 ))}
@@ -461,7 +471,7 @@ const App: FC = () => {
                   {row.cells.map((cell) => {
                     return (
                       <StyledTableCell
-                        style={{ padding: '10px' }}
+                        style={{ padding: '12px', overflowWrap: 'break-word' }}
                         key={cell.getCellProps().key}
                         {...cell.getCellProps()}
                       >
