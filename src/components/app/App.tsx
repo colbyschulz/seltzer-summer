@@ -181,11 +181,11 @@ const App: FC = () => {
           accessor: 'numRaces',
         },
         {
-          Header: 'Delta',
+          Header: 'Baseline Delta',
           accessor: 'delta',
         },
         {
-          Header: '',
+          Header: 'Detail',
           accessor: 'test',
           Cell: () => <img src={ArrowRight} width={20} alt="Arrow" />,
         },
@@ -214,12 +214,12 @@ const App: FC = () => {
         Add Race
       </StyledButton>
       <RecordTableWrapper>
-        <MaUTable {...getTableProps()}>
+        <MaUTable {...getTableProps()} stickyHeader padding="none">
           <TableHead>
             {headerGroups.map((headerGroup) => (
               <TableRow key={headerGroup.getHeaderGroupProps().key} {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map((column) => (
-                  <TableCell key={column.getHeaderProps().key} {...column.getHeaderProps()}>
+                  <TableCell style={{ padding: '10px' }} key={column.getHeaderProps().key} {...column.getHeaderProps()}>
                     {column.render('Header')}
                   </TableCell>
                 ))}
@@ -240,7 +240,7 @@ const App: FC = () => {
                 >
                   {row.cells.map((cell) => {
                     const cellColor =
-                      cell.column.Header === 'Delta'
+                      cell.column.Header === 'Baseline Delta'
                         ? cell.value.includes('-')
                           ? 'green'
                           : cell.value === '0:00'
@@ -249,7 +249,7 @@ const App: FC = () => {
                         : 'black';
                     return (
                       <StyledTableCell
-                        style={{ color: cellColor }}
+                        style={{ color: cellColor, padding: '10px' }}
                         key={cell.getCellProps().key}
                         {...cell.getCellProps()}
                       >
@@ -441,12 +441,12 @@ const App: FC = () => {
         </ModalContent>
       </Modal>
       <Modal header="Races" showModal={isOpen} onClose={() => setIsOpen(false)}>
-        <MaUTable {...getModalTableProps()}>
+        <MaUTable {...getModalTableProps()} padding="none">
           <TableHead>
             {modalHeaderGroups.map((headerGroup) => (
               <TableRow key={headerGroup.getHeaderGroupProps().key} {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map((column) => (
-                  <TableCell key={column.getHeaderProps().key} {...column.getHeaderProps()}>
+                  <TableCell style={{ padding: '10px' }} key={column.getHeaderProps().key} {...column.getHeaderProps()}>
                     {column.render('Header')}
                   </TableCell>
                 ))}
@@ -460,7 +460,11 @@ const App: FC = () => {
                 <TableRow key={row.getRowProps().key} {...row.getRowProps()}>
                   {row.cells.map((cell) => {
                     return (
-                      <StyledTableCell key={cell.getCellProps().key} {...cell.getCellProps()}>
+                      <StyledTableCell
+                        style={{ padding: '10px' }}
+                        key={cell.getCellProps().key}
+                        {...cell.getCellProps()}
+                      >
                         {cell.render('Cell')}
                       </StyledTableCell>
                     );

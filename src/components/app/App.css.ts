@@ -49,11 +49,12 @@ export const InputWrapper = styled.div`
 export const StyledButton = styled.button`
   color: white;
   background-color: #884d1d;
-  height: 40px;
+  min-height: 35px;
   width: 80px;
   cursor: pointer;
   border-radius: 5px;
   margin-top: 20px;
+  margin-bottom: 5px;
 
   &&:hover {
     background-color: #b16b2d;

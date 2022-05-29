@@ -8,6 +8,7 @@ export const ModalWrapper = styled.div<{ visible: boolean }>`
   bottom: 0;
   left: 0;
   right: 0;
+  z-index: 2;
 `;
 
 export const ModalView = styled.div`
@@ -15,6 +16,7 @@ export const ModalView = styled.div`
   background-color: rgba(0, 0, 0, 0.4);
   align-items: center;
   justify-content: center;
+  padding: 10px;
   flex: 1;
 `;
 
@@ -22,7 +24,6 @@ export const ModalCard = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  // justify-content: center;
   background-color: white;
   padding: 15px 20px 20px 20px;
   border-radius: 5px;
