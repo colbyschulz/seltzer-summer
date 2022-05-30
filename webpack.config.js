@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const createStyledComponentsTransformer = require('typescript-plugin-styled-components').default;
 const styledComponentsTransformer = createStyledComponentsTransformer();
 const Dotenv = require('dotenv-webpack');
@@ -29,10 +30,6 @@ module.exports = {
         test: /\.css$/i,
         use: ['style-loader', 'css-loader'],
       },
-      // {
-      //   test: /\.(jpe?g|png|gif|svg)$/i,
-      //   loader: 'file-loader',
-      // },
       {
         test: /\.(png|jpg|gif|svg)$/i,
         use: [
@@ -46,6 +43,9 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: './src/index.html',
+    }),
+    new CopyWebpackPlugin({
+      patterns: [{ from: 'static' }],
     }),
     new Dotenv(),
   ],
