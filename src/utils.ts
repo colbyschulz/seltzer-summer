@@ -27,14 +27,16 @@ export const secondsToRaceTime = (timeInSeconds: number) => {
   return `${minutes}:${seconds}`;
 };
 
-export const normalizeByName = (records: TableRecord[]) =>
+export const racesByNameId = (records: TableRecord[]) =>
   records.reduce((accum, { fields: { name, distance, time, date, raceName } }) => {
     const capitalizedName = capitalize(name);
+    const mutableName = name;
+    const nameId = mutableName.replace(/\s+/g, '');
 
-    if (!accum[capitalizedName]) {
-      accum[capitalizedName] = [{ name: capitalizedName, distance, time, date, raceName }];
+    if (!accum[nameId]) {
+      accum[nameId] = [{ nameId, name: capitalizedName, distance, time, date, raceName }];
     } else {
-      accum[capitalizedName].push({ name: capitalizedName, distance, time, date, raceName });
+      accum[nameId].push({ nameId, name: capitalizedName, distance, time, date, raceName });
     }
 
     return accum;

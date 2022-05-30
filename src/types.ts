@@ -1,6 +1,7 @@
 export type DistanceOption = '5k' | '10k' | '1 mile';
 
 export interface TableRecordFields {
+  nameId?: string;
   distance: string;
   name: string;
   time: number;
