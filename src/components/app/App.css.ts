@@ -1,4 +1,15 @@
 import styled from 'styled-components';
+import { TableCell } from '@material-ui/core';
+
+export const RecordTableWrapper = styled.div`
+  -webkit-overflow-scrolling: touch;
+  overflow-y: scroll;
+  margin-bottom: 30px;
+`;
+
+export const StyledTableCell = styled(TableCell)<{ isFaster?: boolean }>`
+  color: ${({ isFaster }) => (isFaster ? 'green' : 'red')};
+`;
 
 export const AppWrapper = styled.div`
   margin: 0 20px;

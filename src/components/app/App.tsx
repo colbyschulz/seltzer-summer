@@ -5,7 +5,6 @@ import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { createRecord, getRecords } from '../../reactQuery/api';
 import { queryKeys } from '../../reactQuery/queryKeys';
 import { DistanceOption, TableRecord } from '../../types';
-// import RecordTable from '../recordTable/RecordTable';
 import MaUTable from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -18,12 +17,13 @@ import {
   InputLabel,
   InputWrapper,
   ModalContent,
+  RecordTableWrapper,
   StyledButton,
   StyledDatePicker,
+  StyledTableCell,
 } from './App.css';
 import Modal from '../modal/Modal';
 import { Column, useTable } from 'react-table';
-import { RecordTableWrapper, StyledTableCell } from '../recordTable/recordTable.css';
 import ArrowRight from '../../assets/images/arrow-right.png';
 import { capitalize } from '../../utils';
 
@@ -92,18 +92,12 @@ const App: FC = () => {
           (race) => race.time === Math.min(...raceArrayMutable.map((race) => race.time)),
         );
 
-        const deltaInSeconds = fastestRemainingRace?.time - baseRace.time || 0;
-        const isFaster = deltaInSeconds.toString().includes('-');
-        const minutes = Math.floor(Math.abs(deltaInSeconds) / 60).toString();
-        const seconds = (Math.abs(deltaInSeconds) % 60).toLocaleString('US', {
-          minimumIntegerDigits: 2,
-          useGrouping: false,
-        });
+        const deltaInSeconds = ((fastestRemainingRace?.time - baseRace.time) / baseRace.time) * 100 || 0;
 
         return {
           name,
           numRaces: raceArray.length.toString(),
-          delta: `${isFaster ? '-' : ''}${minutes}:${seconds}`,
+          delta: deltaInSeconds === 0 ? `${deltaInSeconds}%` : `${deltaInSeconds.toFixed(2)}%`,
           deltaInSeconds,
         };
       }),
@@ -187,7 +181,7 @@ const App: FC = () => {
           accessor: 'numRaces',
         },
         {
-          Header: 'Baseline Delta',
+          Header: 'Progress',
           accessor: 'delta',
         },
         {
@@ -246,10 +240,10 @@ const App: FC = () => {
                 >
                   {row.cells.map((cell) => {
                     const cellColor =
-                      cell.column.Header === 'Baseline Delta'
+                      cell.column.Header === 'Progress'
                         ? cell.value.includes('-')
                           ? 'green'
-                          : cell.value === '0:00'
+                          : cell.value === '0%'
                           ? 'black'
                           : '#D30703'
                         : 'black';

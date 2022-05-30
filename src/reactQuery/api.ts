@@ -1,6 +1,9 @@
 import { TableRecord } from '../types';
 
-const baseUrl = process.env.ENVVIRONMENT === 'prod' ? '' : 'https://api.airtable.com/v0/appusTcSy172j3GYs/Table%201';
+const baseUrl =
+  process.env.ENVVIRONMENT === 'prod'
+    ? 'https://api.airtable.com/v0/appusTcSy172j3GYs/prod'
+    : 'https://api.airtable.com/v0/appusTcSy172j3GYs/dev';
 
 export const getRecords = async (): Promise<TableRecord[]> => {
   const response = await fetch(baseUrl, {
