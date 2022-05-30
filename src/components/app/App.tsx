@@ -5,6 +5,7 @@ import Seltzer from '../../assets/images/seltzer.jpg';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import DetailScreen from '../../screens/detailScreen/DetailScreen';
 import LeaderboardScreen from '../../screens/leaderboardScreen/LeaderboardScreen';
+import { HeaderImage, HeaderWrapper } from './App.css';
 
 const queryClient = new QueryClient();
 
@@ -13,9 +14,9 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <GlobalCSS />
-        <div style={{ alignSelf: 'center' }}>
-          <img style={{ maxWidth: '100%' }} src={Seltzer} />
-        </div>
+        <HeaderWrapper>
+          <HeaderImage style={{ maxHeight: '400px' }} src={Seltzer} />
+        </HeaderWrapper>
 
         <Routes>
           <Route path="/" element={<LeaderboardScreen />} />

@@ -88,7 +88,7 @@ const DetailScreen = () => {
           ))}
         </TableHead>
         <TableBody>
-          {modalRows.map((row, i) => {
+          {modalRows.map((row) => {
             modalPrepareRow(row);
             return (
               <TableRow key={row.getRowProps().key} {...row.getRowProps()}>

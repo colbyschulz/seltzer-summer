@@ -1,5 +1,5 @@
 import { Field, FieldProps, Form, Formik } from 'formik';
-import React, { FC, useMemo, useRef, useState } from 'react';
+import React, { FC, useMemo, useRef } from 'react';
 import * as Yup from 'yup';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { createRecord, getRecords } from '../../reactQuery/api';
@@ -23,8 +23,8 @@ import {
   StyledTableCell,
 } from './leaderboardScreen.css';
 import Modal from '../../components/modal/Modal';
-import { Column, TableOptions, useTable } from 'react-table';
-import ArrowRight from '../../assets/images/arrow-right.png';
+import { Column, useTable } from 'react-table';
+import ArrowRight from '../../assets/images/arrow-right.svg';
 import { racesByNameId, raceTimeToSeconds } from '../../utils';
 import { useNavigate } from 'react-router-dom';
 
@@ -96,11 +96,12 @@ const App: FC = () => {
         position: (i + 1).toString(),
         numRaces,
         delta: deltaAsPercentage === 0 ? `${deltaAsPercentage}%` : `${deltaAsPercentage.toFixed(2)}%`,
+        arrow: '',
       }));
   }, [records]);
 
   const leaderboardColumns: Array<
-    Column<{ position: string; name: string; numRaces: string; delta: string; nameId: string }>
+    Column<{ position: string; name: string; numRaces: string; delta: string; nameId: string; arrow: string }>
   > = useMemo(
     () => [
       {
@@ -120,8 +121,8 @@ const App: FC = () => {
         accessor: 'delta',
       },
       {
-        Header: 'Detail',
-        Cell: () => <img src={ArrowRight} width={20} alt="Arrow" />,
+        Cell: () => <img style={{ alignSelf: 'center', display: 'flex' }} src={ArrowRight} width={20} alt="Arrow" />,
+        accessor: 'arrow',
       },
     ],
     [],
@@ -159,7 +160,6 @@ const App: FC = () => {
                   {...row.getRowProps()}
                   onClick={() => {
                     navigate(`/${row.original.nameId}`);
-                    // navigate(`/colbyschulz`);
                   }}
                 >
                   {row.cells.map((cell) => {
@@ -229,7 +229,7 @@ const App: FC = () => {
                   <FormWrapper>
                     <div style={{ display: 'flex' }}>
                       <Field name="firstName" id="firstName">
-                        {({ field, form: { touched, errors }, meta }: FieldProps) => (
+                        {({ field, form: { touched, errors } }: FieldProps) => (
                           <InputWrapper>
                             <InputLabel error={touched.firstName && !!errors.firstName} htmlFor="firstName">
                               First Name
@@ -245,7 +245,7 @@ const App: FC = () => {
                       </Field>
 
                       <Field name="lastName" id="lastName">
-                        {({ field, form: { touched, errors }, meta }: FieldProps) => (
+                        {({ field, form: { touched, errors } }: FieldProps) => (
                           <InputWrapper>
                             <InputLabel error={touched.lastName && !!errors.lastName} htmlFor="lastName">
                               Last Name
@@ -263,7 +263,7 @@ const App: FC = () => {
 
                     <div style={{ display: 'flex', width: '100%' }}>
                       <Field name="raceName" id="raceName">
-                        {({ field, form: { touched, errors }, meta }: FieldProps) => (
+                        {({ field, form: { touched, errors } }: FieldProps) => (
                           <InputWrapper style={{ width: '100%' }}>
                             <InputLabel error={touched.raceName && !!errors.raceName} htmlFor="raceName">
                               Race Name
@@ -279,9 +279,9 @@ const App: FC = () => {
                       </Field>
                     </div>
 
-                    <div style={{ display: 'flex', alignItems: 'baseline' }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-end' }}>
                       <Field name="date" id="date">
-                        {({ field, form: { touched, errors }, meta }: FieldProps) => (
+                        {({ field, form: { touched, errors } }: FieldProps) => (
                           <InputWrapper>
                             <InputLabel error={touched.date && !!errors.date} htmlFor="date">
                               Date
@@ -306,7 +306,7 @@ const App: FC = () => {
                         </InputLabel>
                         <div style={{ display: 'flex', alignItems: 'baseline' }}>
                           <Field name="minutes" id="minutes">
-                            {({ field, form: { touched, errors }, meta }: FieldProps) => (
+                            {({ field, form: { touched, errors } }: FieldProps) => (
                               <>
                                 <Input
                                   error={touched.minutes && !!errors.minutes}
@@ -320,7 +320,7 @@ const App: FC = () => {
                           </Field>
                           <div>:</div>
                           <Field name="seconds" id="seconds">
-                            {({ field, form: { touched, errors }, meta }: FieldProps) => (
+                            {({ field, form: { touched, errors } }: FieldProps) => (
                               <>
                                 <Input
                                   error={touched.seconds && !!errors.seconds}

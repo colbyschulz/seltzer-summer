@@ -34,15 +34,10 @@ module.exports = {
       //   loader: 'file-loader',
       // },
       {
-        test: /\.(png|jpg|gif)$/i,
+        test: /\.(png|jpg|gif|svg)$/i,
         use: [
           {
             loader: 'url-loader',
-            options: {
-              limit: 8192,
-              mimetype: 'image/png',
-              encoding: true,
-            },
           },
         ],
       },
