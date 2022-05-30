@@ -11,7 +11,6 @@ ReactDOM.render(
   <QueryClientProvider client={queryClient}>
     <GlobalCSS />
     <div style={{ alignSelf: 'center' }}>
-      {/* <img style={{ height: '100%', objectFit: 'contain', alignSelf: 'center' }} src={Seltzer} /> */}
       <img style={{ maxWidth: '100%' }} src={Seltzer} />
     </div>
 

@@ -1,7 +1,7 @@
 import { TableRecord } from '../types';
 
 const baseUrl =
-  process.env.ENVVIRONMENT === 'prod'
+  process.env.ENVIRONMENT === 'prod'
     ? 'https://api.airtable.com/v0/appusTcSy172j3GYs/prod'
     : 'https://api.airtable.com/v0/appusTcSy172j3GYs/dev';
 

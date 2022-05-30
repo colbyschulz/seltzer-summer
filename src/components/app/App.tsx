@@ -4,7 +4,7 @@ import * as Yup from 'yup';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { createRecord, getRecords } from '../../reactQuery/api';
 import { queryKeys } from '../../reactQuery/queryKeys';
-import { DistanceOption, TableRecord } from '../../types';
+import { TableRecord } from '../../types';
 import MaUTable from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -25,7 +25,7 @@ import {
 import Modal from '../modal/Modal';
 import { Column, useTable } from 'react-table';
 import ArrowRight from '../../assets/images/arrow-right.png';
-import { capitalize } from '../../utils';
+import { normalizeByName, raceTimeToSeconds } from '../../utils';
 
 interface FormValues {
   firstName: string;
@@ -33,7 +33,6 @@ interface FormValues {
   raceName: string;
   minutes: string;
   seconds: string;
-  distance: DistanceOption;
   date: string;
 }
 
@@ -43,12 +42,13 @@ const validationSchema = Yup.object().shape({
   raceName: Yup.string().required('Required'),
   minutes: Yup.string()
     .required('Required')
+    // .min(2)
     .max(2)
     .matches(/(1[0-9]|[2-5][0-9])/, ''),
   seconds: Yup.string()
     .required('Required')
     .max(2)
-    .matches(/(0[0-9]|[1-5][0-9])/, ''),
+    .matches(/^[0-5]?[0-9]$/, ''),
   date: Yup.string().required('Required'),
 });
 
@@ -58,69 +58,49 @@ const App: FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeName, setActiveName] = useState('');
   const formikRef = useRef(null);
-
-  const { data: records = [], isLoading } = useQuery(queryKeys.records, () => getRecords());
-  const { mutate: createRecordMutation, isLoading: createRecordLoading } = useMutation(createRecord, {
+  const { data: records = [] } = useQuery(queryKeys.records, () => getRecords());
+  const { mutate: createRecordMutation } = useMutation(createRecord, {
     onSuccess: () => {
       queryClient.invalidateQueries(queryKeys.records);
     },
   });
 
-  const normalizedData = records.reduce((accum, { fields: { name, distance, time, date, raceName } }) => {
-    const timeInSeconds = time
-      .split(':')
-      .reduce((accum, time, index) => (index === 0 ? accum + Number(time) * 60 : accum + Number(time)), 0);
+  const dataNormalizedByName = useMemo(() => normalizeByName(records), [records]);
 
-    const capitalizedName = capitalize(name);
-    if (!accum[capitalizedName]) {
-      accum[capitalizedName] = [{ name: capitalizedName, distance, time: timeInSeconds, date, raceName }];
-    } else {
-      accum[capitalizedName].push({ name: capitalizedName, distance, time: timeInSeconds, date, raceName });
-    }
-    return accum;
-  }, {} as { [key: string]: { name: string; distance: string; time: number; raceName: string; date: string }[] });
+  const leaderboardData = useMemo(() => {
+    const enhancedData = Object.keys(dataNormalizedByName).map((name) => {
+      const raceArray = dataNormalizedByName[name];
+      const raceArrayMutable = [...raceArray];
 
-  const enhancedData = useMemo(
+      const sortedByDate = raceArrayMutable.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      const baseRace = sortedByDate.splice(0, 1)[0];
+      const fastestRemainingRace = raceArrayMutable.find(
+        (race) => race.time === Math.min(...raceArrayMutable.map((race) => race.time)),
+      );
+
+      const deltaAsPercentage = ((fastestRemainingRace?.time - baseRace.time) / baseRace.time) * 100 || 0;
+
+      return {
+        name,
+        numRaces: raceArray.length.toString(),
+        deltaAsPercentage,
+      };
+    });
+
+    return enhancedData
+      .sort((a, b) => a.deltaAsPercentage - b.deltaAsPercentage)
+      .map(({ name, numRaces, deltaAsPercentage }, i) => ({
+        name,
+        position: (i + 1).toString(),
+        numRaces,
+        delta: deltaAsPercentage === 0 ? `${deltaAsPercentage}%` : `${deltaAsPercentage.toFixed(2)}%`,
+        test: '',
+      }));
+  }, [records]);
+
+  const detailModalData = useMemo(
     () =>
-      Object.keys(normalizedData).map((name) => {
-        const raceArray = normalizedData[name];
-        const raceArrayMutable = [...raceArray];
-        const sortedByDate = raceArrayMutable.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-        const baseRace = sortedByDate.splice(0, 1)[0];
-
-        const fastestRemainingRace = raceArrayMutable.find(
-          (race) => race.time === Math.min(...raceArrayMutable.map((race) => race.time)),
-        );
-
-        const deltaInSeconds = ((fastestRemainingRace?.time - baseRace.time) / baseRace.time) * 100 || 0;
-
-        return {
-          name,
-          numRaces: raceArray.length.toString(),
-          delta: deltaInSeconds === 0 ? `${deltaInSeconds}%` : `${deltaInSeconds.toFixed(2)}%`,
-          deltaInSeconds,
-        };
-      }),
-    [records],
-  );
-
-  const data = useMemo(
-    () =>
-      enhancedData
-        .sort((a, b) => a.deltaInSeconds - b.deltaInSeconds)
-        .map(({ name, numRaces, delta }, i) => ({
-          name,
-          position: (i + 1).toString(),
-          numRaces,
-          delta,
-          test: '',
-        })),
-    [records],
-  );
-
-  const modalData = useMemo(
-    () =>
-      normalizedData[activeName]
+      dataNormalizedByName[activeName]
         ?.map(({ name, date, raceName, time, distance }) => {
           const minutes = Math.floor(Math.abs(time) / 60).toString();
           const seconds = (Math.abs(time) % 60).toLocaleString('US', {
@@ -142,60 +122,62 @@ const App: FC = () => {
     [records, activeName],
   );
 
-  const modalcolumns: Array<Column<{ date: string; name: string; raceName: string; distance: string; time: string }>> =
-    useMemo(
-      () => [
-        {
-          Header: 'Date',
-          accessor: 'date',
-        },
-        {
-          Header: 'Name',
-          accessor: 'name',
-        },
-        {
-          Header: 'Race',
-          accessor: 'raceName',
-        },
-        {
-          Header: 'Time',
-          accessor: 'time',
-        },
-      ],
-      [],
-    );
+  const detailModalColumns: Array<
+    Column<{ date: string; name: string; raceName: string; distance: string; time: string }>
+  > = useMemo(
+    () => [
+      {
+        Header: 'Date',
+        accessor: 'date',
+      },
+      {
+        Header: 'Name',
+        accessor: 'name',
+      },
+      {
+        Header: 'Race',
+        accessor: 'raceName',
+      },
+      {
+        Header: 'Time',
+        accessor: 'time',
+      },
+    ],
+    [],
+  );
 
-  const columns: Array<Column<{ position: string; name: string; numRaces: string; delta: string; test: string }>> =
-    useMemo(
-      () => [
-        {
-          Header: 'Pos',
-          accessor: 'position',
-        },
-        {
-          Header: 'Name',
-          accessor: 'name',
-        },
-        {
-          Header: 'Races',
-          accessor: 'numRaces',
-        },
-        {
-          Header: 'Progress',
-          accessor: 'delta',
-        },
-        {
-          Header: 'Detail',
-          accessor: 'test',
-          Cell: () => <img src={ArrowRight} width={20} alt="Arrow" />,
-        },
-      ],
-      [],
-    );
+  const leaderboardColumns: Array<
+    Column<{ position: string; name: string; numRaces: string; delta: string; test: string }>
+  > = useMemo(
+    () => [
+      {
+        Header: 'Pos',
+        accessor: 'position',
+      },
+      {
+        Header: 'Name',
+        accessor: 'name',
+      },
+      {
+        Header: 'Races',
+        accessor: 'numRaces',
+      },
+      {
+        Header: 'Progress',
+        accessor: 'delta',
+      },
+      {
+        Header: 'Detail',
+        accessor: 'test',
+        Cell: () => <img src={ArrowRight} width={20} alt="Arrow" />,
+      },
+    ],
+    [],
+  );
 
   const { getTableProps, headerGroups, rows, prepareRow } = useTable({
-    columns,
-    data,
+    columns: leaderboardColumns,
+    data: leaderboardData,
   });
 
   const {
@@ -204,8 +186,8 @@ const App: FC = () => {
     rows: modalRows,
     prepareRow: modalPrepareRow,
   } = useTable({
-    columns: modalcolumns,
-    data: modalData,
+    columns: detailModalColumns,
+    data: detailModalData,
   });
 
   return (
@@ -279,20 +261,19 @@ const App: FC = () => {
               lastName: '',
               minutes: '',
               seconds: '',
-              distance: '',
               raceName: '',
               date: '',
             }}
             innerRef={formikRef}
             validationSchema={validationSchema}
-            onSubmit={(values: FormValues, { resetForm }) => {
+            onSubmit={({ date, raceName, firstName, lastName, minutes, seconds }: FormValues, { resetForm }) => {
               const recordValues: TableRecord = {
                 fields: {
-                  date: values.date,
-                  raceName: values.raceName,
-                  name: `${values.firstName} ${values.lastName}`.toLowerCase(),
-                  distance: values.distance || '5k',
-                  time: `${values.minutes}:${values.seconds}`,
+                  date,
+                  raceName,
+                  name: `${firstName.trim()} ${lastName.trim()}`.toLowerCase(),
+                  distance: '5k',
+                  time: raceTimeToSeconds(minutes, seconds),
                 },
               };
               createRecordMutation(recordValues);
@@ -333,7 +314,6 @@ const App: FC = () => {
                               placeholder="Enthusiast"
                               {...field}
                             />
-                            {/* {meta.touched && errors.firstName && <div>{errors.firstName}</div>} */}
                           </InputWrapper>
                         )}
                       </Field>
@@ -356,22 +336,6 @@ const App: FC = () => {
                         )}
                       </Field>
                     </div>
-
-                    {/* <InputWrapper style={{ alignSelf: 'flexStart' }}>
-                    <InputLabel htmlFor="distance">Distance</InputLabel>
-                    <Select name="distance" id="distance" onChange={handleChange} value={values.distance}>
-                      <option key="default" value=""></option>
-                      <option key="1 mile" value="1 mile">
-                        1 Mile
-                      </option>
-                      <option key="5k" value="5k">
-                        5k
-                      </option>
-                      <option key="10k" value="10k">
-                        10k
-                      </option>
-                    </Select>
-                  </InputWrapper> */}
 
                     <div style={{ display: 'flex', alignItems: 'baseline' }}>
                       <Field name="date" id="date">

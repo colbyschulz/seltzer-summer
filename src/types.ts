@@ -1,13 +1,14 @@
 export type DistanceOption = '5k' | '10k' | '1 mile';
 
+export interface TableRecordFields {
+  distance: string;
+  name: string;
+  time: number;
+  raceName: string;
+  date: string;
+}
 export interface TableRecord {
   createdTime?: string;
-  fields: {
-    distance: string;
-    name: string;
-    time: string;
-    raceName: string;
-    date: string;
-  };
+  fields: TableRecordFields;
   id?: string;
 }
