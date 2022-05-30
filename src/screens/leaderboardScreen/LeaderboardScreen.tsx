@@ -121,7 +121,14 @@ const App: FC = () => {
         accessor: 'delta',
       },
       {
-        Cell: () => <img style={{ alignSelf: 'center', display: 'flex' }} src={ArrowRight} width={20} alt="Arrow" />,
+        Cell: () => (
+          <img
+            style={{ alignSelf: 'center', display: 'flex', width: '15px' }}
+            src={ArrowRight}
+            width={20}
+            alt="Arrow"
+          />
+        ),
         accessor: 'arrow',
       },
     ],
@@ -304,7 +311,7 @@ const App: FC = () => {
                         >
                           Time
                         </InputLabel>
-                        <div style={{ display: 'flex', alignItems: 'baseline' }}>
+                        <div style={{ display: 'flex', alignItems: 'flex-end' }}>
                           <Field name="minutes" id="minutes">
                             {({ field, form: { touched, errors } }: FieldProps) => (
                               <>
@@ -318,7 +325,7 @@ const App: FC = () => {
                               </>
                             )}
                           </Field>
-                          <div>:</div>
+                          <div style={{ marginBottom: '20px' }}>:</div>
                           <Field name="seconds" id="seconds">
                             {({ field, form: { touched, errors } }: FieldProps) => (
                               <>

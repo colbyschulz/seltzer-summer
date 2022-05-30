@@ -6,7 +6,6 @@ export const HeaderWrapper = styled.div`
   width: 100%;
   justify-content: center;
   max-height: 400px;
-  background-color: #884d1d;
 `;
 
 export const HeaderImage = styled.img`
