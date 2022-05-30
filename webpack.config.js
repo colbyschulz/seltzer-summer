@@ -47,7 +47,7 @@ module.exports = {
     new CopyWebpackPlugin({
       patterns: [{ from: 'static' }],
     }),
-    new Dotenv(),
+    new Dotenv({ systemvars: true }),
   ],
   devServer: {
     historyApiFallback: true,
