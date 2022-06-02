@@ -144,6 +144,11 @@ const App: FC = () => {
   return (
     <LeaderboardScreenWrapper>
       <Breadcrumbs config={[{ route: null, display: 'Leaderboard' }]} />
+
+      <div style={{ marginBottom: '20px' }}>
+        {`Summer of Speed 2022 is all about 5k's. Add a race as a baseline and track your progress throughout the summer.`}
+      </div>
+
       <StyledButton color="primary" onClick={() => setIsModalOpen(true)} style={{ marginBottom: '20px' }}>
         Add Race
       </StyledButton>

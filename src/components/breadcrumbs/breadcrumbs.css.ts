@@ -5,6 +5,7 @@ export const BreadcrumbsWrapper = styled.div`
   display: flex;
   align-items: center;
   margin-bottom: 20px;
+  font-size: 18px;
 `;
 
 export const LinkCrumb = styled(Link)`

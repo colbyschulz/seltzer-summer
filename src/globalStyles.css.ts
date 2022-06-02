@@ -1,14 +1,15 @@
 import { createGlobalStyle } from 'styled-components';
 
 export default createGlobalStyle`
+* {
+  font-family: 'Roboto', Open-Sans, Helvetica, Sans-Serif !important;
+}
   html { height:100%; }
   body {
     margin: 0;
     padding: 0;
     font-family: 'Roboto', Open-Sans, Helvetica, Sans-Serif;
     font-weight: 400;
-    line-height: 1.43;
-    letter-spacing: 0.01071em;
     width: 100%;
     min-height: 100%;
   }
@@ -37,10 +38,10 @@ export default createGlobalStyle`
 
     box-shadow: none !important;
   }
-  input:focus {outline:none}
 
+  input:focus {outline:none}
 
   input::-webkit-calendar-picker-indicator{
     display: none;
-}
+  }
 `;

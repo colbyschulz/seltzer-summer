@@ -41,7 +41,6 @@ export const Input = styled.input<InputProps>`
 `;
 
 export const StyledDatePicker = styled(Input)`
-  font-family: 'Roboto', Open-Sans, Helvetica, Sans-Serif;
   padding: 1px 5px;
   background-color: white;
 `;
