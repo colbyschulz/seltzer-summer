@@ -14,7 +14,7 @@ export const getRecords = async (): Promise<TableRecord[]> => {
   });
   const result = await response.json();
 
-  return result.records as TableRecord[];
+  return result.records;
 };
 
 export const createRecord = async (newRecord: TableRecord): Promise<TableRecord[]> => {
@@ -28,5 +28,5 @@ export const createRecord = async (newRecord: TableRecord): Promise<TableRecord[
   });
   const result = await response.json();
 
-  return result.records as TableRecord[];
+  return result.records;
 };

@@ -27,17 +27,21 @@ export const secondsToRaceTime = (timeInSeconds: number) => {
   return `${minutes}:${seconds}`;
 };
 
-export const racesByNameId = (records: TableRecord[]) =>
-  records.reduce((accum, { fields: { name, distance, time, date, raceName } }) => {
-    const capitalizedName = capitalize(name);
-    const mutableName = name;
-    const nameId = mutableName.replace(/\s+/g, '');
+export const racesByNameId = (records: TableRecord[]) => {
+  if (records) {
+    const byId = records.reduce((accum, { fields: { name, distance, time, date, raceName } }) => {
+      const capitalizedName = capitalize(name);
+      const mutableName = name;
+      const nameId = mutableName.replace(/\s+/g, '');
 
-    if (!accum[nameId]) {
-      accum[nameId] = [{ nameId, name: capitalizedName, distance, time, date, raceName }];
-    } else {
-      accum[nameId].push({ nameId, name: capitalizedName, distance, time, date, raceName });
-    }
+      if (!accum[nameId]) {
+        accum[nameId] = [{ nameId, name: capitalizedName, distance, time, date, raceName }];
+      } else {
+        accum[nameId].push({ nameId, name: capitalizedName, distance, time, date, raceName });
+      }
 
-    return accum;
-  }, {} as { [key: string]: TableRecordFields[] });
+      return accum;
+    }, {} as { [key: string]: TableRecordFields[] });
+    return byId;
+  }
+};

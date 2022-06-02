@@ -10,61 +10,106 @@ import { DetailScreenWrapper } from './detailScreen.css';
 import MaUTable from '@material-ui/core/Table';
 import { useParams } from 'react-router-dom';
 import Breadcrumbs from '../../components/breadcrumbs/Breadcrumbs';
+import colors from '../../colors';
+
+interface EnhancedTableRecordField {
+  name?: string;
+  time?: number;
+  isBestEffort?: boolean;
+  isBaseline?: boolean;
+  isBestEffortBetterThanBaseline?: boolean;
+  raceName?: string;
+  date?: string;
+}
+
+interface RowData {
+  name: string;
+  time: string;
+  isBestEffort: boolean;
+  isBaseline: boolean;
+  isBestEffortBetterThanBaseline: boolean;
+  raceName: string;
+  date: string;
+}
 
 const DetailScreen = () => {
-  const { data: records = [] } = useQuery(queryKeys.records, () => getRecords());
+  const { data: records } = useQuery(queryKeys.records, getRecords);
   const { nameId } = useParams();
   const breadcrumbsconfig = [
     { route: '/', display: 'Leaderboard' },
     { route: null, display: 'Detail' },
   ];
-  const dataNormalizedById = useMemo(() => racesByNameId(records), [records]);
-  const detailModalData = useMemo(
-    () =>
-      dataNormalizedById[nameId]
-        ?.map(({ name, date, raceName, time, distance }) => {
-          const minutes = Math.floor(Math.abs(time) / 60).toString();
-          const seconds = (Math.abs(time) % 60).toLocaleString('US', {
-            minimumIntegerDigits: 2,
-            useGrouping: false,
-          });
 
-          const [YYYY, MM, DD] = date.split('-');
-          const dateString = new Date(parseInt(YYYY), parseInt(MM) - 1, parseInt(DD));
-          return {
-            name,
-            date: dateString.toLocaleDateString('US'),
-            raceName,
-            time: `${minutes}:${seconds}`,
-            distance,
-          };
-        })
-        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()) || [],
-    [records],
+  const dataNormalizedById = racesByNameId(records);
+  const raceArray = dataNormalizedById?.[nameId];
+  const raceArrayMutable = raceArray ? [...raceArray] : [];
+  const sortedByDate = raceArrayMutable.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  const baseRace = sortedByDate.splice(0, 1)[0];
+
+  const enhancedBaseRace: EnhancedTableRecordField = {
+    ...baseRace,
+    isBaseline: true,
+  };
+
+  const remainingRacesSortedBytime: EnhancedTableRecordField[] = sortedByDate.sort((a, b) => a.time - b.time);
+  if (remainingRacesSortedBytime[0]) {
+    remainingRacesSortedBytime[0].isBestEffort = true;
+  }
+
+  if (remainingRacesSortedBytime[0] && remainingRacesSortedBytime[0].time < baseRace.time) {
+    remainingRacesSortedBytime[0].isBestEffortBetterThanBaseline = true;
+  }
+
+  const enhancedRaceArray = [enhancedBaseRace, ...remainingRacesSortedBytime];
+
+  const createTableDataEntry = ({ name, raceName, time, date, ...rest }: EnhancedTableRecordField) => {
+    const minutes = Math.floor(Math.abs(time) / 60).toString();
+    const seconds = (Math.abs(time) % 60).toLocaleString('US', {
+      minimumIntegerDigits: 2,
+      useGrouping: false,
+    });
+    const parsedDate = date && date.split('-');
+
+    const dateString =
+      parsedDate && new Date(parseInt(parsedDate[0]), parseInt(parsedDate[1]) - 1, parseInt(parsedDate[2]));
+
+    return {
+      ...rest,
+      name,
+      date: dateString?.toLocaleDateString('US') ?? '',
+      raceName,
+      time: `${minutes}:${seconds}`,
+    };
+  };
+
+  const detailModalData = useMemo(() => {
+    const data = enhancedRaceArray.map(createTableDataEntry);
+    data.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    console.log(data);
+    return data;
+  }, [records]);
+
+  const detailColumns: Array<Column<RowData>> = useMemo(
+    () => [
+      {
+        Header: 'Date',
+        accessor: 'date',
+      },
+      {
+        Header: 'Name',
+        accessor: 'name',
+      },
+      {
+        Header: 'Race',
+        accessor: 'raceName',
+      },
+      {
+        Header: 'Time',
+        accessor: 'time',
+      },
+    ],
+    [],
   );
-
-  const detailColumns: Array<Column<{ date: string; name: string; raceName: string; distance: string; time: string }>> =
-    useMemo(
-      () => [
-        {
-          Header: 'Date',
-          accessor: 'date',
-        },
-        {
-          Header: 'Name',
-          accessor: 'name',
-        },
-        {
-          Header: 'Race',
-          accessor: 'raceName',
-        },
-        {
-          Header: 'Time',
-          accessor: 'time',
-        },
-      ],
-      [],
-    );
 
   const {
     getTableProps: getModalTableProps,
@@ -96,24 +141,36 @@ const DetailScreen = () => {
           ))}
         </TableHead>
         <TableBody>
-          {modalRows.map((row) => {
-            modalPrepareRow(row);
-            return (
-              <TableRow key={row.getRowProps().key} {...row.getRowProps()}>
-                {row.cells.map((cell) => {
-                  return (
-                    <StyledTableCell
-                      style={{ padding: '12px', overflowWrap: 'break-word' }}
-                      key={cell.getCellProps().key}
-                      {...cell.getCellProps()}
-                    >
-                      {cell.render('Cell')}
-                    </StyledTableCell>
-                  );
-                })}
-              </TableRow>
-            );
-          })}
+          {records &&
+            modalRows.map((row) => {
+              modalPrepareRow(row);
+              const color =
+                row.index === 0
+                  ? 'black'
+                  : row.original.isBestEffort
+                  ? row.original.isBestEffortBetterThanBaseline
+                    ? colors.green
+                    : colors.red
+                  : colors.grey;
+
+              console.log(row, color);
+
+              return (
+                <TableRow key={row.getRowProps().key} {...row.getRowProps()}>
+                  {row.cells.map((cell) => {
+                    return (
+                      <StyledTableCell
+                        style={{ padding: '12px', overflowWrap: 'break-word', color }}
+                        key={cell.getCellProps().key}
+                        {...cell.getCellProps()}
+                      >
+                        {cell.render('Cell')}
+                      </StyledTableCell>
+                    );
+                  })}
+                </TableRow>
+              );
+            })}
         </TableBody>
       </MaUTable>
     </DetailScreenWrapper>
