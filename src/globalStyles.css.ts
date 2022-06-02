@@ -6,6 +6,9 @@ export default createGlobalStyle`
     margin: 0;
     padding: 0;
     font-family: 'Roboto', Open-Sans, Helvetica, Sans-Serif;
+    font-weight: 400;
+    line-height: 1.43;
+    letter-spacing: 0.01071em;
     width: 100%;
     min-height: 100%;
   }
@@ -32,7 +35,6 @@ export default createGlobalStyle`
     border-radius: 0 !important;
     border-top: 0 !important;
 
-    // -webkit-appearance: none;
     box-shadow: none !important;
   }
   input:focus {outline:none}

@@ -168,6 +168,7 @@ const App: FC = () => {
                   onClick={() => {
                     navigate(`/${row.original.nameId}`);
                   }}
+                  style={{ cursor: 'pointer' }}
                 >
                   {row.cells.map((cell) => {
                     const cellColor =

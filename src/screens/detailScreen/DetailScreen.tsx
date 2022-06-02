@@ -9,10 +9,15 @@ import { StyledTableCell } from '../leaderboardScreen/leaderboardScreen.css';
 import { DetailScreenWrapper } from './detailScreen.css';
 import MaUTable from '@material-ui/core/Table';
 import { useParams } from 'react-router-dom';
+import Breadcrumbs from '../../components/breadcrumbs/Breadcrumbs';
 
 const DetailScreen = () => {
   const { data: records = [] } = useQuery(queryKeys.records, () => getRecords());
   const { nameId } = useParams();
+  const breadcrumbsconfig = [
+    { route: '/', display: 'Leaderboard' },
+    { route: null, display: 'Detail' },
+  ];
   const dataNormalizedById = useMemo(() => racesByNameId(records), [records]);
   const detailModalData = useMemo(
     () =>
@@ -60,6 +65,7 @@ const DetailScreen = () => {
       ],
       [],
     );
+
   const {
     getTableProps: getModalTableProps,
     headerGroups: modalHeaderGroups,
@@ -69,8 +75,10 @@ const DetailScreen = () => {
     columns: detailColumns,
     data: detailModalData,
   });
+
   return (
     <DetailScreenWrapper>
+      <Breadcrumbs config={breadcrumbsconfig} />
       <MaUTable {...getModalTableProps()} padding="none" stickyHeader>
         <TableHead>
           {modalHeaderGroups.map((headerGroup) => (
