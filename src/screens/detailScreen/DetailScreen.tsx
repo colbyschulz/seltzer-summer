@@ -4,9 +4,9 @@ import { useQuery } from 'react-query';
 import { Column, useTable } from 'react-table';
 import { getRecords } from '../../reactQuery/api';
 import { queryKeys } from '../../reactQuery/queryKeys';
-import { racesByNameId } from '../../utils';
+import { calcPaceDifference, racesByNameId, secondsToPace } from '../../utils';
 import { StyledTableCell } from '../leaderboardScreen/leaderboardScreen.css';
-import { DetailScreenWrapper } from './detailScreen.css';
+import { DetailScreenWrapper, MetricLabel, Metrics, MetricValue } from './detailScreen.css';
 import MaUTable from '@material-ui/core/Table';
 import { useParams } from 'react-router-dom';
 import Breadcrumbs from '../../components/breadcrumbs/Breadcrumbs';
@@ -62,6 +62,10 @@ const DetailScreen = () => {
 
   const enhancedRaceArray = [enhancedBaseRace, ...remainingRacesSortedBytime];
 
+  const basePace = secondsToPace(baseRace?.time);
+  const bestEffortPace = secondsToPace(remainingRacesSortedBytime[0]?.time);
+  const paceDifference = calcPaceDifference(bestEffortPace, basePace);
+
   const createTableDataEntry = ({ name, raceName, time, date, ...rest }: EnhancedTableRecordField) => {
     const minutes = Math.floor(Math.abs(time) / 60).toString();
     const seconds = (Math.abs(time) % 60).toLocaleString('US', {
@@ -85,7 +89,6 @@ const DetailScreen = () => {
   const detailModalData = useMemo(() => {
     const data = enhancedRaceArray.map(createTableDataEntry);
     data.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-    console.log(data);
     return data;
   }, [records]);
 
@@ -124,6 +127,23 @@ const DetailScreen = () => {
   return (
     <DetailScreenWrapper>
       <Breadcrumbs config={breadcrumbsconfig} />
+
+      <Metrics>
+        <div style={{ marginBottom: '5px' }}>
+          <MetricLabel>Baseline Pace: </MetricLabel>
+          <MetricValue>{basePace}</MetricValue>
+        </div>
+
+        <div style={{ marginBottom: '5px' }}>
+          <MetricLabel>Best Effort Pace: </MetricLabel>
+          <MetricValue>{bestEffortPace ? bestEffortPace : basePace}</MetricValue>
+          <MetricValue color={baseRace?.time < remainingRacesSortedBytime[0]?.time ? colors.red : colors.green}>
+            {bestEffortPace
+              ? ` (${baseRace?.time < remainingRacesSortedBytime[0]?.time ? '' : '-'}${paceDifference})`
+              : ''}
+          </MetricValue>
+        </div>
+      </Metrics>
       <MaUTable {...getModalTableProps()} padding="none" stickyHeader>
         <TableHead>
           {modalHeaderGroups.map((headerGroup) => (
@@ -152,9 +172,6 @@ const DetailScreen = () => {
                     ? colors.green
                     : colors.red
                   : colors.grey;
-
-              console.log(row, color);
-
               return (
                 <TableRow key={row.getRowProps().key} {...row.getRowProps()}>
                   {row.cells.map((cell) => {

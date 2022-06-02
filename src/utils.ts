@@ -45,3 +45,32 @@ export const racesByNameId = (records: TableRecord[]) => {
     return byId;
   }
 };
+
+export const secondsToPace = (timeInSeconds: number, distanceInMiles = 3.10686) => {
+  if (!timeInSeconds) {
+    return '';
+  }
+  const secondsPerMile = timeInSeconds / distanceInMiles;
+  const paceMinutesPerMile = secondsPerMile / 60;
+  const paceSecondsPerMile = secondsPerMile % 60;
+  const pace = `${Math.floor(paceMinutesPerMile)}:${Math.abs(Math.round(paceSecondsPerMile)).toLocaleString('US', {
+    minimumIntegerDigits: 2,
+    useGrouping: false,
+  })}`;
+
+  return pace;
+};
+
+export const calcPaceDifference = (pace1: string, pace2: string) => {
+  const pace1Minutes = Number(pace1.split(':')[0]);
+  const pace1Seconds = Number(pace1.split(':')[1]);
+  const pace1TotalSeconds = pace1Minutes * 60 + pace1Seconds;
+
+  const pace2Minutes = Number(pace2.split(':')[0]);
+  const pace2Seconds = Number(pace2.split(':')[1]);
+  const pace2TotalSeconds = pace2Minutes * 60 + pace2Seconds;
+
+  const difference = pace1TotalSeconds - pace2TotalSeconds;
+
+  return secondsToRaceTime(difference);
+};

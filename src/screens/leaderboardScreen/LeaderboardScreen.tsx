@@ -27,6 +27,7 @@ import { Column, useTable } from 'react-table';
 import ArrowRight from '../../assets/images/arrow-right.svg';
 import { racesByNameId, raceTimeToSeconds } from '../../utils';
 import { useNavigate } from 'react-router-dom';
+import Breadcrumbs from '../../components/breadcrumbs/Breadcrumbs';
 
 interface FormValues {
   firstName: string;
@@ -142,6 +143,7 @@ const App: FC = () => {
 
   return (
     <LeaderboardScreenWrapper>
+      <Breadcrumbs config={[{ route: null, display: 'Leaderboard' }]} />
       <StyledButton color="primary" onClick={() => setIsModalOpen(true)} style={{ marginBottom: '20px' }}>
         Add Race
       </StyledButton>
