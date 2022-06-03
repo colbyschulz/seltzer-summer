@@ -1,9 +1,6 @@
 import { Field, FieldProps, Form, Formik } from 'formik';
 import React, { FC, useMemo, useRef } from 'react';
 import * as Yup from 'yup';
-import { useMutation, useQuery, useQueryClient } from 'react-query';
-import { createRecord, getRecords } from '../../reactQuery/api';
-import { queryKeys } from '../../reactQuery/queryKeys';
 import { TableRecord } from '../../types';
 import MaUTable from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -28,6 +25,7 @@ import ArrowRight from '../../assets/images/arrow-right.svg';
 import { racesByNameId, raceTimeToSeconds } from '../../utils';
 import { useNavigate } from 'react-router-dom';
 import Breadcrumbs from '../../components/breadcrumbs/Breadcrumbs';
+import { useRecords, useCreateRecord } from '../../api/records';
 
 interface FormValues {
   firstName: string;
@@ -55,17 +53,11 @@ const validationSchema = Yup.object().shape({
 });
 
 const App: FC = () => {
-  const queryClient = useQueryClient();
+  const { data: records = [] } = useRecords();
+  const { mutate: createRecordMutation } = useCreateRecord();
   const navigate = useNavigate();
-
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const formikRef = useRef(null);
-  const { data: records = [] } = useQuery(queryKeys.records, () => getRecords());
-  const { mutate: createRecordMutation } = useMutation(createRecord, {
-    onSuccess: () => {
-      queryClient.invalidateQueries(queryKeys.records);
-    },
-  });
 
   const dataNormalizedById = useMemo(() => racesByNameId(records), [records]);
 
@@ -78,7 +70,6 @@ const App: FC = () => {
       const fastestRemainingRace = raceArrayMutable.find(
         (race) => race.time === Math.min(...raceArrayMutable.map((race) => race.time)),
       );
-
       const deltaAsPercentage = ((fastestRemainingRace?.time - baseRace.time) / baseRace.time) * 100 || 0;
 
       return {

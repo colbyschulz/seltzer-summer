@@ -7,7 +7,14 @@ import DetailScreen from '../../screens/detailScreen/DetailScreen';
 import LeaderboardScreen from '../../screens/leaderboardScreen/LeaderboardScreen';
 import { HeaderImage, HeaderWrapper } from './App.css';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+      staleTime: 30000,
+    },
+  },
+});
 
 const App = () => {
   return (

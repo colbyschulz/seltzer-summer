@@ -42,6 +42,7 @@ export const racesByNameId = (records: TableRecord[]) => {
 
       return accum;
     }, {} as { [key: string]: TableRecordFields[] });
+
     return byId;
   }
 };

@@ -1,9 +1,6 @@
 import { TableHead, TableRow, TableCell, TableBody } from '@material-ui/core';
 import React, { useMemo } from 'react';
-import { useQuery } from 'react-query';
 import { Column, useTable } from 'react-table';
-import { getRecords } from '../../reactQuery/api';
-import { queryKeys } from '../../reactQuery/queryKeys';
 import { calcPaceDifference, racesByNameId, secondsToPace } from '../../utils';
 import { StyledTableCell } from '../leaderboardScreen/leaderboardScreen.css';
 import { DetailScreenWrapper, MetricLabel, Metrics, MetricValue } from './detailScreen.css';
@@ -11,6 +8,8 @@ import MaUTable from '@material-ui/core/Table';
 import { useParams } from 'react-router-dom';
 import Breadcrumbs from '../../components/breadcrumbs/Breadcrumbs';
 import colors from '../../colors';
+import LineChart from '../../components/lineChart/LineChart';
+import { useRecords } from '../../api/records';
 
 interface EnhancedTableRecordField {
   name?: string;
@@ -33,14 +32,14 @@ interface RowData {
 }
 
 const DetailScreen = () => {
-  const { data: records } = useQuery(queryKeys.records, getRecords);
+  const { data: records = [] } = useRecords();
   const { nameId } = useParams();
   const breadcrumbsconfig = [
     { route: '/', display: 'Leaderboard' },
     { route: null, display: 'Detail' },
   ];
 
-  const dataNormalizedById = racesByNameId(records);
+  const dataNormalizedById = useMemo(() => racesByNameId(records), [records]);
   const raceArray = dataNormalizedById?.[nameId];
   const raceArrayMutable = raceArray ? [...raceArray] : [];
   const sortedByDate = raceArrayMutable.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
@@ -144,6 +143,9 @@ const DetailScreen = () => {
           </MetricValue>
         </div>
       </Metrics>
+
+      <LineChart />
+
       <MaUTable {...getModalTableProps()} padding="none" stickyHeader>
         <TableHead>
           {modalHeaderGroups.map((headerGroup) => (
