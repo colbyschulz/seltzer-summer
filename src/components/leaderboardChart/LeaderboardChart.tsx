@@ -124,7 +124,7 @@ const LeaderboardChart: FC = () => {
 
           return (
             <Line
-              // onClick={(data) => setActiveName('hi')}
+              onClick={(data) => setActiveName('hi')}
               isAnimationActive={false}
               key={key}
               type="monotone"

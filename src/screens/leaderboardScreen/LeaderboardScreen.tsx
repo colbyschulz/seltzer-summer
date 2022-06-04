@@ -1,4 +1,4 @@
-import { Field, FieldProps, Form, Formik, FormikProps } from 'formik';
+import { Field, FieldProps, Form, Formik } from 'formik';
 import React, { FC, useMemo, useRef } from 'react';
 import * as Yup from 'yup';
 import { TableRecord } from '../../types';

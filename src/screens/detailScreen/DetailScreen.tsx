@@ -11,9 +11,18 @@ import colors from '../../colors';
 import RaceComparisonChart from '../../components/raceComparisonChart/RaceComparisonChart';
 import { useRecords } from '../../api/records';
 
-interface EnhancedTableRecordField {
+interface RowData {
   name: string;
   time: number;
+  isBestEffort?: boolean;
+  isBaseline?: boolean;
+  isBestEffortBetterThanBaseline?: boolean;
+  raceName: string;
+  date: string;
+}
+interface FormattedRowData {
+  name: string;
+  time: string;
   isBestEffort?: boolean;
   isBaseline?: boolean;
   isBestEffortBetterThanBaseline?: boolean;
@@ -29,69 +38,63 @@ const DetailScreen = () => {
     { route: null, display: 'Detail' },
   ];
 
-  const dataNormalizedById = useMemo(() => racesByNameId(records), [records]);
-  const raceArray = (nameId && dataNormalizedById?.[nameId]) || [];
+  const dataNormalizedById = racesByNameId(records);
+  const raceArray = (nameId && dataNormalizedById[nameId]) || [];
   const raceArrayMutable = [...raceArray];
-  const sortedByDate = raceArrayMutable.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  const baseRace = sortedByDate.splice(0, 1)[0];
+  const mutableSortedByDate = raceArrayMutable.sort(
+    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+  ) as RowData[];
+  const baseRace = mutableSortedByDate.splice(0, 1)[0];
 
-  const enhancedBaseRace: EnhancedTableRecordField = {
+  const enhancedBaseRace = {
     ...baseRace,
     isBaseline: true,
   };
 
-  const remainingRacesSortedBytime: EnhancedTableRecordField[] = sortedByDate.sort((a, b) => a.time - b.time);
-  if (remainingRacesSortedBytime[0]) {
-    remainingRacesSortedBytime[0].isBestEffort = true;
+  const mutableMinusBaseSortedByTime = mutableSortedByDate.sort((a, b) => a.time - b.time);
+  if (mutableMinusBaseSortedByTime[0]) {
+    mutableMinusBaseSortedByTime[0].isBestEffort = true;
   }
 
-  if (remainingRacesSortedBytime[0] && remainingRacesSortedBytime[0].time < baseRace.time) {
-    remainingRacesSortedBytime[0].isBestEffortBetterThanBaseline = true;
+  if (mutableMinusBaseSortedByTime[0] && mutableMinusBaseSortedByTime[0].time < baseRace.time) {
+    mutableMinusBaseSortedByTime[0].isBestEffortBetterThanBaseline = true;
   }
 
-  const enhancedRaceArray = [enhancedBaseRace, ...remainingRacesSortedBytime];
+  const rowData = [enhancedBaseRace, ...mutableMinusBaseSortedByTime];
 
   const basePace = secondsToPace(baseRace?.time);
-  const bestEffortPace = secondsToPace(remainingRacesSortedBytime[0]?.time);
+  const bestEffortPace = secondsToPace(mutableMinusBaseSortedByTime[0]?.time);
   const paceDifference = calcPaceDifference(bestEffortPace, basePace);
 
-  const createTableDataEntry = ({ name, raceName, time, date, ...rest }: EnhancedTableRecordField) => {
+  const formatRowData = ({ name, raceName, time, date, ...rest }: RowData) => {
     const minutes = Math.floor(Math.abs(time) / 60).toString();
     const seconds = (Math.abs(time) % 60).toLocaleString('US', {
       minimumIntegerDigits: 2,
       useGrouping: false,
     });
-    const parsedDate = date && date.split('-');
 
-    const dateString =
-      parsedDate.length > 0 && new Date(parseInt(parsedDate[0]), parseInt(parsedDate[1]) - 1, parseInt(parsedDate[2]));
+    const parsedDate = date.split('-');
+
+    const dateString = new Date(parseInt(parsedDate[0]), parseInt(parsedDate[1]) - 1, parseInt(parsedDate[2]));
 
     return {
       ...rest,
       name,
-      date: (dateString && dateString.toLocaleDateString('US')) ?? '',
+      date: dateString.toLocaleDateString('US'),
       raceName,
       time: `${minutes}:${seconds}`,
     };
   };
 
-  // const detailScreenData = useMemo(() => {
-  //   const data = enhancedRaceArray.map(createTableDataEntry);
-  //   data.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  //   return data;
-  // }, [records]);
+  const formatedAndSortedRowData = useMemo(() => {
+    console.log(records);
 
-  const detailColumns: Array<
-    Column<{
-      date: string;
-      name: string;
-      raceName: string;
-      time: string;
-      isBestEffort: boolean | undefined;
-      isBestEffortBetterThanBaseline: boolean | undefined;
-      isBaseline: boolean | undefined;
-    }>
-  > = useMemo(
+    const data = records.length ? rowData.map(formatRowData) : [];
+    data.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    return data;
+  }, [records]);
+
+  const detailColumns: Array<Column<FormattedRowData>> = useMemo(
     () => [
       {
         Header: 'Date',
@@ -113,15 +116,15 @@ const DetailScreen = () => {
     [],
   );
 
-  // const {
-  //   getTableProps: getModalTableProps,
-  //   headerGroups: modalHeaderGroups,
-  //   rows: modalRows,
-  //   prepareRow: modalPrepareRow,
-  // } = useTable({
-  //   columns: detailColumns,
-  //   data: detailScreenData,
-  // });
+  const {
+    getTableProps: getModalTableProps,
+    headerGroups: modalHeaderGroups,
+    rows: modalRows,
+    prepareRow: modalPrepareRow,
+  } = useTable({
+    columns: detailColumns,
+    data: formatedAndSortedRowData,
+  });
 
   return (
     <DetailScreenWrapper>
@@ -136,9 +139,9 @@ const DetailScreen = () => {
         <div style={{ marginBottom: '5px' }}>
           <MetricLabel>Best Effort Pace: </MetricLabel>
           <MetricValue>{bestEffortPace ? bestEffortPace : basePace}</MetricValue>
-          <MetricValue color={baseRace?.time < remainingRacesSortedBytime[0]?.time ? colors.red : colors.green}>
+          <MetricValue color={baseRace?.time < mutableMinusBaseSortedByTime[0]?.time ? colors.red : colors.green}>
             {bestEffortPace
-              ? ` (${baseRace?.time < remainingRacesSortedBytime[0]?.time ? '' : '-'}${paceDifference})`
+              ? ` (${baseRace?.time < mutableMinusBaseSortedByTime[0]?.time ? '' : '-'}${paceDifference})`
               : ''}
           </MetricValue>
         </div>
@@ -146,7 +149,7 @@ const DetailScreen = () => {
 
       <RaceComparisonChart />
 
-      {/* <MaUTable {...getModalTableProps()} padding="none" stickyHeader style={{ marginTop: '20px' }}>
+      <MaUTable {...getModalTableProps()} padding="none" stickyHeader style={{ marginTop: '20px' }}>
         <TableHead>
           {modalHeaderGroups.map((headerGroup) => {
             const { key, ...restHeaderGroupProps } = headerGroup.getHeaderGroupProps();
@@ -167,8 +170,8 @@ const DetailScreen = () => {
         <TableBody>
           {records &&
             modalRows.map((row) => {
-              const { key, ...restRowProps } = row.getRowProps();
               modalPrepareRow(row);
+              const { key, ...restRowProps } = row.getRowProps();
               const color =
                 row.index === 0
                   ? 'black'
@@ -195,7 +198,7 @@ const DetailScreen = () => {
               );
             })}
         </TableBody>
-      </MaUTable> */}
+      </MaUTable>
     </DetailScreenWrapper>
   );
 };
