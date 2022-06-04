@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from 'react';
+import React, { FC, useMemo, useState } from 'react';
 import { useRecords } from '../../api/records';
 import { racesByNameId, secondsToRaceTime } from '../../utils';
 import { LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line, ResponsiveContainer, ReferenceLine } from 'recharts';
@@ -6,12 +6,29 @@ import { format } from 'date-fns';
 import { useParams } from 'react-router-dom';
 import colors from '../../colors';
 
+const colorMap: { [k: string]: string } = {
+  '0': '#800080',
+  '1': '##1E90FF',
+  '2': '#4B0082',
+  '3': '#FF1493',
+  '4': '#D2691E',
+  '5': '#A52A2A',
+  '6': '#808000',
+  '7': '#2F4F4F',
+  '8': '#B8860B',
+  '9': '#191970',
+  '10': '#00CED1',
+  '11': '#006400',
+  '12': '#BDB76B',
+  '13': '#FF0000',
+};
+
 const LeaderboardChart: FC = () => {
   const { data: records = [] } = useRecords();
   const { nameId } = useParams();
-
+  const [activeName, setActiveName] = useState('');
   const dataNormalizedById = useMemo(() => racesByNameId(records), [records]);
-  const raceArray = dataNormalizedById[nameId] || [];
+  const raceArray = (nameId && dataNormalizedById[nameId]) || [];
   const raceArrayMutable = [...raceArray];
   const sortedByDate = raceArrayMutable?.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   const baseRaceTime = sortedByDate?.splice(0, 1)[0]?.time;
@@ -102,23 +119,21 @@ const LeaderboardChart: FC = () => {
 
         {Object.keys(dataNormalizedById).map((key, i) => {
           const raceArray = dataNormalizedById[key];
-          const isActiveLine = key === nameId;
           const name = raceArray[0].name;
-          const color = isActiveLine ? 'black' : '#c7c7c7';
-          const dotRadius = isActiveLine ? 3 : 2;
-          const activeDotRadius = isActiveLine ? 6 : 3;
+          const color = 'grey';
 
           return (
             <Line
+              // onClick={(data) => setActiveName('hi')}
               isAnimationActive={false}
               key={key}
               type="monotone"
               dataKey={name}
-              strokeWidth={isActiveLine ? 2 : 1}
-              stroke={isActiveLine ? 'black' : '#c7c7c7'}
+              strokeWidth={2}
+              stroke={color}
+              dot={{ fill: color, r: 3, stroke: color }}
+              activeDot={{ fill: color, r: 6, stroke: color }}
               connectNulls
-              dot={{ fill: color, r: dotRadius, stroke: color }}
-              activeDot={{ fill: color, r: activeDotRadius, stroke: color }}
             />
           );
         })}

@@ -2,10 +2,6 @@ import { format } from 'date-fns';
 import { TableRecord, TableRecordFields } from './types';
 
 export const capitalize = (string: string) => {
-  if (!string) {
-    return;
-  }
-
   const capitalized = string
     .trim()
     .toLowerCase()
@@ -46,6 +42,8 @@ export const racesByNameId = (records: TableRecord[]) => {
 
     return byId;
   }
+
+  return {};
 };
 
 export const secondsToPace = (timeInSeconds: number, distanceInMiles = 3.10686) => {
@@ -77,7 +75,7 @@ export const calcPaceDifference = (pace1: string, pace2: string) => {
   return secondsToRaceTime(difference);
 };
 
-export const formatDate = (date: string, incomingDateFormat: string) => {
+export const formatDate = (date: string) => {
   const dateObj = new Date(date);
   return format(dateObj, 'MM/dd/yyyy');
 };

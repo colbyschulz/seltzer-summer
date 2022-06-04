@@ -12,21 +12,11 @@ import RaceComparisonChart from '../../components/raceComparisonChart/RaceCompar
 import { useRecords } from '../../api/records';
 
 interface EnhancedTableRecordField {
-  name?: string;
-  time?: number;
+  name: string;
+  time: number;
   isBestEffort?: boolean;
   isBaseline?: boolean;
   isBestEffortBetterThanBaseline?: boolean;
-  raceName?: string;
-  date?: string;
-}
-
-interface RowData {
-  name: string;
-  time: string;
-  isBestEffort: boolean;
-  isBaseline: boolean;
-  isBestEffortBetterThanBaseline: boolean;
   raceName: string;
   date: string;
 }
@@ -40,8 +30,8 @@ const DetailScreen = () => {
   ];
 
   const dataNormalizedById = useMemo(() => racesByNameId(records), [records]);
-  const raceArray = dataNormalizedById?.[nameId];
-  const raceArrayMutable = raceArray ? [...raceArray] : [];
+  const raceArray = (nameId && dataNormalizedById?.[nameId]) || [];
+  const raceArrayMutable = [...raceArray];
   const sortedByDate = raceArrayMutable.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   const baseRace = sortedByDate.splice(0, 1)[0];
 
@@ -74,24 +64,34 @@ const DetailScreen = () => {
     const parsedDate = date && date.split('-');
 
     const dateString =
-      parsedDate && new Date(parseInt(parsedDate[0]), parseInt(parsedDate[1]) - 1, parseInt(parsedDate[2]));
+      parsedDate.length > 0 && new Date(parseInt(parsedDate[0]), parseInt(parsedDate[1]) - 1, parseInt(parsedDate[2]));
 
     return {
       ...rest,
       name,
-      date: dateString?.toLocaleDateString('US') ?? '',
+      date: (dateString && dateString.toLocaleDateString('US')) ?? '',
       raceName,
       time: `${minutes}:${seconds}`,
     };
   };
 
-  const detailModalData = useMemo(() => {
-    const data = enhancedRaceArray.map(createTableDataEntry);
-    data.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-    return data;
-  }, [records]);
+  // const detailScreenData = useMemo(() => {
+  //   const data = enhancedRaceArray.map(createTableDataEntry);
+  //   data.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  //   return data;
+  // }, [records]);
 
-  const detailColumns: Array<Column<RowData>> = useMemo(
+  const detailColumns: Array<
+    Column<{
+      date: string;
+      name: string;
+      raceName: string;
+      time: string;
+      isBestEffort: boolean | undefined;
+      isBestEffortBetterThanBaseline: boolean | undefined;
+      isBaseline: boolean | undefined;
+    }>
+  > = useMemo(
     () => [
       {
         Header: 'Date',
@@ -113,15 +113,15 @@ const DetailScreen = () => {
     [],
   );
 
-  const {
-    getTableProps: getModalTableProps,
-    headerGroups: modalHeaderGroups,
-    rows: modalRows,
-    prepareRow: modalPrepareRow,
-  } = useTable({
-    columns: detailColumns,
-    data: detailModalData,
-  });
+  // const {
+  //   getTableProps: getModalTableProps,
+  //   headerGroups: modalHeaderGroups,
+  //   rows: modalRows,
+  //   prepareRow: modalPrepareRow,
+  // } = useTable({
+  //   columns: detailColumns,
+  //   data: detailScreenData,
+  // });
 
   return (
     <DetailScreenWrapper>
@@ -146,25 +146,28 @@ const DetailScreen = () => {
 
       <RaceComparisonChart />
 
-      <MaUTable {...getModalTableProps()} padding="none" stickyHeader style={{ marginTop: '20px' }}>
+      {/* <MaUTable {...getModalTableProps()} padding="none" stickyHeader style={{ marginTop: '20px' }}>
         <TableHead>
-          {modalHeaderGroups.map((headerGroup) => (
-            <TableRow key={headerGroup.getHeaderGroupProps().key} {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column) => (
-                <TableCell
-                  style={{ padding: '12px 8px' }}
-                  key={column.getHeaderProps().key}
-                  {...column.getHeaderProps()}
-                >
-                  {column.render('Header')}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
+          {modalHeaderGroups.map((headerGroup) => {
+            const { key, ...restHeaderGroupProps } = headerGroup.getHeaderGroupProps();
+            return (
+              <TableRow key={key} {...restHeaderGroupProps}>
+                {headerGroup.headers.map((column) => {
+                  const { key, ...restColumnProps } = column.getHeaderProps();
+                  return (
+                    <TableCell style={{ padding: '12px 8px' }} key={key} {...restColumnProps}>
+                      {column.render('Header')}
+                    </TableCell>
+                  );
+                })}
+              </TableRow>
+            );
+          })}
         </TableHead>
         <TableBody>
           {records &&
             modalRows.map((row) => {
+              const { key, ...restRowProps } = row.getRowProps();
               modalPrepareRow(row);
               const color =
                 row.index === 0
@@ -175,13 +178,14 @@ const DetailScreen = () => {
                     : colors.red
                   : colors.grey;
               return (
-                <TableRow key={row.getRowProps().key} {...row.getRowProps()}>
+                <TableRow key={key} {...restRowProps}>
                   {row.cells.map((cell) => {
+                    const { key, ...restCellProps } = cell.getCellProps();
                     return (
                       <StyledTableCell
                         style={{ padding: '12px', overflowWrap: 'break-word', color }}
-                        key={cell.getCellProps().key}
-                        {...cell.getCellProps()}
+                        key={key}
+                        {...restCellProps}
                       >
                         {cell.render('Cell')}
                       </StyledTableCell>
@@ -191,7 +195,7 @@ const DetailScreen = () => {
               );
             })}
         </TableBody>
-      </MaUTable>
+      </MaUTable> */}
     </DetailScreenWrapper>
   );
 };

@@ -11,7 +11,7 @@ const RaceComparisonChart: FC = () => {
   const { nameId } = useParams();
 
   const dataNormalizedById = useMemo(() => racesByNameId(records), [records]);
-  const raceArray = dataNormalizedById[nameId] || [];
+  const raceArray = (nameId && dataNormalizedById[nameId]) || [];
   const raceArrayMutable = [...raceArray];
   const sortedByDate = raceArrayMutable?.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   const baseRaceTime = sortedByDate?.splice(0, 1)[0]?.time;
@@ -100,7 +100,7 @@ const RaceComparisonChart: FC = () => {
           }}
         />
 
-        {Object.keys(dataNormalizedById).map((key, i) => {
+        {Object.keys(dataNormalizedById).map((key) => {
           const raceArray = dataNormalizedById[key];
           const isActiveLine = key === nameId;
           const name = raceArray[0].name;
