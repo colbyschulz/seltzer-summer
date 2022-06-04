@@ -16,11 +16,11 @@ export default createGlobalStyle`
   #root {
     min-height: 100vh;
     min-height: -webkit-fill-available;
-   
+    margin: auto;
     max-height: 100vh;
     max-height: -webkit-fill-available;
-    height: 100vh;
     width: 100vw;
+    max-width: 1800px;
     display: flex;
     flex-direction: column;
   }

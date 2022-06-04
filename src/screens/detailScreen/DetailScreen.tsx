@@ -8,7 +8,7 @@ import MaUTable from '@material-ui/core/Table';
 import { useParams } from 'react-router-dom';
 import Breadcrumbs from '../../components/breadcrumbs/Breadcrumbs';
 import colors from '../../colors';
-import LineChart from '../../components/lineChart/LineChart';
+import RaceComparisonChart from '../../components/raceComparisonChart/RaceComparisonChart';
 import { useRecords } from '../../api/records';
 
 interface EnhancedTableRecordField {
@@ -144,9 +144,9 @@ const DetailScreen = () => {
         </div>
       </Metrics>
 
-      <LineChart />
+      <RaceComparisonChart />
 
-      <MaUTable {...getModalTableProps()} padding="none" stickyHeader>
+      <MaUTable {...getModalTableProps()} padding="none" stickyHeader style={{ marginTop: '20px' }}>
         <TableHead>
           {modalHeaderGroups.map((headerGroup) => (
             <TableRow key={headerGroup.getHeaderGroupProps().key} {...headerGroup.getHeaderGroupProps()}>

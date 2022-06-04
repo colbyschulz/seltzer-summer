@@ -1,3 +1,4 @@
+import { format } from 'date-fns';
 import { TableRecord, TableRecordFields } from './types';
 
 export const capitalize = (string: string) => {
@@ -74,4 +75,9 @@ export const calcPaceDifference = (pace1: string, pace2: string) => {
   const difference = pace1TotalSeconds - pace2TotalSeconds;
 
   return secondsToRaceTime(difference);
+};
+
+export const formatDate = (date: string, incomingDateFormat: string) => {
+  const dateObj = new Date(date);
+  return format(dateObj, 'MM/dd/yyyy');
 };
