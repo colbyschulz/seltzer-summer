@@ -1,9 +1,6 @@
 import { Field, FieldProps, Form, Formik } from 'formik';
 import React, { FC, useMemo, useRef } from 'react';
 import * as Yup from 'yup';
-import { useMutation, useQuery, useQueryClient } from 'react-query';
-import { createRecord, getRecords } from '../../reactQuery/api';
-import { queryKeys } from '../../reactQuery/queryKeys';
 import { TableRecord } from '../../types';
 import MaUTable from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -28,6 +25,8 @@ import ArrowRight from '../../assets/images/arrow-right.svg';
 import { racesByNameId, raceTimeToSeconds } from '../../utils';
 import { useNavigate } from 'react-router-dom';
 import Breadcrumbs from '../../components/breadcrumbs/Breadcrumbs';
+import { useRecords, useCreateRecord } from '../../api/records';
+import LeaderboardChart from '../../components/leaderboardChart/LeaderboardChart';
 
 interface FormValues {
   firstName: string;
@@ -55,17 +54,11 @@ const validationSchema = Yup.object().shape({
 });
 
 const App: FC = () => {
-  const queryClient = useQueryClient();
+  const { data: records = [] } = useRecords();
+  const { mutate: createRecordMutation } = useCreateRecord();
   const navigate = useNavigate();
-
   const [isModalOpen, setIsModalOpen] = React.useState(false);
-  const formikRef = useRef(null);
-  const { data: records = [] } = useQuery(queryKeys.records, () => getRecords());
-  const { mutate: createRecordMutation } = useMutation(createRecord, {
-    onSuccess: () => {
-      queryClient.invalidateQueries(queryKeys.records);
-    },
-  });
+  const formikRef = useRef<any>(null);
 
   const dataNormalizedById = useMemo(() => racesByNameId(records), [records]);
 
@@ -78,8 +71,8 @@ const App: FC = () => {
       const fastestRemainingRace = raceArrayMutable.find(
         (race) => race.time === Math.min(...raceArrayMutable.map((race) => race.time)),
       );
-
-      const deltaAsPercentage = ((fastestRemainingRace?.time - baseRace.time) / baseRace.time) * 100 || 0;
+      const deltaAsPercentage =
+        (fastestRemainingRace?.time && ((fastestRemainingRace?.time - baseRace.time) / baseRace.time) * 100) || 0;
 
       return {
         nameId,
@@ -144,40 +137,53 @@ const App: FC = () => {
   return (
     <LeaderboardScreenWrapper>
       <Breadcrumbs config={[{ route: null, display: 'Leaderboard' }]} />
-
-      <div style={{ marginBottom: '20px' }}>
-        {`Summer of Speed 2022 is all about 5k's. Add a race as a baseline and track your progress throughout the summer.`}
-      </div>
-
-      <StyledButton color="primary" onClick={() => setIsModalOpen(true)} style={{ marginBottom: '20px' }}>
+      <StyledButton
+        color="primary"
+        onClick={() => setIsModalOpen(true)}
+        style={{ marginBottom: '20px', position: 'absolute', right: '20px' }}
+      >
         Add Race
       </StyledButton>
+
+      {/* <div style={{ marginBottom: '20px' }}>
+        {`Summer of Speed 2022 is all about 5k's. Add a race as a baseline and track your progress throughout the summer.`}
+      </div> */}
+      <LeaderboardChart />
+
       <RecordTableWrapper>
         <MaUTable {...getTableProps()} stickyHeader padding="none">
           <TableHead>
-            {headerGroups.map((headerGroup) => (
-              <TableRow key={headerGroup.getHeaderGroupProps().key} {...headerGroup.getHeaderGroupProps()}>
-                {headerGroup.headers.map((column) => (
-                  <TableCell style={{ padding: '12px' }} key={column.getHeaderProps().key} {...column.getHeaderProps()}>
-                    {column.render('Header')}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))}
+            {headerGroups.map((headerGroup) => {
+              const { key, ...restHeaderGroupProps } = headerGroup.getHeaderGroupProps();
+              return (
+                <TableRow key={key} {...restHeaderGroupProps}>
+                  {headerGroup.headers.map((column) => {
+                    const { key, ...restHeaderProps } = column.getHeaderProps();
+                    return (
+                      <TableCell key={key} style={{ padding: '12px' }} {...restHeaderProps}>
+                        {column.render('Header')}
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+              );
+            })}
           </TableHead>
           <TableBody>
             {rows.map((row) => {
               prepareRow(row);
+              const { key, ...restRowProps } = row.getRowProps();
               return (
                 <TableRow
-                  key={row.getRowProps().key}
-                  {...row.getRowProps()}
+                  key={key}
+                  {...restRowProps}
                   onClick={() => {
                     navigate(`/${row.original.nameId}`);
                   }}
                   style={{ cursor: 'pointer' }}
                 >
                   {row.cells.map((cell) => {
+                    const { key, ...restCellProps } = cell.getCellProps();
                     const cellColor =
                       cell.column.Header === 'Progress'
                         ? cell.value.includes('-')
@@ -188,9 +194,9 @@ const App: FC = () => {
                         : 'black';
                     return (
                       <StyledTableCell
+                        key={key}
                         style={{ color: cellColor, padding: '12px 8px', overflowWrap: 'break-word' }}
-                        key={cell.getCellProps().key}
-                        {...cell.getCellProps()}
+                        {...restCellProps}
                       >
                         {cell.render('Cell')}
                       </StyledTableCell>
@@ -304,7 +310,6 @@ const App: FC = () => {
                             <StyledDatePicker
                               error={touched.date && !!errors.date}
                               id="date"
-                              name="date"
                               type="date"
                               {...field}
                               onChange={handleChange}
@@ -351,7 +356,7 @@ const App: FC = () => {
                       </InputWrapper>
                     </div>
 
-                    <StyledButton style={{ alignSelf: 'center', marginTop: '30px' }} type="submit">
+                    <StyledButton style={{ alignSelf: 'center', marginTop: '20px' }} type="submit">
                       Submit
                     </StyledButton>
                   </FormWrapper>

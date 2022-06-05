@@ -4,25 +4,24 @@ export default createGlobalStyle`
 * {
   font-family: 'Roboto', Open-Sans, Helvetica, Sans-Serif !important;
 }
-  html { height:100%; }
+  // html { height:100%; }
   body {
     margin: 0;
     padding: 0;
     font-family: 'Roboto', Open-Sans, Helvetica, Sans-Serif;
     font-weight: 400;
-    width: 100%;
-    min-height: 100%;
+    // width: 100%;
+    // min-height: 100%;
   }
   #root {
     min-height: 100vh;
-    min-height: -webkit-fill-available;
-   
-    max-height: 100vh;
-    max-height: -webkit-fill-available;
-    height: 100vh;
+    margin: auto;
+    // max-height: 100vh;
+    // max-height: -webkit-fill-available;
     width: 100vw;
-    display: flex;
-    flex-direction: column;
+    max-width: 1800px;
+    // display: flex;
+    // flex-direction: column;
   }
 
   button {
