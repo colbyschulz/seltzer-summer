@@ -87,9 +87,7 @@ const DetailScreen = () => {
   };
 
   const formatedAndSortedRowData = useMemo(() => {
-    console.log(records);
-
-    const data = records.length ? rowData.map(formatRowData) : [];
+    const data = rowData.length && raceArray.length ? rowData.map(formatRowData) : [];
     data.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     return data;
   }, [records]);

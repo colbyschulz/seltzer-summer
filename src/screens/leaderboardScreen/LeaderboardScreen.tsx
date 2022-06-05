@@ -137,15 +137,19 @@ const App: FC = () => {
   return (
     <LeaderboardScreenWrapper>
       <Breadcrumbs config={[{ route: null, display: 'Leaderboard' }]} />
+      <StyledButton
+        color="primary"
+        onClick={() => setIsModalOpen(true)}
+        style={{ marginBottom: '20px', position: 'absolute', right: '20px' }}
+      >
+        Add Race
+      </StyledButton>
 
       {/* <div style={{ marginBottom: '20px' }}>
         {`Summer of Speed 2022 is all about 5k's. Add a race as a baseline and track your progress throughout the summer.`}
       </div> */}
       <LeaderboardChart />
 
-      <StyledButton color="primary" onClick={() => setIsModalOpen(true)} style={{ marginBottom: '20px' }}>
-        Add Race
-      </StyledButton>
       <RecordTableWrapper>
         <MaUTable {...getTableProps()} stickyHeader padding="none">
           <TableHead>
@@ -352,7 +356,7 @@ const App: FC = () => {
                       </InputWrapper>
                     </div>
 
-                    <StyledButton style={{ alignSelf: 'center', marginTop: '30px' }} type="submit">
+                    <StyledButton style={{ alignSelf: 'center', marginTop: '20px' }} type="submit">
                       Submit
                     </StyledButton>
                   </FormWrapper>

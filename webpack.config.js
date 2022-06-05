@@ -51,6 +51,9 @@ module.exports = {
   ],
   devServer: {
     historyApiFallback: true,
+    client: {
+      overlay: true,
+    },
   },
   devtool: 'inline-source-map',
 };

@@ -12,7 +12,7 @@ export const StyledTableCell = styled(TableCell)<{ isFaster?: boolean }>`
 `;
 
 export const LeaderboardScreenWrapper = styled.div`
-  margin: 10px 20px 20px 20px;
+  margin: 20px;
   display: flex;
   flex-direction: column;
   overflow-x: hidden;
@@ -64,7 +64,6 @@ export const StyledButton = styled.button`
   cursor: pointer;
   border-radius: 5px;
   margin-bottom: 5px;
-
   &&:hover {
     background-color: #b16b2d;
   }

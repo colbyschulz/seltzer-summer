@@ -65,7 +65,7 @@ const RaceComparisonChart: FC = () => {
 
   return (
     <ResponsiveContainer aspect={1.2} maxHeight={550}>
-      <LineChart data={chartData} margin={{ top: 10, right: 10, left: 10, bottom: 5 }}>
+      <LineChart data={chartData} margin={{ top: 10, right: 10, left: -10, bottom: 5 }}>
         <CartesianGrid />
         <ReferenceLine y={fastestRaceTime} strokeDasharray="8 8" stroke={colors.green} strokeWidth={1} />
         <ReferenceLine y={slowestRaceTime} strokeDasharray="8 8" stroke={colors.red} strokeWidth={1} />

@@ -26,7 +26,7 @@ const colorMap: { [k: string]: string } = {
 const LeaderboardChart: FC = () => {
   const { data: records = [] } = useRecords();
   const { nameId } = useParams();
-  const [activeName, setActiveName] = useState('');
+  const [activeDataKey, setActiveDataKey] = useState<string>('');
   const dataNormalizedById = useMemo(() => racesByNameId(records), [records]);
   const raceArray = (nameId && dataNormalizedById[nameId]) || [];
   const raceArrayMutable = [...raceArray];
@@ -82,7 +82,7 @@ const LeaderboardChart: FC = () => {
 
   return (
     <ResponsiveContainer aspect={1.2} maxHeight={550}>
-      <LineChart data={chartData} margin={{ top: 10, right: 10, left: 10, bottom: 5 }}>
+      <LineChart data={chartData} margin={{ top: 10, right: 10, left: -10, bottom: 5 }}>
         <CartesianGrid />
         <ReferenceLine y={fastestRaceTime} strokeDasharray="8 8" stroke={colors.green} strokeWidth={1} />
         <ReferenceLine y={slowestRaceTime} strokeDasharray="8 8" stroke={colors.red} strokeWidth={1} />
@@ -120,19 +120,27 @@ const LeaderboardChart: FC = () => {
         {Object.keys(dataNormalizedById).map((key, i) => {
           const raceArray = dataNormalizedById[key];
           const name = raceArray[0].name;
-          const color = 'grey';
+          const color = name === activeDataKey ? 'black' : 'grey';
 
           return (
             <Line
-              onClick={(data) => setActiveName('hi')}
               isAnimationActive={false}
               key={key}
               type="monotone"
               dataKey={name}
               strokeWidth={2}
               stroke={color}
-              dot={{ fill: color, r: 3, stroke: color }}
-              activeDot={{ fill: color, r: 6, stroke: color }}
+              dot={{
+                fill: color,
+                r: 3,
+                stroke: color,
+              }}
+              activeDot={{
+                fill: color,
+                r: 6,
+                stroke: color,
+                onClick: (_, svgCircleElement: any) => setActiveDataKey(svgCircleElement.dataKey),
+              }}
               connectNulls
             />
           );
