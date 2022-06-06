@@ -1,26 +1,19 @@
 import styled from 'styled-components';
 
-export const ModalWrapper = styled.div<{ visible: boolean }>`
-  display: ${({ visible }) => (visible ? 'flex' : 'none')};
-  margin: 0;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
+export const ModalWrapper = styled.div`
+  position: fixed;
+  inset: 0; /* inset sets all 4 values (top right bottom left) much like how we set padding, margin etc., */
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease-in-out;
+  overflow: hidden;
   z-index: 2;
 `;
 
-export const ModalView = styled.div`
-  display: flex;
-  background-color: rgba(0, 0, 0, 0.4);
-  align-items: center;
-  justify-content: center;
-  padding: 10px;
-  flex: 1;
-`;
-
-export const ModalCard = styled.div`
+export const ModalContent = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
