@@ -191,7 +191,7 @@ const App: FC = () => {
               prepareRow(row);
               const { key, ...restRowProps } = row.getRowProps();
 
-              const backgroundColor = row.original.name === activeDataKey ? '#dbd8ca' : 'white';
+              const backgroundColor = row.original.name === activeDataKey ? '#e9e9e9' : 'white';
               return (
                 <TableRow
                   key={key}

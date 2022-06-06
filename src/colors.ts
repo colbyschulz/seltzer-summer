@@ -5,5 +5,5 @@ export default {
   brown: '#7F785B',
   lightBrown: '#C1A06D',
   tan: '#D3C797',
-  button: '#ece8d9',
+  button: '#e9e9e9',
 };
