@@ -104,7 +104,7 @@ const RaceComparisonChart: FC = () => {
           const raceArray = dataNormalizedById[key];
           const isActiveLine = key === nameId;
           const name = raceArray[0].name;
-          const color = isActiveLine ? 'black' : '#c7c7c7';
+          const color = isActiveLine ? 'black' : '#a7a7a7';
           const dotRadius = isActiveLine ? 3 : 2;
           const activeDotRadius = isActiveLine ? 6 : 3;
 
@@ -115,7 +115,7 @@ const RaceComparisonChart: FC = () => {
               type="monotone"
               dataKey={name}
               strokeWidth={isActiveLine ? 2 : 1}
-              stroke={isActiveLine ? 'black' : '#c7c7c7'}
+              stroke={isActiveLine ? 'black' : '#a7a7a7'}
               connectNulls
               dot={{ fill: color, r: dotRadius, stroke: color }}
               activeDot={{ fill: color, r: activeDotRadius, stroke: color }}

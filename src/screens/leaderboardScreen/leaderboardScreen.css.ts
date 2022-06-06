@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { TableCell } from '@material-ui/core';
+import colors from '../../colors';
 
 export const RecordTableWrapper = styled.div`
   -webkit-overflow-scrolling: touch;
@@ -37,7 +38,7 @@ export const Input = styled.input<InputProps>`
   border-radius: none;
   box-shadow: none;
   outline: none;
-  border-bottom: ${({ error }) => (error ? '1px solid #D30703' : '1px solid black')};
+  border-bottom: ${({ error }) => (error ? `1px solid ${colors.red}` : '1px solid black')};
 `;
 
 export const StyledDatePicker = styled(Input)`
@@ -57,15 +58,16 @@ export const InputWrapper = styled.div`
 `;
 
 export const StyledButton = styled.button`
-  color: white;
-  background-color: #884d1d;
+  color: black;
+  box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.3);
+  background-color: ${colors.button};
   min-height: 35px;
   width: 80px;
   cursor: pointer;
   border-radius: 5px;
   margin-bottom: 5px;
   &&:hover {
-    background-color: #b16b2d;
+    background-color: #cba872;
   }
 `;
 

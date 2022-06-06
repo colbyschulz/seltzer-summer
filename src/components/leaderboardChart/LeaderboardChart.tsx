@@ -1,4 +1,4 @@
-import React, { FC, useMemo, useState } from 'react';
+import React, { Dispatch, FC, SetStateAction, useMemo, useState } from 'react';
 import { useRecords } from '../../api/records';
 import { racesByNameId, secondsToRaceTime } from '../../utils';
 import { LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line, ResponsiveContainer, ReferenceLine } from 'recharts';
@@ -6,27 +6,30 @@ import { format } from 'date-fns';
 import { useParams } from 'react-router-dom';
 import colors from '../../colors';
 
-const colorMap: { [k: string]: string } = {
-  '0': '#800080',
-  '1': '##1E90FF',
-  '2': '#4B0082',
-  '3': '#FF1493',
-  '4': '#D2691E',
-  '5': '#A52A2A',
-  '6': '#808000',
-  '7': '#2F4F4F',
-  '8': '#B8860B',
-  '9': '#191970',
-  '10': '#00CED1',
-  '11': '#006400',
-  '12': '#BDB76B',
-  '13': '#FF0000',
-};
+// const colorMap: { [k: string]: string } = {
+//   '0': '#800080',
+//   '1': '#1E90FF',
+//   '2': '#D2691E',
+//   '3': '#FF1493',
+//   '4': '#4B0082',
+//   '5': '#A52A2A',
+//   '6': '#808000',
+//   '7': '#2F4F4F',
+//   '8': '#B8860B',
+//   '9': '#191970',
+//   '10': '#00CED1',
+//   '11': '#006400',
+//   '12': '#BDB76B',
+//   '13': '#FF0000',
+// };
 
-const LeaderboardChart: FC = () => {
+interface LeaderboardChartProps {
+  activeDataKey: string;
+  setActiveDataKey: Dispatch<SetStateAction<string>>;
+}
+const LeaderboardChart: FC<LeaderboardChartProps> = ({ activeDataKey, setActiveDataKey }) => {
   const { data: records = [] } = useRecords();
   const { nameId } = useParams();
-  const [activeDataKey, setActiveDataKey] = useState<string>('');
   const dataNormalizedById = useMemo(() => racesByNameId(records), [records]);
   const raceArray = (nameId && dataNormalizedById[nameId]) || [];
   const raceArrayMutable = [...raceArray];
@@ -93,9 +96,7 @@ const LeaderboardChart: FC = () => {
           // label={{ position: 'bottom', value: 'Summer Baseline' }}
           strokeWidth={1}
         />
-
         <XAxis dataKey="date" />
-
         <YAxis
           ticks={ticks}
           interval={1}
@@ -106,7 +107,7 @@ const LeaderboardChart: FC = () => {
             return secondsToRaceTime(v);
           }}
         />
-        <Tooltip
+        {/* <Tooltip
           formatter={(v: number) => secondsToRaceTime(v)}
           labelFormatter={(value) => {
             const parsedDate = value && typeof value === 'string' && value.split('/');
@@ -115,15 +116,17 @@ const LeaderboardChart: FC = () => {
               parsedDate && new Date(currentYear, parseInt(parsedDate[0]) - 1, parseInt(parsedDate[1]));
             return format(dateString, 'MM/dd/yyyy');
           }}
-        />
-
+        /> */}
         {Object.keys(dataNormalizedById).map((key, i) => {
           const raceArray = dataNormalizedById[key];
           const name = raceArray[0].name;
-          const color = name === activeDataKey ? 'black' : 'grey';
-
+          const color = activeDataKey === name ? colors.lightBrown : 'black';
           return (
             <Line
+              cursor="pointer"
+              onClick={() => {
+                setActiveDataKey(name);
+              }}
               isAnimationActive={false}
               key={key}
               type="monotone"
@@ -131,15 +134,19 @@ const LeaderboardChart: FC = () => {
               strokeWidth={2}
               stroke={color}
               dot={{
+                cursor: 'pointer',
                 fill: color,
                 r: 3,
                 stroke: color,
+                onClick: () => {
+                  setActiveDataKey(name);
+                },
               }}
               activeDot={{
                 fill: color,
                 r: 6,
                 stroke: color,
-                onClick: (_, svgCircleElement: any) => setActiveDataKey(svgCircleElement.dataKey),
+                // onClick: (_, svgCircleElement: any) => setActiveDataKey(svgCircleElement.dataKey),
               }}
               connectNulls
             />

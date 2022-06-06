@@ -1,5 +1,5 @@
 import { Field, FieldProps, Form, Formik } from 'formik';
-import React, { FC, useMemo, useRef } from 'react';
+import React, { FC, useMemo, useRef, useState } from 'react';
 import * as Yup from 'yup';
 import { TableRecord } from '../../types';
 import MaUTable from '@material-ui/core/Table';
@@ -27,6 +27,7 @@ import { useNavigate } from 'react-router-dom';
 import Breadcrumbs from '../../components/breadcrumbs/Breadcrumbs';
 import { useRecords, useCreateRecord } from '../../api/records';
 import LeaderboardChart from '../../components/leaderboardChart/LeaderboardChart';
+import colors from '../../colors';
 
 interface FormValues {
   firstName: string;
@@ -58,6 +59,7 @@ const App: FC = () => {
   const { mutate: createRecordMutation } = useCreateRecord();
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [activeDataKey, setActiveDataKey] = useState<string>('');
   const formikRef = useRef<any>(null);
 
   const dataNormalizedById = useMemo(() => racesByNameId(records), [records]);
@@ -116,12 +118,24 @@ const App: FC = () => {
       },
       {
         Cell: () => (
-          <img
-            style={{ alignSelf: 'center', display: 'flex', width: '15px' }}
-            src={ArrowRight}
-            width={20}
-            alt="Arrow"
-          />
+          <StyledButton
+            style={{
+              marginBottom: 0,
+              width: 'auto',
+              display: 'flex',
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+              maxWidth: '80px',
+            }}
+          >
+            <img
+              style={{ alignSelf: 'center', display: 'flex', width: '15px' }}
+              src={ArrowRight}
+              width={20}
+              alt="Arrow"
+            />
+          </StyledButton>
         ),
         accessor: 'arrow',
       },
@@ -136,19 +150,22 @@ const App: FC = () => {
 
   return (
     <LeaderboardScreenWrapper>
-      <Breadcrumbs config={[{ route: null, display: 'Leaderboard' }]} />
-      <StyledButton
-        color="primary"
-        onClick={() => setIsModalOpen(true)}
-        style={{ marginBottom: '20px', position: 'absolute', right: '20px' }}
-      >
-        Add Race
-      </StyledButton>
+      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <Breadcrumbs config={[{ route: null, display: 'Leaderboard' }]} />
+        <StyledButton
+          color="primary"
+          onClick={() => setIsModalOpen(true)}
+          // style={{ marginBottom: '20px', position: 'absolute', right: '20px' }}
+          style={{ marginBottom: '20px' }}
+        >
+          Add Race
+        </StyledButton>
+      </div>
 
       {/* <div style={{ marginBottom: '20px' }}>
         {`Summer of Speed 2022 is all about 5k's. Add a race as a baseline and track your progress throughout the summer.`}
       </div> */}
-      <LeaderboardChart />
+      <LeaderboardChart activeDataKey={activeDataKey} setActiveDataKey={setActiveDataKey} />
 
       <RecordTableWrapper>
         <MaUTable {...getTableProps()} stickyHeader padding="none">
@@ -173,29 +190,43 @@ const App: FC = () => {
             {rows.map((row) => {
               prepareRow(row);
               const { key, ...restRowProps } = row.getRowProps();
+
+              const backgroundColor = row.original.name === activeDataKey ? '#dbd8ca' : 'white';
               return (
                 <TableRow
                   key={key}
                   {...restRowProps}
-                  onClick={() => {
-                    navigate(`/${row.original.nameId}`);
-                  }}
-                  style={{ cursor: 'pointer' }}
+                  // onClick={() => {
+                  //   navigate(`/${row.original.nameId}`);
+                  // }}
+                  style={{ cursor: 'pointer', backgroundColor }}
                 >
                   {row.cells.map((cell) => {
                     const { key, ...restCellProps } = cell.getCellProps();
                     const cellColor =
                       cell.column.Header === 'Progress'
                         ? cell.value.includes('-')
-                          ? 'green'
+                          ? colors.green
                           : cell.value === '0%'
                           ? 'black'
-                          : '#D30703'
+                          : colors.red
                         : 'black';
                     return (
                       <StyledTableCell
                         key={key}
-                        style={{ color: cellColor, padding: '12px 8px', overflowWrap: 'break-word' }}
+                        onClick={() => {
+                          if (cell.column.id === 'arrow') {
+                            navigate(`/${row.original.nameId}`);
+                          } else {
+                            setActiveDataKey(row.original.name);
+                          }
+                        }}
+                        style={{
+                          color: cellColor,
+                          padding: '12px 8px',
+                          overflowWrap: 'break-word',
+                          display: cell.column.id === 'arrow' ? 'flex' : 'table-cell',
+                        }}
                         {...restCellProps}
                       >
                         {cell.render('Cell')}
