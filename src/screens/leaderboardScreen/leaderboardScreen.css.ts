@@ -5,9 +5,9 @@ import colors from '../../colors';
 export const LeaderboardTableWrapper = styled.div`
   -webkit-overflow-scrolling: touch;
   overflow-y: scroll;
-  margin-top: 10px;
   border-radius: 5px;
   background-color: ${colors.tan};
+  margin: 10px 20px 0 20px;
 `;
 
 export const StyledTableCell = styled(TableCell)<{ isFaster?: boolean }>`
@@ -15,7 +15,6 @@ export const StyledTableCell = styled(TableCell)<{ isFaster?: boolean }>`
 `;
 
 export const LeaderboardScreenWrapper = styled.div`
-  margin: 20px;
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -63,7 +62,7 @@ export const InputWrapper = styled.div`
 
 export const StyledButton = styled.button`
   color: black;
-  box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.3);
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.3);
   background-color: ${colors.tan};
   min-height: 35px;
   width: 80px;

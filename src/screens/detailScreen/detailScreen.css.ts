@@ -2,7 +2,6 @@ import styled from 'styled-components';
 import colors from '../../colors';
 
 export const DetailScreenWrapper = styled.div`
-  margin: 20px;
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -14,7 +13,7 @@ export const DetailScreenWrapper = styled.div`
 export const DetailTableWrapper = styled.div`
   -webkit-overflow-scrolling: touch;
   overflow-y: scroll;
-  margin-top: 10px;
+  margin: 10px 20px 0 20px;
   border-radius: 5px;
   background-color: ${colors.tan};
 `;
@@ -22,7 +21,7 @@ export const DetailTableWrapper = styled.div`
 export const Metrics = styled.div`
   display: flex;
   flex-direction: column;
-  margin-bottom: 15px;
+  margin: 0 20px 15px 20px;
 `;
 
 export const MetricLabel = styled.label``;

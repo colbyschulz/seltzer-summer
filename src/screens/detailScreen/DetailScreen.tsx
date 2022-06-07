@@ -126,7 +126,9 @@ const DetailScreen = () => {
 
   return (
     <DetailScreenWrapper>
-      <Breadcrumbs config={breadcrumbsconfig} />
+      <div style={{ display: 'flex', justifyContent: 'space-between', margin: '0 20px' }}>
+        <Breadcrumbs config={breadcrumbsconfig} />
+      </div>
 
       <Metrics>
         <div style={{ marginBottom: '5px' }}>
@@ -145,7 +147,7 @@ const DetailScreen = () => {
         </div>
       </Metrics>
 
-      <div style={{ display: 'flex' }}>
+      <div style={{ display: 'flex', margin: '0 20px' }}>
         <RaceComparisonChart />
       </div>
 

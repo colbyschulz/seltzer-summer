@@ -121,11 +121,11 @@ const App: FC = () => {
             style={{
               marginBottom: 0,
               width: 'auto',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flex: 1,
-              minHeight: '30px',
+              // display: 'flex',
+
+              // alignItems: 'center',
+              // justifyContent: 'center',
+              minHeight: '25px',
               maxWidth: '80px',
               backgroundColor: colors.tan,
             }}
@@ -151,14 +151,14 @@ const App: FC = () => {
 
   return (
     <LeaderboardScreenWrapper>
-      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', margin: '0 20px' }}>
         <Breadcrumbs config={[{ route: null, display: 'Leaderboard' }]} />
         <StyledButton color="primary" onClick={() => setIsModalOpen(true)} style={{ backgroundColor: '#D7C6AE' }}>
           Add Race
         </StyledButton>
       </div>
 
-      <div style={{ display: 'flex' }}>
+      <div style={{ display: 'flex', margin: '0 20px' }}>
         <LeaderboardChart activeDataKey={activeDataKey} setActiveDataKey={setActiveDataKey} />
       </div>
 
@@ -219,7 +219,8 @@ const App: FC = () => {
                           color: cellColor,
                           padding: '12px 8px',
                           overflowWrap: 'break-word',
-                          display: cell.column.id === 'arrow' ? 'flex' : 'table-cell',
+                          display: 'table-cell',
+                          textAlign: 'center',
                         }}
                         {...restCellProps}
                       >
