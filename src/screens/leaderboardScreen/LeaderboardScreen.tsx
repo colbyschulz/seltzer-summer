@@ -130,9 +130,9 @@ const App: FC = () => {
             }}
           >
             <img
-              style={{ alignSelf: 'center', display: 'flex', width: '15px' }}
+              style={{ alignSelf: 'center', display: 'flex', width: '12px' }}
               src={ArrowRight}
-              width={20}
+              width={12}
               alt="Arrow"
             />
           </StyledButton>
