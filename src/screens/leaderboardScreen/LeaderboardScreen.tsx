@@ -127,6 +127,7 @@ const App: FC = () => {
               alignItems: 'center',
               justifyContent: 'center',
               maxWidth: '80px',
+              backgroundColor: colors.tan,
             }}
           >
             <img
@@ -152,12 +153,7 @@ const App: FC = () => {
     <LeaderboardScreenWrapper>
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <Breadcrumbs config={[{ route: null, display: 'Leaderboard' }]} />
-        <StyledButton
-          color="primary"
-          onClick={() => setIsModalOpen(true)}
-          // style={{ marginBottom: '20px', position: 'absolute', right: '20px' }}
-          style={{ marginBottom: '20px' }}
-        >
+        <StyledButton color="primary" onClick={() => setIsModalOpen(true)}>
           Add Race
         </StyledButton>
       </div>
@@ -165,7 +161,10 @@ const App: FC = () => {
       {/* <div style={{ marginBottom: '20px' }}>
         {`Summer of Speed 2022 is all about 5k's. Add a race as a baseline and track your progress throughout the summer.`}
       </div> */}
+
+      {/* <div style={{ backgroundColor: colors.tan, padding: '10px', borderRadius: '5px' }}> */}
       <LeaderboardChart activeDataKey={activeDataKey} setActiveDataKey={setActiveDataKey} />
+      {/* </div> */}
 
       <RecordTableWrapper>
         <MaUTable {...getTableProps()} stickyHeader padding="none">
@@ -177,7 +176,7 @@ const App: FC = () => {
                   {headerGroup.headers.map((column) => {
                     const { key, ...restHeaderProps } = column.getHeaderProps();
                     return (
-                      <TableCell key={key} style={{ padding: '12px' }} {...restHeaderProps}>
+                      <TableCell key={key} style={{ padding: '12px', backgroundColor: '#D7C6AE' }} {...restHeaderProps}>
                         {column.render('Header')}
                       </TableCell>
                     );
@@ -191,15 +190,13 @@ const App: FC = () => {
               prepareRow(row);
               const { key, ...restRowProps } = row.getRowProps();
 
-              const backgroundColor = row.original.name === activeDataKey ? '#e9e9e9' : 'white';
+              const backgroundColor =
+                row.original.name === activeDataKey ? 'rgb(193, 160, 109, .6)' : 'rgb(255,255,255, .5)';
               return (
                 <TableRow
                   key={key}
                   {...restRowProps}
-                  // onClick={() => {
-                  //   navigate(`/${row.original.nameId}`);
-                  // }}
-                  style={{ cursor: 'pointer', backgroundColor }}
+                  style={{ cursor: 'pointer', backgroundColor, borderColor: 'black' }}
                 >
                   {row.cells.map((cell) => {
                     const { key, ...restCellProps } = cell.getCellProps();
@@ -222,6 +219,7 @@ const App: FC = () => {
                           }
                         }}
                         style={{
+                          borderColor: 'black',
                           color: cellColor,
                           padding: '12px 8px',
                           overflowWrap: 'break-word',

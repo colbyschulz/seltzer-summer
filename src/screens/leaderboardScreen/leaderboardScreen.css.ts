@@ -5,7 +5,9 @@ import colors from '../../colors';
 export const RecordTableWrapper = styled.div`
   -webkit-overflow-scrolling: touch;
   overflow-y: scroll;
-  margin-bottom: 30px;
+  margin-top: 10px;
+  border-radius: 5px;
+  background-color: ${colors.tan};
 `;
 
 export const StyledTableCell = styled(TableCell)<{ isFaster?: boolean }>`
@@ -60,14 +62,14 @@ export const InputWrapper = styled.div`
 export const StyledButton = styled.button`
   color: black;
   box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.3);
-  background-color: ${colors.button};
+  background-color: ${colors.tan};
   min-height: 35px;
   width: 80px;
   cursor: pointer;
   border-radius: 5px;
   margin-bottom: 5px;
   &&:hover {
-    background-color: #cba872;
+    background-color: ${colors.lightBrown};
   }
 `;
 
@@ -85,5 +87,5 @@ export const ModalContent = styled.div`
 export const InputLabel = styled.label<InputProps>`
   font-size: 14px;
   margin-bottom: 3px;
-  color: ${({ error }) => (error ? '#D30703' : 'black')};
+  color: ${({ error }) => (error ? `${colors.red}` : 'black')};
 `;

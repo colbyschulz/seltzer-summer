@@ -1,7 +1,7 @@
 import React from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import GlobalCSS from '../../globalStyles.css';
-import Seltzer from '../../assets/images/seltzer.jpg';
+import Seltzer from '../../assets/images/seltzer.png';
 import { Route, Routes } from 'react-router-dom';
 import DetailScreen from '../../screens/detailScreen/DetailScreen';
 import LeaderboardScreen from '../../screens/leaderboardScreen/LeaderboardScreen';
@@ -20,7 +20,7 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <GlobalCSS />
       <HeaderWrapper>
-        <HeaderImage style={{ maxHeight: '400px' }} src={Seltzer} />
+        <HeaderImage src={Seltzer} />
       </HeaderWrapper>
 
       <Routes>

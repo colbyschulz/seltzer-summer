@@ -4,6 +4,5 @@ export default {
   grey: 'rgba(137, 127, 132, 0.85)',
   brown: '#7F785B',
   lightBrown: '#C1A06D',
-  tan: '#D3C797',
-  button: '#e9e9e9',
+  tan: 'rgb(193, 160, 109, 0.3)',
 };

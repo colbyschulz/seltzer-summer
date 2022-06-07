@@ -5,24 +5,6 @@ import { LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line, ResponsiveContai
 import { format } from 'date-fns';
 import { useParams } from 'react-router-dom';
 import colors from '../../colors';
-
-// const colorMap: { [k: string]: string } = {
-//   '0': '#800080',
-//   '1': '#1E90FF',
-//   '2': '#D2691E',
-//   '3': '#FF1493',
-//   '4': '#4B0082',
-//   '5': '#A52A2A',
-//   '6': '#808000',
-//   '7': '#2F4F4F',
-//   '8': '#B8860B',
-//   '9': '#191970',
-//   '10': '#00CED1',
-//   '11': '#006400',
-//   '12': '#BDB76B',
-//   '13': '#FF0000',
-// };
-
 interface LeaderboardChartProps {
   activeDataKey: string;
   setActiveDataKey: Dispatch<SetStateAction<string>>;
@@ -84,7 +66,7 @@ const LeaderboardChart: FC<LeaderboardChartProps> = ({ activeDataKey, setActiveD
     .map((data) => ({ ...data, date: format(new Date(data.date), 'MM/dd') }));
 
   return (
-    <ResponsiveContainer aspect={1.2} maxHeight={550}>
+    <ResponsiveContainer aspect={1.5} maxHeight={550}>
       <LineChart data={chartData} margin={{ top: 10, right: 10, left: -10, bottom: 5 }}>
         <CartesianGrid />
         <ReferenceLine y={fastestRaceTime} strokeDasharray="8 8" stroke={colors.green} strokeWidth={1} />
@@ -146,7 +128,6 @@ const LeaderboardChart: FC<LeaderboardChartProps> = ({ activeDataKey, setActiveD
                 fill: color,
                 r: 6,
                 stroke: color,
-                // onClick: (_, svgCircleElement: any) => setActiveDataKey(svgCircleElement.dataKey),
               }}
               connectNulls
             />

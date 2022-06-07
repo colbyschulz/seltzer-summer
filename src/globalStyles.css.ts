@@ -1,22 +1,25 @@
 import { createGlobalStyle } from 'styled-components';
-
+import Crumpled1 from './assets/images/crumpled1.jpg';
 export default createGlobalStyle`
 * {
-  font-family: 'Roboto', Open-Sans, Helvetica, Sans-Serif !important;
+  font-family: 'Walter Turncoat', Open-Sans, Helvetica, Sans-Serif !important;
+  // font-family: 'Roboto', Open-Sans, Helvetica, Sans-Serif !important;
 }
   body {
     margin: 0;
     padding: 0;
-    font-family: 'Roboto', Open-Sans, Helvetica, Sans-Serif;
     font-weight: 400;
   }
   #root {
+    background-image: url(${Crumpled1});
+    background-size: cover;
     min-height: 100vh;
     margin: auto;
     width: 100vw;
-    max-width: 1800px;
+    max-width: 2000px;
     display: flex;
     flex-direction: column;
+    max-height: 100vh;
   }
 
   button {
