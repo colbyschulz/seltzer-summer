@@ -3,23 +3,28 @@ import { queryKeys } from './config';
 import { TableRecord } from '../types';
 import { baseUrl } from './config';
 
-const getRecords = async (): Promise<TableRecord[]> => {
+type GetRecordsResponse = {
+  records: TableRecord[];
+};
+const getRecords = async () => {
   const response = await fetch(baseUrl, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
     },
   });
-  const result = await response.json();
 
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+
+  const result: GetRecordsResponse = await response.json();
   return result.records;
 };
 
-export const useRecords = () => {
-  return useQuery(queryKeys.records, getRecords);
-};
+export const useRecords = () => useQuery(queryKeys.records, getRecords);
 
-const createRecord = async (newRecord: TableRecord): Promise<TableRecord[]> => {
+const createRecord = async (newRecord: TableRecord) => {
   const response = await fetch(baseUrl, {
     method: 'POST',
     headers: {
@@ -28,7 +33,7 @@ const createRecord = async (newRecord: TableRecord): Promise<TableRecord[]> => {
     },
     body: JSON.stringify(newRecord),
   });
-  const result = await response.json();
+  const result: GetRecordsResponse = await response.json();
 
   return result.records;
 };

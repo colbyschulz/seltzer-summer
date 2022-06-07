@@ -54,7 +54,7 @@ const LeaderboardChart: FC<LeaderboardChartProps> = ({ activeDataKey, setActiveD
     .map((data) => ({ ...data, date: format(new Date(data.date), 'MM/dd') }));
 
   return (
-    <ResponsiveContainer aspect={1.5} maxHeight={550} minHeight={innerWidth > 840 ? 550 : 234}>
+    <ResponsiveContainer aspect={1.5} maxHeight={550} minHeight={innerWidth > 840 ? 550 : 218}>
       <LineChart data={chartData} margin={{ top: 10, right: 10, left: -10, bottom: 5 }}>
         <CartesianGrid />
         <XAxis dataKey="date" tick={{ fontSize: '14px' }} />
@@ -82,7 +82,7 @@ const LeaderboardChart: FC<LeaderboardChartProps> = ({ activeDataKey, setActiveD
         {Object.keys(dataNormalizedById).map((key) => {
           const raceArray = dataNormalizedById[key];
           const name = raceArray[0].name;
-          const color = activeDataKey === name ? colors.lightBrown : 'black';
+          const color = activeDataKey === name ? colors.lightBrown : '#131313';
           return (
             <Line
               cursor="pointer"

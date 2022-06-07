@@ -27,6 +27,7 @@ import { useRecords, useCreateRecord } from '../../api/records';
 import LeaderboardChart from '../../components/leaderboardChart/LeaderboardChart';
 import colors from '../../colors';
 import { format } from 'date-fns';
+import Card from '../../components/card/Card';
 
 interface FormValues {
   firstName: string;
@@ -112,20 +113,18 @@ const App: FC = () => {
         accessor: 'numRaces',
       },
       {
-        Header: 'Progress',
+        Header: 'Delta',
         accessor: 'delta',
       },
       {
+        Header: 'Details',
         Cell: () => (
           <StyledButton
             style={{
               marginBottom: 0,
               width: 'auto',
-              // display: 'flex',
-
-              // alignItems: 'center',
-              // justifyContent: 'center',
-              minHeight: '25px',
+              padding: '7px',
+              minHeight: 'unset',
               maxWidth: '80px',
               backgroundColor: colors.tan,
             }}
@@ -153,14 +152,18 @@ const App: FC = () => {
     <LeaderboardScreenWrapper>
       <div style={{ display: 'flex', justifyContent: 'space-between', margin: '0 20px' }}>
         <Breadcrumbs config={[{ route: null, display: 'Leaderboard' }]} />
-        <StyledButton color="primary" onClick={() => setIsModalOpen(true)} style={{ backgroundColor: '#D7C6AE' }}>
+        <StyledButton
+          color="primary"
+          onClick={() => setIsModalOpen(true)}
+          style={{ backgroundColor: colors.tan, height: '36px' }}
+        >
           Add Race
         </StyledButton>
       </div>
 
-      <div style={{ display: 'flex', margin: '0 20px' }}>
+      <Card style={{ padding: '10px 12px 0 10px' }}>
         <LeaderboardChart activeDataKey={activeDataKey} setActiveDataKey={setActiveDataKey} />
-      </div>
+      </Card>
 
       <LeaderboardTableWrapper>
         <MaUTable {...getTableProps()} stickyHeader padding="none">
@@ -172,7 +175,11 @@ const App: FC = () => {
                   {headerGroup.headers.map((column) => {
                     const { key, ...restHeaderProps } = column.getHeaderProps();
                     return (
-                      <TableCell key={key} style={{ padding: '12px', backgroundColor: '#D7C6AE' }} {...restHeaderProps}>
+                      <TableCell
+                        key={key}
+                        style={{ padding: '12px 8px', backgroundColor: colors.tan }}
+                        {...restHeaderProps}
+                      >
                         {column.render('Header')}
                       </TableCell>
                     );
@@ -187,23 +194,23 @@ const App: FC = () => {
               const { key, ...restRowProps } = row.getRowProps();
 
               const backgroundColor =
-                row.original.name === activeDataKey ? 'rgb(193, 160, 109, .6)' : 'rgb(255,255,255, .5)';
+                row.original.name === activeDataKey ? 'rgb(193, 160, 109, 0.2)' : colors.transparentWhite;
               return (
                 <TableRow
                   key={key}
                   {...restRowProps}
-                  style={{ cursor: 'pointer', backgroundColor, borderColor: 'black' }}
+                  style={{ cursor: 'pointer', backgroundColor, borderColor: colors.tan }}
                 >
                   {row.cells.map((cell) => {
                     const { key, ...restCellProps } = cell.getCellProps();
                     const cellColor =
-                      cell.column.Header === 'Progress'
+                      cell.column.Header === 'Delta'
                         ? cell.value.includes('-')
                           ? colors.green
                           : cell.value === '0%'
-                          ? 'black'
+                          ? '#131313'
                           : colors.red
-                        : 'black';
+                        : '#131313';
                     return (
                       <StyledTableCell
                         key={key}
@@ -215,12 +222,12 @@ const App: FC = () => {
                           }
                         }}
                         style={{
-                          borderColor: 'black',
+                          borderColor: colors.grey,
                           color: cellColor,
                           padding: '12px 8px',
                           overflowWrap: 'break-word',
                           display: 'table-cell',
-                          textAlign: 'center',
+                          textAlign: cell.column.id === 'arrow' ? 'center' : 'left',
                         }}
                         {...restCellProps}
                       >
@@ -270,9 +277,7 @@ const App: FC = () => {
               resetForm();
             }}
           >
-            {({ handleChange, errors, touched, values }) => {
-              console.log(values);
-
+            {({ handleChange, errors, touched }) => {
               return (
                 <Form>
                   <FormWrapper>
@@ -385,7 +390,7 @@ const App: FC = () => {
                     </div>
 
                     <StyledButton
-                      style={{ alignSelf: 'center', marginTop: '20px', backgroundColor: '#D7C6AE' }}
+                      style={{ alignSelf: 'center', marginTop: '20px', backgroundColor: colors.tan }}
                       type="submit"
                     >
                       Submit

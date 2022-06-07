@@ -1,6 +1,6 @@
 import React, { FC, useEffect } from 'react';
 import ReactPortal from '../ReactPortal';
-import { Children, HeaderRow, HeaderText, IconRow, ModalContent, ModalWrapper } from './Modal.css';
+import { HeaderRow, HeaderText, IconRow, ModalBackgroundWrapper, ModalContent, ModalWrapper } from './Modal.css';
 
 interface ModalProps {
   showModal: boolean;
@@ -24,24 +24,22 @@ const Modal: FC<ModalProps> = ({ showModal, onClose, header, children, portalId 
     document.body.style.overflow = showModal ? 'hidden' : 'auto';
   }, [showModal]);
 
-  if (!showModal) {
-    return null;
-  }
-
   return (
     <ReactPortal wrapperId={portalId}>
-      <ModalWrapper>
-        <ModalContent>
-          <IconRow>
-            <div style={{ padding: '10px' }} onClick={onClose}>
-              X
-            </div>
-          </IconRow>
-          {header ? (
-            <HeaderRow>{typeof header === 'string' ? <HeaderText>{header}</HeaderText> : header}</HeaderRow>
-          ) : null}
-          {children}
-        </ModalContent>
+      <ModalWrapper showModal={showModal}>
+        <ModalBackgroundWrapper>
+          <ModalContent>
+            <IconRow>
+              <div style={{ padding: '10px' }} onClick={onClose}>
+                X
+              </div>
+            </IconRow>
+            {header ? (
+              <HeaderRow>{typeof header === 'string' ? <HeaderText>{header}</HeaderText> : header}</HeaderRow>
+            ) : null}
+            {children}
+          </ModalContent>
+        </ModalBackgroundWrapper>
       </ModalWrapper>
     </ReactPortal>
   );

@@ -1,11 +1,12 @@
 import styled from 'styled-components';
 import Crumpled1 from '../../assets/images/crumpled1.jpg';
+import colors from '../../colors';
 
-export const ModalWrapper = styled.div`
+export const ModalWrapper = styled.div<{ showModal: boolean }>`
   position: fixed;
   inset: 0; /* inset sets all 4 values (top right bottom left) much like how we set padding, margin etc., */
   background-color: rgba(0, 0, 0, 0.6);
-  display: flex;
+  display: ${({ showModal }) => (showModal ? 'flex' : 'none')};
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -14,16 +15,19 @@ export const ModalWrapper = styled.div`
   z-index: 2;
 `;
 
+export const ModalBackgroundWrapper = styled.div`
+  background-image: url(${Crumpled1});
+  background-size: cover;
+  max-height: 70%;
+  border-radius: 5px;
+`;
+
 export const ModalContent = styled.div`
+  background-color: ${colors.transparentWhite};
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-image: url(${Crumpled1});
-  background-size: cover;
   padding: 15px 20px 20px 20px;
-  border-radius: 5px;
-  max-height: 70%;
-  overflow-y: scroll;
 `;
 
 export const IconRow = styled.div`
@@ -32,10 +36,6 @@ export const IconRow = styled.div`
   flex-direction: row;
   width: 100%;
   justify-content: flex-end;
-`;
-
-export const Children = styled.div`
-  flex-shrink: 1;
 `;
 
 export const HeaderRow = styled.div`

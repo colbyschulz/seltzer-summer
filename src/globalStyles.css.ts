@@ -3,7 +3,7 @@ import Crumpled1 from './assets/images/crumpled1.jpg';
 export default createGlobalStyle`
 * {
   font-family: 'Walter Turncoat', Open-Sans, Helvetica, Sans-Serif !important;
-  // font-family: 'Roboto', Open-Sans, Helvetica, Sans-Serif !important;
+  box-sizing: border-box;
 }
   body {
     margin: 0;

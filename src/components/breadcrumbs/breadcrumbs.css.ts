@@ -9,11 +9,11 @@ export const BreadcrumbsWrapper = styled.div`
 `;
 
 export const LinkCrumb = styled(Link)`
-  color: black;
+  color: #131313;
 `;
 
 export const Crumb = styled.span`
-  color: black;
+  color: #131313;
 `;
 
 export const CrumbWrapper = styled.div`

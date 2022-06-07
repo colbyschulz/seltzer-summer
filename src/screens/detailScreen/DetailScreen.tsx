@@ -10,6 +10,7 @@ import Breadcrumbs from '../../components/breadcrumbs/Breadcrumbs';
 import colors from '../../colors';
 import RaceComparisonChart from '../../components/raceComparisonChart/RaceComparisonChart';
 import { useRecords } from '../../api/records';
+import Card from '../../components/card/Card';
 
 interface RowData {
   name: string;
@@ -38,7 +39,7 @@ const DetailScreen = () => {
     { route: null, display: 'Detail' },
   ];
 
-  const dataNormalizedById = racesByNameId(records);
+  const dataNormalizedById = useMemo(() => racesByNameId(records), [records]);
   const raceArray = (nameId && dataNormalizedById[nameId]) || [];
   const raceArrayMutable = [...raceArray];
   const mutableSortedByDate = raceArrayMutable.sort(
@@ -147,9 +148,9 @@ const DetailScreen = () => {
         </div>
       </Metrics>
 
-      <div style={{ display: 'flex', margin: '0 20px' }}>
+      <Card style={{ padding: '10px 12px 0 10px' }}>
         <RaceComparisonChart />
-      </div>
+      </Card>
 
       <DetailTableWrapper>
         <MaUTable {...getModalTableProps()} padding="none" stickyHeader>
@@ -161,7 +162,11 @@ const DetailScreen = () => {
                   {headerGroup.headers.map((column) => {
                     const { key, ...restColumnProps } = column.getHeaderProps();
                     return (
-                      <TableCell style={{ padding: '12px', backgroundColor: '#D7C6AE' }} key={key} {...restColumnProps}>
+                      <TableCell
+                        style={{ padding: '12px 8px', backgroundColor: colors.tan }}
+                        key={key}
+                        {...restColumnProps}
+                      >
                         {column.render('Header')}
                       </TableCell>
                     );
@@ -175,10 +180,10 @@ const DetailScreen = () => {
               modalRows.map((row) => {
                 modalPrepareRow(row);
                 const { key, ...restRowProps } = row.getRowProps();
-                const backgroundColor = 'rgb(255,255,255, .5)';
+                const backgroundColor = colors.transparentWhite;
                 const color =
                   row.index === 0
-                    ? 'black'
+                    ? '#131313'
                     : row.original.isBestEffort
                     ? row.original.isBestEffortBetterThanBaseline
                       ? colors.green
@@ -190,7 +195,13 @@ const DetailScreen = () => {
                       const { key, ...restCellProps } = cell.getCellProps();
                       return (
                         <StyledTableCell
-                          style={{ padding: '12px', overflowWrap: 'break-word', color }}
+                          style={{
+                            borderColor: colors.grey,
+                            padding: '12px 8px',
+                            overflowWrap: 'break-word',
+                            color,
+                            textAlign: 'left',
+                          }}
                           key={key}
                           {...restCellProps}
                         >
