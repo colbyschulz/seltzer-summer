@@ -9,6 +9,8 @@ interface LeaderboardChartProps {
   setActiveDataKey: Dispatch<SetStateAction<string>>;
 }
 const LeaderboardChart: FC<LeaderboardChartProps> = ({ activeDataKey, setActiveDataKey }) => {
+  const { innerWidth } = window;
+
   const { data: records = [] } = useRecords();
   const dataNormalizedById = useMemo(() => racesByNameId(records), [records]);
 
@@ -52,7 +54,7 @@ const LeaderboardChart: FC<LeaderboardChartProps> = ({ activeDataKey, setActiveD
     .map((data) => ({ ...data, date: format(new Date(data.date), 'MM/dd') }));
 
   return (
-    <ResponsiveContainer aspect={1.5} maxHeight={550}>
+    <ResponsiveContainer aspect={1.5} maxHeight={550} minHeight={innerWidth > 840 ? 550 : 234}>
       <LineChart data={chartData} margin={{ top: 10, right: 10, left: -10, bottom: 5 }}>
         <CartesianGrid />
         <XAxis dataKey="date" tick={{ fontSize: '14px' }} />

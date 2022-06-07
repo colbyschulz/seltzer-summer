@@ -7,6 +7,7 @@ import { useParams } from 'react-router-dom';
 import colors from '../../colors';
 
 const RaceComparisonChart: FC = () => {
+  const { innerWidth } = window;
   const { data: records = [] } = useRecords();
   const { nameId } = useParams();
 
@@ -64,7 +65,7 @@ const RaceComparisonChart: FC = () => {
     .map((data) => ({ ...data, date: format(new Date(data.date), 'MM/dd') }));
 
   return (
-    <ResponsiveContainer aspect={1.5} maxHeight={550}>
+    <ResponsiveContainer aspect={1.5} maxHeight={550} minHeight={innerWidth > 840 ? 550 : 234}>
       <LineChart data={chartData} margin={{ top: 10, right: 10, left: -10, bottom: 5 }}>
         <CartesianGrid />
         <ReferenceLine y={fastestRaceTime} strokeDasharray="8 8" stroke={colors.green} strokeWidth={2} />
