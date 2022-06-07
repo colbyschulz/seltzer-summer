@@ -21,7 +21,7 @@ export const DetailTableWrapper = styled.div`
 export const Metrics = styled.div`
   display: flex;
   flex-direction: column;
-  margin: 0 20px 15px 20px;
+  margin: 0 20px 5px 20px;
 `;
 
 export const MetricLabel = styled.label``;

@@ -36,7 +36,7 @@ const DetailScreen = () => {
   const { nameId } = useParams();
   const breadcrumbsconfig = [
     { route: '/', display: 'Leaderboard' },
-    { route: null, display: 'Detail' },
+    { route: null, display: 'Race Details' },
   ];
 
   const dataNormalizedById = useMemo(() => racesByNameId(records), [records]);
@@ -127,7 +127,7 @@ const DetailScreen = () => {
 
   return (
     <DetailScreenWrapper>
-      <div style={{ display: 'flex', justifyContent: 'space-between', margin: '0 20px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', margin: '0 20px 10px 20px' }}>
         <Breadcrumbs config={breadcrumbsconfig} />
       </div>
 

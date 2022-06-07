@@ -17,11 +17,13 @@ export const HeaderImage = styled.img`
 `;
 
 export const FooterWrapper = styled.div`
+  position: absolute;
   display: flex;
   align-items: center;
   max-width: 100%;
-  padding 0 10px;
-  justify-content: flex-end;
+  padding 0 20px;
+  bottom: 0;
+  right: 0;
 `;
 
 export const FooterText = styled.span`

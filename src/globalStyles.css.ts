@@ -1,15 +1,16 @@
 import { createGlobalStyle } from 'styled-components';
 import Crumpled1 from './assets/images/crumpled1.jpg';
 export default createGlobalStyle`
-* {
-  font-family: 'Walter Turncoat', Open-Sans, Helvetica, Sans-Serif !important;
-  box-sizing: border-box;
-}
-  body {
+  * {
+    font-family: 'Walter Turncoat', Open-Sans, Helvetica, Sans-Serif !important;
+  }
+  html, body {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior-y: none;
     margin: 0;
     padding: 0;
-    font-weight: 400;
-  }
+    
   #root {
     background-image: url(${Crumpled1});
     background-size: cover;

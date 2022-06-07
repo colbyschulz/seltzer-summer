@@ -18,7 +18,7 @@ import {
   StyledTableCell,
 } from './leaderboardScreen.css';
 import Modal from '../../components/modal/Modal';
-import { Column, useTable } from 'react-table';
+import { Column, useFlexLayout, useTable } from 'react-table';
 import ArrowRight from '../../assets/images/arrow-right.svg';
 import { racesByNameId, raceTimeToSeconds } from '../../utils';
 import { useNavigate } from 'react-router-dom';
@@ -150,7 +150,14 @@ const App: FC = () => {
 
   return (
     <LeaderboardScreenWrapper>
-      <div style={{ display: 'flex', justifyContent: 'space-between', margin: '0 20px' }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          margin: '0 20px 3px 20px',
+          alignItems: 'flex-start',
+        }}
+      >
         <Breadcrumbs config={[{ route: null, display: 'Leaderboard' }]} />
         <StyledButton
           color="primary"
@@ -193,8 +200,7 @@ const App: FC = () => {
               prepareRow(row);
               const { key, ...restRowProps } = row.getRowProps();
 
-              const backgroundColor =
-                row.original.name === activeDataKey ? 'rgb(193, 160, 109, 0.2)' : colors.transparentWhite;
+              const backgroundColor = row.original.name === activeDataKey ? 'rgb(193, 160, 109, 0.2)' : 'transparent';
               return (
                 <TableRow
                   key={key}

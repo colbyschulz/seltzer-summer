@@ -4,7 +4,6 @@ import styled from 'styled-components';
 export const BreadcrumbsWrapper = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 20px;
   font-size: 18px;
 `;
 

@@ -22,6 +22,7 @@ export const LeaderboardTableWrapper = styled.div`
   border-radius: 5px;
   margin: 10px 20px 20px 20px;
   box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2);
+  background-color: ${colors.transparentWhite};
 `;
 
 export const FormWrapper = styled.div`
