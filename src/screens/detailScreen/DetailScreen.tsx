@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import { Column, useTable } from 'react-table';
 import { calcPaceDifference, racesByNameId, secondsToPace } from '../../utils';
 import { StyledTableCell } from '../leaderboardScreen/leaderboardScreen.css';
-import { DetailScreenWrapper, MetricLabel, Metrics, MetricValue } from './detailScreen.css';
+import { DetailScreenWrapper, DetailTableWrapper, MetricLabel, Metrics, MetricValue } from './detailScreen.css';
 import MaUTable from '@material-ui/core/Table';
 import { useParams } from 'react-router-dom';
 import Breadcrumbs from '../../components/breadcrumbs/Breadcrumbs';
@@ -145,58 +145,63 @@ const DetailScreen = () => {
         </div>
       </Metrics>
 
-      <RaceComparisonChart />
+      <div style={{ display: 'flex', flex: 1 }}>
+        <RaceComparisonChart />
+      </div>
 
-      <MaUTable {...getModalTableProps()} padding="none" stickyHeader style={{ marginTop: '20px' }}>
-        <TableHead>
-          {modalHeaderGroups.map((headerGroup) => {
-            const { key, ...restHeaderGroupProps } = headerGroup.getHeaderGroupProps();
-            return (
-              <TableRow key={key} {...restHeaderGroupProps}>
-                {headerGroup.headers.map((column) => {
-                  const { key, ...restColumnProps } = column.getHeaderProps();
-                  return (
-                    <TableCell style={{ padding: '12px 8px' }} key={key} {...restColumnProps}>
-                      {column.render('Header')}
-                    </TableCell>
-                  );
-                })}
-              </TableRow>
-            );
-          })}
-        </TableHead>
-        <TableBody>
-          {records &&
-            modalRows.map((row) => {
-              modalPrepareRow(row);
-              const { key, ...restRowProps } = row.getRowProps();
-              const color =
-                row.index === 0
-                  ? 'black'
-                  : row.original.isBestEffort
-                  ? row.original.isBestEffortBetterThanBaseline
-                    ? colors.green
-                    : colors.red
-                  : colors.grey;
+      <DetailTableWrapper>
+        <MaUTable {...getModalTableProps()} padding="none" stickyHeader>
+          <TableHead>
+            {modalHeaderGroups.map((headerGroup) => {
+              const { key, ...restHeaderGroupProps } = headerGroup.getHeaderGroupProps();
               return (
-                <TableRow key={key} {...restRowProps}>
-                  {row.cells.map((cell) => {
-                    const { key, ...restCellProps } = cell.getCellProps();
+                <TableRow key={key} {...restHeaderGroupProps}>
+                  {headerGroup.headers.map((column) => {
+                    const { key, ...restColumnProps } = column.getHeaderProps();
                     return (
-                      <StyledTableCell
-                        style={{ padding: '12px', overflowWrap: 'break-word', color }}
-                        key={key}
-                        {...restCellProps}
-                      >
-                        {cell.render('Cell')}
-                      </StyledTableCell>
+                      <TableCell style={{ padding: '12px', backgroundColor: '#D7C6AE' }} key={key} {...restColumnProps}>
+                        {column.render('Header')}
+                      </TableCell>
                     );
                   })}
                 </TableRow>
               );
             })}
-        </TableBody>
-      </MaUTable>
+          </TableHead>
+          <TableBody>
+            {records &&
+              modalRows.map((row) => {
+                modalPrepareRow(row);
+                const { key, ...restRowProps } = row.getRowProps();
+                const backgroundColor = 'rgb(255,255,255, .5)';
+                const color =
+                  row.index === 0
+                    ? 'black'
+                    : row.original.isBestEffort
+                    ? row.original.isBestEffortBetterThanBaseline
+                      ? colors.green
+                      : colors.red
+                    : colors.grey;
+                return (
+                  <TableRow key={key} {...restRowProps} style={{ backgroundColor }}>
+                    {row.cells.map((cell) => {
+                      const { key, ...restCellProps } = cell.getCellProps();
+                      return (
+                        <StyledTableCell
+                          style={{ padding: '12px', overflowWrap: 'break-word', color }}
+                          key={key}
+                          {...restCellProps}
+                        >
+                          {cell.render('Cell')}
+                        </StyledTableCell>
+                      );
+                    })}
+                  </TableRow>
+                );
+              })}
+          </TableBody>
+        </MaUTable>
+      </DetailTableWrapper>
     </DetailScreenWrapper>
   );
 };

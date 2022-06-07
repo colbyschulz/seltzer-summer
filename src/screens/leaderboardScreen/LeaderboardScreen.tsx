@@ -14,7 +14,7 @@ import {
   InputLabel,
   InputWrapper,
   ModalContent,
-  RecordTableWrapper,
+  LeaderboardTableWrapper,
   StyledButton,
   StyledDatePicker,
   StyledTableCell,
@@ -158,15 +158,11 @@ const App: FC = () => {
         </StyledButton>
       </div>
 
-      {/* <div style={{ marginBottom: '20px' }}>
-        {`Summer of Speed 2022 is all about 5k's. Add a race as a baseline and track your progress throughout the summer.`}
-      </div> */}
+      <div style={{ display: 'flex', flex: 1 }}>
+        <LeaderboardChart activeDataKey={activeDataKey} setActiveDataKey={setActiveDataKey} />
+      </div>
 
-      {/* <div style={{ backgroundColor: colors.tan, padding: '10px', borderRadius: '5px' }}> */}
-      <LeaderboardChart activeDataKey={activeDataKey} setActiveDataKey={setActiveDataKey} />
-      {/* </div> */}
-
-      <RecordTableWrapper>
+      <LeaderboardTableWrapper>
         <MaUTable {...getTableProps()} stickyHeader padding="none">
           <TableHead>
             {headerGroups.map((headerGroup) => {
@@ -236,7 +232,7 @@ const App: FC = () => {
             })}
           </TableBody>
         </MaUTable>
-      </RecordTableWrapper>
+      </LeaderboardTableWrapper>
       <Modal
         showModal={isModalOpen}
         onClose={() => {

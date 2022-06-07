@@ -1,9 +1,8 @@
-import React, { Dispatch, FC, SetStateAction, useMemo, useState } from 'react';
+import React, { Dispatch, FC, SetStateAction, useMemo } from 'react';
 import { useRecords } from '../../api/records';
 import { racesByNameId, secondsToRaceTime } from '../../utils';
-import { LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line, ResponsiveContainer, ReferenceLine } from 'recharts';
+import { LineChart, CartesianGrid, XAxis, YAxis, Line, ResponsiveContainer } from 'recharts';
 import { format } from 'date-fns';
-import { useParams } from 'react-router-dom';
 import colors from '../../colors';
 interface LeaderboardChartProps {
   activeDataKey: string;
@@ -11,20 +10,7 @@ interface LeaderboardChartProps {
 }
 const LeaderboardChart: FC<LeaderboardChartProps> = ({ activeDataKey, setActiveDataKey }) => {
   const { data: records = [] } = useRecords();
-  const { nameId } = useParams();
   const dataNormalizedById = useMemo(() => racesByNameId(records), [records]);
-  const raceArray = (nameId && dataNormalizedById[nameId]) || [];
-  const raceArrayMutable = [...raceArray];
-  const sortedByDate = raceArrayMutable?.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  const baseRaceTime = sortedByDate?.splice(0, 1)[0]?.time;
-
-  const fastestRaceTime = raceArrayMutable?.find(
-    (race) => race.time === Math.min(...raceArray.map((race) => race.time)),
-  )?.time;
-
-  const slowestRaceTime = raceArrayMutable?.find(
-    (race) => race.time === Math.max(...raceArray.map((race) => race.time)),
-  )?.time;
 
   const raceTimes: number[] = [];
 
@@ -69,17 +55,9 @@ const LeaderboardChart: FC<LeaderboardChartProps> = ({ activeDataKey, setActiveD
     <ResponsiveContainer aspect={1.5} maxHeight={550}>
       <LineChart data={chartData} margin={{ top: 10, right: 10, left: -10, bottom: 5 }}>
         <CartesianGrid />
-        <ReferenceLine y={fastestRaceTime} strokeDasharray="8 8" stroke={colors.green} strokeWidth={1} />
-        <ReferenceLine y={slowestRaceTime} strokeDasharray="8 8" stroke={colors.red} strokeWidth={1} />
-        <ReferenceLine
-          y={baseRaceTime}
-          strokeDasharray="8 8"
-          stroke="black"
-          // label={{ position: 'bottom', value: 'Summer Baseline' }}
-          strokeWidth={1}
-        />
-        <XAxis dataKey="date" />
+        <XAxis dataKey="date" tick={{ fontSize: '14px' }} />
         <YAxis
+          tick={{ fontSize: '14px' }}
           ticks={ticks}
           interval={1}
           scale="linear"
@@ -99,7 +77,7 @@ const LeaderboardChart: FC<LeaderboardChartProps> = ({ activeDataKey, setActiveD
             return format(dateString, 'MM/dd/yyyy');
           }}
         /> */}
-        {Object.keys(dataNormalizedById).map((key, i) => {
+        {Object.keys(dataNormalizedById).map((key) => {
           const raceArray = dataNormalizedById[key];
           const name = raceArray[0].name;
           const color = activeDataKey === name ? colors.lightBrown : 'black';

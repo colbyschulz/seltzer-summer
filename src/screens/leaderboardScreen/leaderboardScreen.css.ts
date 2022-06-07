@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { TableCell } from '@material-ui/core';
 import colors from '../../colors';
 
-export const RecordTableWrapper = styled.div`
+export const LeaderboardTableWrapper = styled.div`
   -webkit-overflow-scrolling: touch;
   overflow-y: scroll;
   margin-top: 10px;
@@ -17,6 +17,7 @@ export const StyledTableCell = styled(TableCell)<{ isFaster?: boolean }>`
 export const LeaderboardScreenWrapper = styled.div`
   margin: 20px;
   display: flex;
+  flex: 1;
   flex-direction: column;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;

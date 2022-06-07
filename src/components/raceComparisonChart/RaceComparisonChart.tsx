@@ -64,22 +64,23 @@ const RaceComparisonChart: FC = () => {
     .map((data) => ({ ...data, date: format(new Date(data.date), 'MM/dd') }));
 
   return (
-    <ResponsiveContainer aspect={1.2} maxHeight={550}>
+    <ResponsiveContainer aspect={1.5} maxHeight={550}>
       <LineChart data={chartData} margin={{ top: 10, right: 10, left: -10, bottom: 5 }}>
         <CartesianGrid />
-        <ReferenceLine y={fastestRaceTime} strokeDasharray="8 8" stroke={colors.green} strokeWidth={1} />
-        <ReferenceLine y={slowestRaceTime} strokeDasharray="8 8" stroke={colors.red} strokeWidth={1} />
+        <ReferenceLine y={fastestRaceTime} strokeDasharray="8 8" stroke={colors.green} strokeWidth={2} />
+        <ReferenceLine y={slowestRaceTime} strokeDasharray="8 8" stroke={colors.red} strokeWidth={2} />
         <ReferenceLine
           y={baseRaceTime}
           strokeDasharray="8 8"
           stroke="black"
           // label={{ position: 'bottom', value: 'Summer Baseline' }}
-          strokeWidth={1}
+          strokeWidth={2}
         />
 
-        <XAxis dataKey="date" />
+        <XAxis dataKey="date" tick={{ fontSize: '14px' }} />
 
         <YAxis
+          tick={{ fontSize: '14px' }}
           ticks={ticks}
           interval={1}
           scale="linear"
@@ -115,7 +116,7 @@ const RaceComparisonChart: FC = () => {
               type="monotone"
               dataKey={name}
               strokeWidth={isActiveLine ? 2 : 1}
-              stroke={isActiveLine ? 'black' : '#a7a7a7'}
+              stroke={color}
               connectNulls
               dot={{ fill: color, r: dotRadius, stroke: color }}
               activeDot={{ fill: color, r: activeDotRadius, stroke: color }}
