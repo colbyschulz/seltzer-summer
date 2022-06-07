@@ -18,7 +18,7 @@ import {
   StyledTableCell,
 } from './leaderboardScreen.css';
 import Modal from '../../components/modal/Modal';
-import { Column, useFlexLayout, useTable } from 'react-table';
+import { Column, useTable } from 'react-table';
 import ArrowRight from '../../assets/images/arrow-right.svg';
 import { racesByNameId, raceTimeToSeconds } from '../../utils';
 import { useNavigate } from 'react-router-dom';

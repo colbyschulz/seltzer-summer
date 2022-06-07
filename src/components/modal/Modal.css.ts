@@ -28,6 +28,7 @@ export const ModalContent = styled.div`
   flex-direction: column;
   align-items: center;
   padding: 15px 20px 20px 20px;
+  border-radius: 5px;
 `;
 
 export const IconRow = styled.div`

@@ -190,7 +190,14 @@ const DetailScreen = () => {
                       : colors.red
                     : colors.grey;
                 return (
-                  <TableRow key={key} {...restRowProps} style={{ backgroundColor }}>
+                  <TableRow
+                    key={key}
+                    {...restRowProps}
+                    style={{ backgroundColor }}
+                    onClick={(val) => {
+                      console.log(val);
+                    }}
+                  >
                     {row.cells.map((cell) => {
                       const { key, ...restCellProps } = cell.getCellProps();
                       return (

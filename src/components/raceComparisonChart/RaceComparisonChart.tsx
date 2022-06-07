@@ -1,10 +1,28 @@
 import React, { FC, useMemo } from 'react';
 import { useRecords } from '../../api/records';
 import { racesByNameId, secondsToRaceTime } from '../../utils';
-import { LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line, ResponsiveContainer, ReferenceLine } from 'recharts';
+import {
+  LineChart,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Line,
+  ResponsiveContainer,
+  ReferenceLine,
+  TooltipProps,
+} from 'recharts';
 import { format } from 'date-fns';
 import { useParams } from 'react-router-dom';
 import colors from '../../colors';
+
+import { DefaultTooltipContent } from 'recharts/lib/component/DefaultTooltipContent';
+
+const CustomTooltip: React.FC<TooltipProps<any, any>> = ({ payload, ...rest }) => {
+  payload?.sort((a, b) => a.value - b.value);
+
+  return <DefaultTooltipContent payload={payload} {...rest} />;
+};
 
 const RaceComparisonChart: FC = () => {
   const { innerWidth } = window;
@@ -92,6 +110,9 @@ const RaceComparisonChart: FC = () => {
           }}
         />
         <Tooltip
+          itemStyle={{ fontSize: '12px', margin: '0', padding: '0' }}
+          labelStyle={{ fontSize: '12px' }}
+          content={<CustomTooltip />}
           formatter={(v: number) => secondsToRaceTime(v)}
           labelFormatter={(value) => {
             const parsedDate = value && typeof value === 'string' && value.split('/');
