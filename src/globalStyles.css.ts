@@ -14,12 +14,26 @@ export default createGlobalStyle`
     background-image: url(${Crumpled1});
     background-size: cover;
     min-height: 100vh;
+    // for mobile notches
+    min-height: -webkit-fill-available;
+    max-height: 100vh;
+    max-height: -webkit-fill-available;
+    height: 100vh;
     margin: auto;
     width: 100vw;
     max-width: 2000px;
     display: flex;
     flex-direction: column;
-    max-height: 100vh;
+
+
+
+    // min-height: 100vh;
+   
+    // max-height: 100vh;
+    // height: 100vh;
+    // width: 100vw;
+    // display: flex;
+    // flex-direction: column;
   }
 
   button {

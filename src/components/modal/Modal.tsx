@@ -40,7 +40,7 @@ const Modal: FC<ModalProps> = ({ showModal, onClose, header, children, portalId 
           {header ? (
             <HeaderRow>{typeof header === 'string' ? <HeaderText>{header}</HeaderText> : header}</HeaderRow>
           ) : null}
-          <Children>{children}</Children>
+          {children}
         </ModalContent>
       </ModalWrapper>
     </ReactPortal>

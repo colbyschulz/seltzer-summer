@@ -7,7 +7,7 @@ export const LeaderboardTableWrapper = styled.div`
   overflow-y: scroll;
   border-radius: 5px;
   background-color: ${colors.tan};
-  margin: 10px 20px 0 20px;
+  margin: 10px 20px 20px 20px;
 `;
 
 export const StyledTableCell = styled(TableCell)<{ isFaster?: boolean }>`
@@ -39,6 +39,7 @@ export const Input = styled.input<InputProps>`
   border: none;
   border-radius: none;
   box-shadow: none;
+  color: black;
   outline: none;
   border-bottom: ${({ error }) => (error ? `1px solid ${colors.red}` : '1px solid black')};
   background-color: transparent;

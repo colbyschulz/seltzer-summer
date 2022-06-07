@@ -13,7 +13,7 @@ export const DetailScreenWrapper = styled.div`
 export const DetailTableWrapper = styled.div`
   -webkit-overflow-scrolling: touch;
   overflow-y: scroll;
-  margin: 10px 20px 0 20px;
+  margin: 10px 20px 20px 20px;
   border-radius: 5px;
   background-color: ${colors.tan};
 `;
