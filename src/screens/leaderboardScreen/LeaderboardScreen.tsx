@@ -13,7 +13,6 @@ import {
   Input,
   InputLabel,
   InputWrapper,
-  ModalContent,
   LeaderboardTableWrapper,
   StyledButton,
   StyledDatePicker,
@@ -123,9 +122,10 @@ const App: FC = () => {
               marginBottom: 0,
               width: 'auto',
               display: 'flex',
-              flex: 1,
               alignItems: 'center',
               justifyContent: 'center',
+              flex: 1,
+              minHeight: '30px',
               maxWidth: '80px',
               backgroundColor: colors.tan,
             }}
@@ -153,12 +153,12 @@ const App: FC = () => {
     <LeaderboardScreenWrapper>
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <Breadcrumbs config={[{ route: null, display: 'Leaderboard' }]} />
-        <StyledButton color="primary" onClick={() => setIsModalOpen(true)}>
+        <StyledButton color="primary" onClick={() => setIsModalOpen(true)} style={{ backgroundColor: '#D7C6AE' }}>
           Add Race
         </StyledButton>
       </div>
 
-      <div style={{ display: 'flex', flex: 1 }}>
+      <div style={{ display: 'flex' }}>
         <LeaderboardChart activeDataKey={activeDataKey} setActiveDataKey={setActiveDataKey} />
       </div>
 
@@ -242,154 +242,155 @@ const App: FC = () => {
           }
         }}
       >
-        <ModalContent>
-          <Formik
-            initialValues={{
-              firstName: '',
-              lastName: '',
-              minutes: '',
-              seconds: '',
-              raceName: '',
-              date: '',
-            }}
-            innerRef={formikRef}
-            validationSchema={validationSchema}
-            onSubmit={({ date, raceName, firstName, lastName, minutes, seconds }: FormValues, { resetForm }) => {
-              const recordValues: TableRecord = {
-                fields: {
-                  date,
-                  raceName,
-                  name: `${firstName.trim()} ${lastName.trim()}`.toLowerCase(),
-                  distance: '5k',
-                  time: raceTimeToSeconds(minutes, seconds),
-                },
-              };
-              createRecordMutation(recordValues);
-              setIsModalOpen(false);
-              resetForm();
-            }}
-          >
-            {({ handleChange, errors, touched }) => {
-              return (
-                <Form>
-                  <FormWrapper>
-                    <div style={{ display: 'flex' }}>
-                      <Field name="firstName" id="firstName">
-                        {({ field, form: { touched, errors } }: FieldProps) => (
-                          <InputWrapper>
-                            <InputLabel error={touched.firstName && !!errors.firstName} htmlFor="firstName">
-                              First Name
-                            </InputLabel>
-                            <Input
-                              type="text"
-                              placeholder="Seltzer"
-                              error={touched.firstName && !!errors.firstName}
-                              {...field}
-                            />
-                          </InputWrapper>
-                        )}
-                      </Field>
+        <Formik
+          initialValues={{
+            firstName: '',
+            lastName: '',
+            minutes: '',
+            seconds: '',
+            raceName: '',
+            date: '',
+          }}
+          innerRef={formikRef}
+          validationSchema={validationSchema}
+          onSubmit={({ date, raceName, firstName, lastName, minutes, seconds }: FormValues, { resetForm }) => {
+            const recordValues: TableRecord = {
+              fields: {
+                date,
+                raceName,
+                name: `${firstName.trim()} ${lastName.trim()}`.toLowerCase(),
+                distance: '5k',
+                time: raceTimeToSeconds(minutes, seconds),
+              },
+            };
+            createRecordMutation(recordValues);
+            setIsModalOpen(false);
+            resetForm();
+          }}
+        >
+          {({ handleChange, errors, touched }) => {
+            return (
+              <Form>
+                <FormWrapper>
+                  <div style={{ display: 'flex' }}>
+                    <Field name="firstName" id="firstName">
+                      {({ field, form: { touched, errors } }: FieldProps) => (
+                        <InputWrapper>
+                          <InputLabel error={touched.firstName && !!errors.firstName} htmlFor="firstName">
+                            First Name
+                          </InputLabel>
+                          <Input
+                            type="text"
+                            placeholder="Seltzer"
+                            error={touched.firstName && !!errors.firstName}
+                            {...field}
+                          />
+                        </InputWrapper>
+                      )}
+                    </Field>
 
-                      <Field name="lastName" id="lastName">
-                        {({ field, form: { touched, errors } }: FieldProps) => (
-                          <InputWrapper>
-                            <InputLabel error={touched.lastName && !!errors.lastName} htmlFor="lastName">
-                              Last Name
-                            </InputLabel>
-                            <Input
-                              error={touched.lastName && !!errors.lastName}
-                              type="text"
-                              placeholder="Enthusiast"
-                              {...field}
-                            />
-                          </InputWrapper>
-                        )}
-                      </Field>
-                    </div>
+                    <Field name="lastName" id="lastName">
+                      {({ field, form: { touched, errors } }: FieldProps) => (
+                        <InputWrapper>
+                          <InputLabel error={touched.lastName && !!errors.lastName} htmlFor="lastName">
+                            Last Name
+                          </InputLabel>
+                          <Input
+                            error={touched.lastName && !!errors.lastName}
+                            type="text"
+                            placeholder="Enthusiast"
+                            {...field}
+                          />
+                        </InputWrapper>
+                      )}
+                    </Field>
+                  </div>
 
-                    <div style={{ display: 'flex', width: '100%' }}>
-                      <Field name="raceName" id="raceName">
-                        {({ field, form: { touched, errors } }: FieldProps) => (
-                          <InputWrapper style={{ width: '100%' }}>
-                            <InputLabel error={touched.raceName && !!errors.raceName} htmlFor="raceName">
-                              Race Name
-                            </InputLabel>
-                            <Input
-                              error={touched.raceName && !!errors.raceName}
-                              type="text"
-                              placeholder="5k Ultra Marathon"
-                              {...field}
-                            />
-                          </InputWrapper>
-                        )}
-                      </Field>
-                    </div>
+                  <div style={{ display: 'flex', width: '100%' }}>
+                    <Field name="raceName" id="raceName">
+                      {({ field, form: { touched, errors } }: FieldProps) => (
+                        <InputWrapper style={{ width: '100%' }}>
+                          <InputLabel error={touched.raceName && !!errors.raceName} htmlFor="raceName">
+                            Race Name
+                          </InputLabel>
+                          <Input
+                            error={touched.raceName && !!errors.raceName}
+                            type="text"
+                            placeholder="5k Ultra Marathon"
+                            {...field}
+                          />
+                        </InputWrapper>
+                      )}
+                    </Field>
+                  </div>
 
-                    <div style={{ display: 'flex', alignItems: 'flex-end' }}>
-                      <Field name="date" id="date">
-                        {({ field, form: { touched, errors } }: FieldProps) => (
-                          <InputWrapper>
-                            <InputLabel error={touched.date && !!errors.date} htmlFor="date">
-                              Date
-                            </InputLabel>
-                            <StyledDatePicker
-                              error={touched.date && !!errors.date}
-                              id="date"
-                              type="date"
-                              {...field}
-                              onChange={handleChange}
-                            />
-                          </InputWrapper>
-                        )}
-                      </Field>
+                  <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+                    <Field name="date" id="date">
+                      {({ field, form: { touched, errors } }: FieldProps) => (
+                        <InputWrapper>
+                          <InputLabel error={touched.date && !!errors.date} htmlFor="date">
+                            Date
+                          </InputLabel>
+                          <StyledDatePicker
+                            error={touched.date && !!errors.date}
+                            id="date"
+                            type="date"
+                            {...field}
+                            onChange={handleChange}
+                          />
+                        </InputWrapper>
+                      )}
+                    </Field>
 
-                      <InputWrapper>
-                        <InputLabel
-                          error={(touched.minutes && !!errors.minutes) || (touched.seconds && !!errors.seconds)}
-                        >
-                          Time
-                        </InputLabel>
-                        <div style={{ display: 'flex', alignItems: 'flex-end' }}>
-                          <Field name="minutes" id="minutes">
-                            {({ field, form: { touched, errors } }: FieldProps) => (
-                              <>
-                                <Input
-                                  error={touched.minutes && !!errors.minutes}
-                                  placeholder="Mins"
-                                  type="number"
-                                  {...field}
-                                  style={{ width: '65px' }}
-                                />
-                              </>
-                            )}
-                          </Field>
-                          <div style={{ marginBottom: '20px' }}>:</div>
-                          <Field name="seconds" id="seconds">
-                            {({ field, form: { touched, errors } }: FieldProps) => (
-                              <>
-                                <Input
-                                  error={touched.seconds && !!errors.seconds}
-                                  placeholder="Secs"
-                                  type="number"
-                                  {...field}
-                                  style={{ width: '100%' }}
-                                />
-                              </>
-                            )}
-                          </Field>
-                        </div>
-                      </InputWrapper>
-                    </div>
+                    <InputWrapper>
+                      <InputLabel
+                        error={(touched.minutes && !!errors.minutes) || (touched.seconds && !!errors.seconds)}
+                      >
+                        Time
+                      </InputLabel>
+                      <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+                        <Field name="minutes" id="minutes">
+                          {({ field, form: { touched, errors } }: FieldProps) => (
+                            <>
+                              <Input
+                                error={touched.minutes && !!errors.minutes}
+                                placeholder="Mins"
+                                type="number"
+                                {...field}
+                                style={{ width: '65px' }}
+                              />
+                            </>
+                          )}
+                        </Field>
+                        <div style={{ marginBottom: '20px' }}>:</div>
+                        <Field name="seconds" id="seconds">
+                          {({ field, form: { touched, errors } }: FieldProps) => (
+                            <>
+                              <Input
+                                error={touched.seconds && !!errors.seconds}
+                                placeholder="Secs"
+                                type="number"
+                                {...field}
+                                style={{ width: '100%' }}
+                              />
+                            </>
+                          )}
+                        </Field>
+                      </div>
+                    </InputWrapper>
+                  </div>
 
-                    <StyledButton style={{ alignSelf: 'center', marginTop: '20px' }} type="submit">
-                      Submit
-                    </StyledButton>
-                  </FormWrapper>
-                </Form>
-              );
-            }}
-          </Formik>
-        </ModalContent>
+                  <StyledButton
+                    style={{ alignSelf: 'center', marginTop: '20px', backgroundColor: '#D7C6AE' }}
+                    type="submit"
+                  >
+                    Submit
+                  </StyledButton>
+                </FormWrapper>
+              </Form>
+            );
+          }}
+        </Formik>
       </Modal>
     </LeaderboardScreenWrapper>
   );

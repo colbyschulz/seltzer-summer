@@ -32,7 +32,7 @@ export default createGlobalStyle`
     border-right: 0 !important;
     border-radius: 0 !important;
     border-top: 0 !important;
-
+    
     box-shadow: none !important;
   }
 

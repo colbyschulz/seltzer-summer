@@ -42,11 +42,12 @@ export const Input = styled.input<InputProps>`
   box-shadow: none;
   outline: none;
   border-bottom: ${({ error }) => (error ? `1px solid ${colors.red}` : '1px solid black')};
+  background-color: transparent;
 `;
 
 export const StyledDatePicker = styled(Input)`
   padding: 1px 5px;
-  background-color: white;
+  background-color: transparent;
 `;
 
 export const Select = styled.select`

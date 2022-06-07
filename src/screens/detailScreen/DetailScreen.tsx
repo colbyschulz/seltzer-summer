@@ -145,7 +145,7 @@ const DetailScreen = () => {
         </div>
       </Metrics>
 
-      <div style={{ display: 'flex', flex: 1 }}>
+      <div style={{ display: 'flex' }}>
         <RaceComparisonChart />
       </div>
 

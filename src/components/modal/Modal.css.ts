@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import Crumpled1 from '../../assets/images/crumpled1.jpg';
 
 export const ModalWrapper = styled.div`
   position: fixed;
@@ -17,7 +18,8 @@ export const ModalContent = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: white;
+  background-image: url(${Crumpled1});
+  background-size: cover;
   padding: 15px 20px 20px 20px;
   border-radius: 5px;
   max-height: 70%;
