@@ -200,6 +200,17 @@ const DetailScreen = () => {
                   >
                     {row.cells.map((cell) => {
                       const { key, ...restCellProps } = cell.getCellProps();
+
+                      const raceNameExtras: any =
+                        cell.column.id === 'raceName'
+                          ? {
+                              textAlign: 'left',
+                              whiteSpace: 'nowrap',
+                              textOverflow: 'ellipsis',
+                              overflow: 'hidden',
+                              maxWidth: '95px',
+                            }
+                          : {};
                       return (
                         <StyledTableCell
                           style={{
@@ -207,7 +218,7 @@ const DetailScreen = () => {
                             padding: '12px 8px',
                             overflowWrap: 'break-word',
                             color,
-                            textAlign: 'left',
+                            ...raceNameExtras,
                           }}
                           key={key}
                           {...restCellProps}
