@@ -21,6 +21,7 @@ export const LeaderboardScreenWrapper = styled.div`
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   overflow-y: hidden;
+  margin-top: 15px;
 `;
 
 export const FormWrapper = styled.div`

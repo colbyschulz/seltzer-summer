@@ -8,6 +8,7 @@ export const DetailScreenWrapper = styled.div`
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   overflow-y: hidden;
+  margin-top: 15px;
 `;
 
 export const DetailTableWrapper = styled.div`
