@@ -1,27 +1,42 @@
 import styled from 'styled-components';
 
-export const SignImage = styled.img`
+interface SignProps {
+  rightPosition: number;
+  rotation: number;
+  bottom: number;
+  height: number;
+  rightText: number;
+  bottomText: number;
+  fontSize: number;
+}
+
+export const SignImage = styled.img<SignProps>`
   position: absolute;
-  transform: rotate(-6deg);
-  right: 115px;
-  height: 100px;
-  bottom: -74px;
+  transform: rotate(${({ rotation }) => rotation}deg);
+  right: ${({ rightPosition }) => rightPosition}px;
+  height: ${({ height }) => height}px;
+  bottom: ${({ bottom }) => bottom}px;
+
   @media (max-width: 415px) {
-    height: 82px;
-    bottom: -69px;
-    right: 107px;
+    right: ${({ rightPosition }) => rightPosition}px;
+    height: ${({ height }) => height - 18}px;
   }
 `;
 
-export const SignText = styled.span`
+export const SignText = styled.button<SignProps>`
   position: absolute;
+  cursor: pointer;
   padding: 10px;
-  font-size: 0.875rem;
-  transform: rotate(-6deg);
-  right: 140px;
+  transform: rotate(${({ rotation }) => rotation}deg);
+  right: ${({ rightText }) => rightText}px;
+  bottom: ${({ bottomText }) => bottomText}px;
+  font-size: ${({ fontSize }) => fontSize}px;
+  background-color: transparent;
 
-  bottom: -57px;
   @media (max-width: 415px) {
-    right: 121px;
+    bottom: ${({ bottomText }) => bottomText - 5}px;
+    right: ${({ rightText }) => rightText - 5}px;
+
+    font-size: ${({ fontSize }) => fontSize - 2}px;
   }
 `;
