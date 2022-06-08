@@ -189,7 +189,6 @@ const App: FC = () => {
               } else {
                 rowColor = 'transparent';
               }
-              // const backgroundColor = row.original.name === activeDataKey ? 'rgb(193, 160, 109, 0.2)' : rowColor;
               const backgroundColor = row.original.name === activeDataKey ? 'rgb(65, 41, 5, 0.2)' : rowColor;
               return (
                 <TableRow

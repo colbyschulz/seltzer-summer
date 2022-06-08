@@ -82,7 +82,7 @@ const LeaderboardChart: FC<LeaderboardChartProps> = ({ activeDataKey, setActiveD
         {Object.keys(dataNormalizedById).map((key) => {
           const raceArray = dataNormalizedById[key];
           const name = raceArray[0].name;
-          const color = activeDataKey === name ? colors.lightBrown : '#131313';
+          const color = activeDataKey === name ? colors.lightBrown : '#454545';
           return (
             <Line
               cursor="pointer"
@@ -93,12 +93,12 @@ const LeaderboardChart: FC<LeaderboardChartProps> = ({ activeDataKey, setActiveD
               key={key}
               type="monotone"
               dataKey={name}
-              strokeWidth={2}
+              strokeWidth={3}
               stroke={color}
               dot={{
                 cursor: 'pointer',
                 fill: color,
-                r: 3,
+                r: 5,
                 stroke: color,
                 onClick: () => {
                   setActiveDataKey(name);
