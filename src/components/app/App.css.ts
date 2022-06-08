@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import colors from '../../colors';
 
 export const HeaderWrapper = styled.div`
+  position: relative;
   display: flex;
   align-items: center;
   max-width: 100%;
@@ -28,5 +29,23 @@ export const FooterWrapper = styled.div`
 
 export const FooterText = styled.span`
   color: ${colors.grey};
-  font-size: 10px;
+  font-size: 14px;
+  @media (max-width: 415px) {
+    font-size: 10px;
+  }
+`;
+
+export const AboutWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+`;
+
+export const AboutLabel = styled.label``;
+
+export const AboutText = styled.label`
+  font-size: 16px;
+  @media (max-width: 415px) {
+    font-size: 12px;
+  }
 `;

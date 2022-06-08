@@ -19,6 +19,7 @@ export const ModalBackgroundWrapper = styled.div`
   background-image: url(${Crumpled1});
   background-size: cover;
   max-height: 70%;
+  max-width: 90%;
   border-radius: 5px;
 `;
 

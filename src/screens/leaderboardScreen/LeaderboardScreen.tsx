@@ -58,7 +58,8 @@ const App: FC = () => {
   const { data: records = [] } = useRecords();
   const { mutate: createRecordMutation } = useCreateRecord();
   const navigate = useNavigate();
-  const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [isRaceModalOpen, setIsRaceModalOpen] = React.useState(false);
+
   const [activeDataKey, setActiveDataKey] = useState<string>('');
   const formikRef = useRef<any>(null);
 
@@ -161,7 +162,7 @@ const App: FC = () => {
         <Breadcrumbs config={[{ route: null, display: 'Leaderboard' }]} />
         <StyledButton
           color="primary"
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => setIsRaceModalOpen(true)}
           style={{ backgroundColor: colors.tan, height: '36px' }}
         >
           Add Race
@@ -248,9 +249,9 @@ const App: FC = () => {
         </MaUTable>
       </LeaderboardTableWrapper>
       <Modal
-        showModal={isModalOpen}
+        showModal={isRaceModalOpen}
         onClose={() => {
-          setIsModalOpen(false);
+          setIsRaceModalOpen(false);
           if (formikRef) {
             formikRef.current?.resetForm();
           }
@@ -279,7 +280,7 @@ const App: FC = () => {
                 },
               };
               createRecordMutation(recordValues);
-              setIsModalOpen(false);
+              setIsRaceModalOpen(false);
               resetForm();
             }}
           >
