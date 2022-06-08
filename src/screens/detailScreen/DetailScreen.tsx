@@ -137,7 +137,7 @@ const DetailScreen = () => {
           <MetricValue>{basePace}</MetricValue>
         </div>
 
-        <div style={{ marginBottom: '5px' }}>
+        <div>
           <MetricLabel>Best Effort Pace: </MetricLabel>
           <MetricValue>{bestEffortPace ? bestEffortPace : basePace}</MetricValue>
           <MetricValue color={baseRace?.time < mutableMinusBaseSortedByTime[0]?.time ? colors.red : colors.green}>
