@@ -105,7 +105,7 @@ const App: FC = () => {
             }}
           >
             <img
-              style={{ alignSelf: 'center', display: 'flex', width: '12px' }}
+              style={{ alignSelf: 'center', display: 'flex', width: '12px', padding: 0 }}
               src={ArrowRight}
               width={12}
               alt="Arrow"

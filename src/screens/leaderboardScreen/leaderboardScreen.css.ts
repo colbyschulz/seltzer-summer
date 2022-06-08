@@ -29,10 +29,10 @@ export const StyledButton = styled.button`
   color: #131313;
   box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.3);
   background-color: ${colors.tan};
-  // min-width: 80px;
+  width: 80px;
   cursor: pointer;
   border-radius: 2px;
-  padding: 5px 7px;
+  padding: 7px 7px;
   border: 1px solid #131313;
 
   &&:hover {
@@ -44,10 +44,10 @@ export const TransparentButton = styled.button`
   color: #131313;
   box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.3);
   background-color: transparent;
-  // min-width: 80px;
+  width: 80px;
   cursor: pointer;
   border-radius: 2px;
-  padding: 5px 7px;
+  padding: 7px 7px;
   border: 1px solid #131313;
   margin-right: 15px;
 
