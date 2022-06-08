@@ -54,7 +54,7 @@ const LeaderboardChart: FC<LeaderboardChartProps> = ({ activeDataKey, setActiveD
     .map((data) => ({ ...data, date: format(new Date(data.date), 'MM/dd') }));
 
   return (
-    <ResponsiveContainer aspect={1.6} maxHeight={550} minHeight={innerWidth > 840 ? 550 : 206}>
+    <ResponsiveContainer aspect={1.6} maxHeight={450} minHeight={innerWidth > 840 ? 450 : 206}>
       <LineChart data={chartData} margin={{ top: 10, right: 10, left: -10, bottom: 5 }}>
         <CartesianGrid />
         <XAxis dataKey="date" tick={{ fontSize: '14px' }} />

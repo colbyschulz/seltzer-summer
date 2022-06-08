@@ -83,7 +83,7 @@ const RaceComparisonChart: FC = () => {
     .map((data) => ({ ...data, date: format(new Date(data.date), 'MM/dd') }));
 
   return (
-    <ResponsiveContainer aspect={1.5} maxHeight={550} minHeight={innerWidth > 840 ? 550 : 218}>
+    <ResponsiveContainer aspect={1.6} maxHeight={350} minHeight={innerWidth > 840 ? 350 : 218}>
       <LineChart data={chartData} margin={{ top: 10, right: 10, left: -10, bottom: 5 }}>
         <CartesianGrid />
         <ReferenceLine y={fastestRaceTime} strokeDasharray="8 8" stroke={colors.green} strokeWidth={2} />
