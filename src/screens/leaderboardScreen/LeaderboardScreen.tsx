@@ -331,7 +331,7 @@ const App: FC = () => {
                             <Input
                               error={touched.raceName && !!errors.raceName}
                               type="text"
-                              placeholder="5k Ultra Marathon"
+                              placeholder="Seltzer Summer 5k"
                               {...field}
                             />
                           </InputWrapper>
