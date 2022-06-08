@@ -76,7 +76,7 @@ const App = () => {
             right={120}
             rightText={135}
             bottom={-47}
-            bottomText={-46}
+            bottomText={-47}
           />
         )}
         {location.pathname === '/' && (
@@ -87,7 +87,7 @@ const App = () => {
             height={50}
             rightText={27}
             bottom={-47}
-            bottomText={-46}
+            bottomText={-47}
             right={24}
           />
         )}

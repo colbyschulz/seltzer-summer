@@ -27,6 +27,7 @@ export const SignText = styled.button<SignProps>`
   position: absolute;
   cursor: pointer;
   padding: 10px;
+  color: #131313 !important;
   transform: rotate(${({ rotation }) => rotation}deg);
   right: ${({ rightText }) => rightText}px;
   bottom: ${({ bottomText }) => bottomText}px;

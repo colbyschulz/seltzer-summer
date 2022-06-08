@@ -12,6 +12,7 @@ export default createGlobalStyle`
     padding: 0;
     background-image: url(${Crumpled1});
     background-size: cover;
+    color: #131313;
   }
     
   #root {
