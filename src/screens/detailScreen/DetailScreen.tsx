@@ -131,7 +131,7 @@ const DetailScreen = () => {
         <Breadcrumbs config={breadcrumbsconfig} />
       </div>
 
-      <Metrics>
+      <Card style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
         <div style={{ marginBottom: '5px' }}>
           <MetricLabel>Baseline Pace: </MetricLabel>
           <MetricValue>{basePace}</MetricValue>
@@ -146,7 +146,7 @@ const DetailScreen = () => {
               : ''}
           </MetricValue>
         </div>
-      </Metrics>
+      </Card>
 
       <Card style={{ padding: '10px 12px 0 10px' }}>
         <RaceComparisonChart />
