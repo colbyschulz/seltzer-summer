@@ -3,7 +3,7 @@ import colors from '../../colors';
 
 export const CardWrapper = styled.div`
   display: flex;
-  margin: 14px 20px;
+  margin: 8px 20px;
   padding: 10px;
   border-radius: 5px;
   background-color: ${colors.transparentWhite};

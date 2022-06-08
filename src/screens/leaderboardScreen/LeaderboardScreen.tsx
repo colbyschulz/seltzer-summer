@@ -129,7 +129,7 @@ const App: FC = () => {
         style={{
           display: 'flex',
           justifyContent: 'space-between',
-          margin: '0 20px 3px 20px',
+          margin: '0 20px 7px 20px',
           alignItems: 'flex-start',
         }}
       >
@@ -175,11 +175,22 @@ const App: FC = () => {
             })}
           </TableHead>
           <TableBody>
-            {rows.map((row) => {
+            {rows.map((row, i) => {
               prepareRow(row);
               const { key, ...restRowProps } = row.getRowProps();
 
-              const backgroundColor = row.original.name === activeDataKey ? 'rgb(193, 160, 109, 0.2)' : 'transparent';
+              let rowColor;
+              if (i === 0) {
+                rowColor = 'rgb(220, 188, 15, 0.15)';
+              } else if (i === 1) {
+                rowColor = 'rgb(192, 192, 192, 0.15)';
+              } else if (i === 2) {
+                rowColor = 'rgb(205, 127, 15, 0.15)';
+              } else {
+                rowColor = 'transparent';
+              }
+              // const backgroundColor = row.original.name === activeDataKey ? 'rgb(193, 160, 109, 0.2)' : rowColor;
+              const backgroundColor = row.original.name === activeDataKey ? 'rgb(65, 41, 5, 0.2)' : rowColor;
               return (
                 <TableRow
                   key={key}
@@ -257,7 +268,7 @@ const App: FC = () => {
 
           <AboutWrapper>
             <AboutLabel>Rules:</AboutLabel>
-            <AboutText>Entries must be a 5k effort</AboutText>
+            <AboutText>Entries must be a 5k effort.</AboutText>
           </AboutWrapper>
 
           <AboutWrapper>
