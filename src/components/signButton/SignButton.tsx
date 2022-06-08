@@ -1,6 +1,7 @@
 import React, { FC } from 'react';
 import { SignImage, SignText } from './signButton.css';
-import Sign from '../../assets/images/sign-tan.png';
+import Sign from '../../assets/images/long-sign-tan.png';
+import TransparentSign from '../../assets/images/long-sign.png';
 
 interface SignButtonProps {
   text: string;
@@ -13,6 +14,7 @@ interface SignButtonProps {
   rightText?: number;
   bottomText?: number;
   fontSize?: number;
+  transparent?: boolean;
 }
 const SignButton: FC<SignButtonProps> = ({
   text,
@@ -24,11 +26,12 @@ const SignButton: FC<SignButtonProps> = ({
   rightText = 0,
   bottomText = 0,
   fontSize = 14,
+  transparent = false,
 }) => {
   return (
     <>
       <SignImage
-        src={Sign}
+        src={transparent ? TransparentSign : Sign}
         rotation={rotation}
         rightPosition={right}
         bottom={bottom}

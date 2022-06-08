@@ -141,7 +141,14 @@ const App: FC = () => {
                     return (
                       <TableCell
                         key={key}
-                        style={{ padding: '12px 8px', backgroundColor: colors.tan }}
+                        style={{
+                          padding: '12px 8px',
+                          backgroundColor: colors.tan,
+                          textAlign:
+                            column.id === 'arrow' || column.id === 'numRaces' || column.id === 'position'
+                              ? 'center'
+                              : 'left',
+                        }}
                         {...restHeaderProps}
                       >
                         {column.render('Header')}
@@ -190,7 +197,10 @@ const App: FC = () => {
                           padding: '12px 8px',
                           overflowWrap: 'break-word',
                           display: 'table-cell',
-                          textAlign: cell.column.id === 'arrow' ? 'center' : 'left',
+                          textAlign:
+                            cell.column.id === 'arrow' || cell.column.id === 'numRaces' || cell.column.id === 'position'
+                              ? 'center'
+                              : 'left',
                         }}
                         {...restCellProps}
                       >

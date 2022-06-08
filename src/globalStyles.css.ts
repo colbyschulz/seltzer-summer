@@ -10,10 +10,11 @@ export default createGlobalStyle`
     overscroll-behavior-y: none;
     margin: 0;
     padding: 0;
-    
-  #root {
     background-image: url(${Crumpled1});
     background-size: cover;
+  }
+    
+  #root {
     min-height: 100vh;
     // for mobile notches
     min-height: -webkit-fill-available;
@@ -22,7 +23,7 @@ export default createGlobalStyle`
     height: 100vh;
     margin: auto;
     width: 100vw;
-    max-width: 2000px;
+    max-width: 1600px;
     display: flex;
     flex-direction: column;
   }

@@ -4,7 +4,7 @@ import styled from 'styled-components';
 export const BreadcrumbsWrapper = styled.div`
   display: flex;
   align-items: center;
-  font-size: 18px;
+  font-size: 20px;
 `;
 
 export const LinkCrumb = styled(Link)`

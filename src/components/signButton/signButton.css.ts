@@ -19,7 +19,7 @@ export const SignImage = styled.img<SignProps>`
 
   @media (max-width: 415px) {
     right: ${({ rightPosition }) => rightPosition}px;
-    height: ${({ height }) => height - 18}px;
+    height: ${({ height }) => height}px;
   }
 `;
 
@@ -34,9 +34,9 @@ export const SignText = styled.button<SignProps>`
   background-color: transparent;
 
   @media (max-width: 415px) {
-    bottom: ${({ bottomText }) => bottomText - 5}px;
-    right: ${({ rightText }) => rightText - 5}px;
+    bottom: ${({ bottomText }) => bottomText}px;
+    right: ${({ rightText }) => rightText}px;
 
-    font-size: ${({ fontSize }) => fontSize - 2}px;
+    font-size: ${({ fontSize }) => fontSize}px;
   }
 `;

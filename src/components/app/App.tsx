@@ -68,25 +68,27 @@ const App = () => {
         <HeaderImage src={Seltzer} />
         {location.pathname === '/' && (
           <SignButton
+            transparent
             text="About"
             onClick={() => setIsAboutModalOpen(true)}
-            rotation={-6}
-            right={119}
-            rightText={142}
-            bottom={-59}
-            bottomText={-41}
+            rotation={-2}
+            height={50}
+            right={120}
+            rightText={135}
+            bottom={-47}
+            bottomText={-46}
           />
         )}
         {location.pathname === '/' && (
           <SignButton
             text="Add Race"
             onClick={() => setIsRaceModalOpen(true)}
-            rotation={5}
-            rightText={21}
-            height={120}
-            bottom={-66}
-            bottomText={-42}
-            fontSize={16}
+            rotation={2}
+            height={50}
+            rightText={27}
+            bottom={-47}
+            bottomText={-46}
+            right={24}
           />
         )}
       </HeaderWrapper>
