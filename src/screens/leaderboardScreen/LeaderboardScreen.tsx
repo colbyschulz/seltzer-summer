@@ -1,14 +1,18 @@
-import React, { FC, useMemo, useState } from 'react';
+import React, { FC, useMemo, useRef, useState } from 'react';
 import MaUTable from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import {
+  AboutLabel,
+  AboutText,
+  AboutWrapper,
   LeaderboardScreenWrapper,
   LeaderboardTableWrapper,
   StyledButton,
   StyledTableCell,
+  TransparentButton,
 } from './leaderboardScreen.css';
 import { Column, useTable } from 'react-table';
 import ArrowRight from '../../assets/images/arrow-right.svg';
@@ -20,8 +24,15 @@ import LeaderboardChart from '../../components/leaderboardChart/LeaderboardChart
 import colors from '../../colors';
 import Card from '../../components/card/Card';
 
+import RaceForm from '../../components/raceForm/RaceForm';
+import Modal from '../../components/modal/Modal';
+
 const App: FC = () => {
   const { data: records = [] } = useRecords();
+  const [isRaceModalOpen, setIsRaceModalOpen] = React.useState(false);
+  const [isAboutModalOpen, setIsAboutModalOpen] = React.useState(false);
+
+  const formikRef = useRef<any>(null);
   const navigate = useNavigate();
 
   const [activeDataKey, setActiveDataKey] = useState<string>('');
@@ -123,6 +134,10 @@ const App: FC = () => {
         }}
       >
         <Breadcrumbs config={[{ route: null, display: 'Leaderboard' }]} />
+        <div style={{ display: 'flex' }}>
+          <TransparentButton onClick={() => setIsAboutModalOpen(true)}>About</TransparentButton>
+          <StyledButton onClick={() => setIsRaceModalOpen(true)}>Add Race</StyledButton>
+        </div>
       </div>
 
       <Card style={{ padding: '10px 12px 0 10px' }}>
@@ -214,6 +229,47 @@ const App: FC = () => {
           </TableBody>
         </MaUTable>
       </LeaderboardTableWrapper>
+      <Modal
+        showModal={isRaceModalOpen}
+        onClose={() => {
+          setIsRaceModalOpen(false);
+          if (formikRef) {
+            formikRef.current?.resetForm();
+          }
+        }}
+      >
+        <RaceForm formikRef={formikRef} handleClose={() => setIsRaceModalOpen(false)} />
+      </Modal>
+      <Modal
+        showModal={isAboutModalOpen}
+        onClose={() => {
+          setIsAboutModalOpen(false);
+        }}
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', fontSize: '13px' }}>
+          <h3 style={{ marginTop: 0, fontSize: '16px' }}>Summer of Speed 5k Challenge</h3>
+          <AboutWrapper>
+            <AboutLabel>Objective:</AboutLabel>
+            <AboutText>
+              Starting with a recent baseline 5k, make the most progress lowering your 5k time through the summer.
+            </AboutText>
+          </AboutWrapper>
+
+          <AboutWrapper>
+            <AboutLabel>Rules:</AboutLabel>
+            <AboutText>Entries must be a 5k effort</AboutText>
+          </AboutWrapper>
+
+          <AboutWrapper>
+            <AboutLabel>Measurement:</AboutLabel>
+            <AboutText>
+              The leaderboard is based on percentages relative to baseline effort. So, as you get faster, each second
+              counts for more.
+            </AboutText>
+            <AboutText>{`e.g  16:00 to 15:50 (-1.04%) vs 20:00 to 19:50(-.83%)`} </AboutText>
+          </AboutWrapper>
+        </div>
+      </Modal>
     </LeaderboardScreenWrapper>
   );
 };
