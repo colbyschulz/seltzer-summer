@@ -19,9 +19,9 @@ import colors from '../../colors';
 import { DefaultTooltipContent } from 'recharts/lib/component/DefaultTooltipContent';
 
 const CustomTooltip: React.FC<TooltipProps<any, any>> = ({ payload, ...rest }) => {
-  payload?.sort((a, b) => b.value - a.value);
+  const newPayload = payload ? [...payload]?.sort((a, b) => b.value - a.value) : [];
 
-  return <DefaultTooltipContent payload={payload} {...rest} />;
+  return <DefaultTooltipContent payload={newPayload} {...rest} />;
 };
 
 const RaceComparisonChart: FC = () => {
@@ -32,7 +32,7 @@ const RaceComparisonChart: FC = () => {
   const dataNormalizedById = useMemo(() => racesByNameId(records), [records]);
   const raceArray = (nameId && dataNormalizedById[nameId]) || [];
   const raceArrayMutable = [...raceArray];
-  const sortedByDate = raceArrayMutable?.sort((a, b) => new Date(b.date).getTime() - new Date(b.date).getTime());
+  const sortedByDate = raceArrayMutable?.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   const baseRaceTime = sortedByDate?.splice(0, 1)[0]?.time;
 
   const fastestRaceTime = raceArrayMutable?.find(
