@@ -51,7 +51,11 @@ const LeaderboardChart: FC<LeaderboardChartProps> = ({ activeDataKey, setActiveD
 
   const chartData = Object.values(chartDataNormalizedByDate)
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-    .map((data) => ({ ...data, date: format(new Date(data.date), 'MM/dd') }));
+    .map((data) => {
+      const parsedDate = data.date.split('-');
+      const dateString = new Date(parseInt(parsedDate[0]), parseInt(parsedDate[1]) - 1, parseInt(parsedDate[2]));
+      return { ...data, date: format(dateString, 'MM/dd') };
+    });
 
   return (
     <ResponsiveContainer aspect={1.6} maxHeight={450} minHeight={innerWidth > 840 ? 450 : 206}>

@@ -77,7 +77,6 @@ const DetailScreen = () => {
     });
 
     const parsedDate = date.split('-');
-
     const dateString = new Date(parseInt(parsedDate[0]), parseInt(parsedDate[1]) - 1, parseInt(parsedDate[2]));
 
     return {
@@ -90,8 +89,11 @@ const DetailScreen = () => {
   };
 
   const formatedAndSortedRowData = useMemo(() => {
-    const data = rowData.length && raceArray.length ? rowData.map(formatRowData) : [];
-    data.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    if (!rowData.length || !raceArray.length) {
+      return [];
+    }
+    rowData.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    const data = rowData.map(formatRowData);
     return data;
   }, [records]);
 
