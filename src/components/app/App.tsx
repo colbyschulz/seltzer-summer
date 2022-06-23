@@ -5,7 +5,6 @@ import { Route, Routes } from 'react-router-dom';
 import DetailScreen from '../../screens/detailScreen/DetailScreen';
 import LeaderboardScreen from '../../screens/leaderboardScreen/LeaderboardScreen';
 import { FooterText, FooterWrapper, HeaderImage, HeaderWrapper } from './App.css';
-import Modal from '../modal/Modal';
 
 const App = () => {
   return (
