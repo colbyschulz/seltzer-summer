@@ -98,7 +98,7 @@ const LeaderboardChart: FC<LeaderboardChartProps> = ({ activeDataKey, setActiveD
               dot={{
                 cursor: 'pointer',
                 fill: color,
-                r: 5,
+                r: 3,
                 stroke: color,
                 onClick: () => {
                   setActiveDataKey(name);

@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import { Column, useTable } from 'react-table';
 import { calcPaceDifference, racesByNameId, secondsToPace } from '../../utils';
 import { StyledTableCell } from '../leaderboardScreen/leaderboardScreen.css';
-import { DetailScreenWrapper, DetailTableWrapper, MetricLabel, Metrics, MetricValue } from './detailScreen.css';
+import { DetailScreenWrapper, DetailTableWrapper, MetricLabel, MetricValue } from './detailScreen.css';
 import MaUTable from '@material-ui/core/Table';
 import { useParams } from 'react-router-dom';
 import Breadcrumbs from '../../components/breadcrumbs/Breadcrumbs';
@@ -11,6 +11,7 @@ import colors from '../../colors';
 import RaceComparisonChart from '../../components/raceComparisonChart/RaceComparisonChart';
 import { useRecords } from '../../api/records';
 import Card from '../../components/card/Card';
+import { format } from 'date-fns';
 
 interface RowData {
   name: string;
@@ -34,13 +35,14 @@ interface FormattedRowData {
 const DetailScreen = () => {
   const { data: records = [] } = useRecords();
   const { nameId } = useParams();
-  const breadcrumbsconfig = [
-    { route: '/', display: 'Leaderboard' },
-    { route: null, display: 'Race Details' },
-  ];
 
   const dataNormalizedById = useMemo(() => racesByNameId(records), [records]);
   const raceArray = (nameId && dataNormalizedById[nameId]) || [];
+  const detailsName = raceArray[0]?.name || '';
+  const breadcrumbsconfig = [
+    { route: '/', display: 'Leaderboard' },
+    { route: null, display: detailsName },
+  ];
   const raceArrayMutable = [...raceArray];
   const mutableSortedByDate = raceArrayMutable.sort(
     (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
@@ -81,7 +83,7 @@ const DetailScreen = () => {
     return {
       ...rest,
       name,
-      date: dateString.toLocaleDateString('US'),
+      date: format(dateString, 'M/dd'),
       raceName,
       time: `${minutes}:${seconds}`,
     };
@@ -98,10 +100,6 @@ const DetailScreen = () => {
       {
         Header: 'Date',
         accessor: 'date',
-      },
-      {
-        Header: 'Name',
-        accessor: 'name',
       },
       {
         Header: 'Race',

@@ -80,10 +80,14 @@ const RaceComparisonChart: FC = () => {
 
   const chartData = Object.values(chartDataNormalizedByDate)
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-    .map((data) => ({ ...data, date: format(new Date(data.date), 'MM/dd') }));
+    .map((data) => {
+      const parsedDate = data.date.split('-');
+      const dateString = new Date(parseInt(parsedDate[0]), parseInt(parsedDate[1]) - 1, parseInt(parsedDate[2]));
+      return { ...data, date: format(dateString, 'M/dd') };
+    });
 
   return (
-    <ResponsiveContainer aspect={1.6} maxHeight={350} minHeight={innerWidth > 840 ? 350 : 218}>
+    <ResponsiveContainer aspect={1.6} maxHeight={350} minHeight={innerWidth > 840 ? 350 : 180}>
       <LineChart data={chartData} margin={{ top: 10, right: 10, left: -10, bottom: 5 }}>
         <CartesianGrid />
         <ReferenceLine y={fastestRaceTime} strokeDasharray="8 8" stroke={colors.green} strokeWidth={2} />
@@ -127,9 +131,9 @@ const RaceComparisonChart: FC = () => {
           const raceArray = dataNormalizedById[key];
           const isActiveLine = key === nameId;
           const name = raceArray[0].name;
-          const color = isActiveLine ? '#454545' : '#a7a7a7';
-          const dotRadius = isActiveLine ? 4 : 2;
-          const activeDotRadius = isActiveLine ? 6 : 3;
+          const color = isActiveLine ? '#454545' : '#c7c7c7';
+          const dotRadius = isActiveLine ? 3 : 2;
+          const activeDotRadius = 4;
 
           return (
             <Line
