@@ -29,7 +29,6 @@ const validationSchema = Yup.object().shape({
   raceName: Yup.string().required('Required'),
   minutes: Yup.string()
     .required('Required')
-    // .min(2)
     .max(2)
     .matches(/(1[0-9]|[2-5][0-9])/, ''),
   seconds: Yup.string()

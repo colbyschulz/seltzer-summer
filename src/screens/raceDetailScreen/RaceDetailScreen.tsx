@@ -11,6 +11,7 @@ import { useRecords } from '../../api/records';
 import Card from '../../components/card/Card';
 import { DetailScreenWrapper, DetailTableWrapper, MetricLabel, MetricValue } from './raceDetailScreen.css';
 import { StyledTableCell } from '../leaderboardScreen/leaderboardScreen.css';
+import { Table, Tbody, Th, THead, Tr } from '../../components/table/table.css';
 
 interface RowData {
   name: string;
@@ -152,41 +153,31 @@ const DetailScreen = () => {
       </Card>
 
       <DetailTableWrapper>
-        <table
-          {...getRaceDetailTableProps()}
-          cellSpacing="0"
-          cellPadding="0"
-          width="100%"
-          style={{ borderCollapse: 'collapse', fontSize: '13px', fontWeight: 500 }}
-        >
-          <thead>
+        <Table {...getRaceDetailTableProps()} cellSpacing="0" cellPadding="0" width="100%">
+          <THead>
             {raceDetailHeaderGroups.map((headerGroup) => {
               const { key, ...restHeaderGroupProps } = headerGroup.getHeaderGroupProps();
               return (
-                <tr key={key} {...restHeaderGroupProps}>
+                <Tr key={key} {...restHeaderGroupProps}>
                   {headerGroup.headers.map((column) => {
                     const { key, ...restHeaderProps } = column.getHeaderProps();
                     return (
-                      <th
+                      <Th
                         key={key}
                         style={{
-                          padding: '12px 5px',
-                          position: 'sticky',
-                          top: 0,
-                          backgroundColor: colors.tan,
                           textAlign: 'left',
                         }}
                         {...restHeaderProps}
                       >
                         {column.render('Header')}
-                      </th>
+                      </Th>
                     );
                   })}
-                </tr>
+                </Tr>
               );
             })}
-          </thead>
-          <tbody>
+          </THead>
+          <Tbody>
             {records &&
               raceDetailRows.map((row) => {
                 raceDetailPrepareRow(row);
@@ -201,7 +192,7 @@ const DetailScreen = () => {
                       : colors.red
                     : colors.grey;
                 return (
-                  <tr key={key} {...restRowProps} style={{ backgroundColor }}>
+                  <Tr key={key} {...restRowProps} style={{ backgroundColor }}>
                     {row.cells.map((cell) => {
                       const { key, ...restCellProps } = cell.getCellProps();
 
@@ -232,11 +223,11 @@ const DetailScreen = () => {
                         </StyledTableCell>
                       );
                     })}
-                  </tr>
+                  </Tr>
                 );
               })}
-          </tbody>
-        </table>
+          </Tbody>
+        </Table>
       </DetailTableWrapper>
     </DetailScreenWrapper>
   );

@@ -15,6 +15,13 @@ export const LeaderboardScreenWrapper = styled.div`
   margin-top: 15px;
 `;
 
+export const HeaderControls = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin: 0 20px 7px 20px;
+  align-items: flex-start;
+`;
+
 export const LeaderboardTableWrapper = styled.div`
   -webkit-overflow-scrolling: touch;
   overflow-y: scroll;

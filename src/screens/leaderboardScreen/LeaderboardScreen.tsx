@@ -16,10 +16,12 @@ import {
   AboutLabel,
   AboutText,
   AboutWrapper,
+  HeaderControls,
   LeaderboardScreenWrapper,
   LeaderboardTableWrapper,
   StyledTableCell,
 } from './leaderboardScreen.css';
+import { Table, Tbody, Th, THead, Tr } from '../../components/table/table.css';
 
 const App: FC = () => {
   const { data: records = [] } = useRecords();
@@ -119,14 +121,7 @@ const App: FC = () => {
 
   return (
     <LeaderboardScreenWrapper>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          margin: '0 20px 7px 20px',
-          alignItems: 'flex-start',
-        }}
-      >
+      <HeaderControls>
         <Breadcrumbs config={[{ route: null, display: 'Leaderboard' }]} />
         <div style={{ display: 'flex' }}>
           <Button transparent style={{ marginRight: 15 }} onClick={() => setIsAboutModalOpen(true)}>
@@ -134,35 +129,25 @@ const App: FC = () => {
           </Button>
           <Button onClick={() => setIsRaceModalOpen(true)}>Add Race</Button>
         </div>
-      </div>
+      </HeaderControls>
 
       <Card style={{ padding: '10px 12px 0 10px' }}>
         <LeaderboardChart activeDataKey={activeDataKey} setActiveDataKey={setActiveDataKey} />
       </Card>
 
       <LeaderboardTableWrapper>
-        <table
-          {...getTableProps()}
-          cellSpacing="0"
-          cellPadding="0"
-          width="100%"
-          style={{ borderCollapse: 'collapse', fontSize: '13px', fontWeight: 500 }}
-        >
-          <thead>
+        <Table {...getTableProps()} cellSpacing="0" cellPadding="0" width="100%">
+          <THead>
             {headerGroups.map((headerGroup) => {
               const { key, ...restHeaderGroupProps } = headerGroup.getHeaderGroupProps();
               return (
-                <tr key={key} {...restHeaderGroupProps}>
+                <Tr key={key} {...restHeaderGroupProps}>
                   {headerGroup.headers.map((column) => {
                     const { key, ...restHeaderProps } = column.getHeaderProps();
                     return (
-                      <th
+                      <Th
                         key={key}
                         style={{
-                          padding: '12px 5px',
-                          position: 'sticky',
-                          top: 0,
-                          backgroundColor: colors.tan,
                           textAlign:
                             column.id === 'arrow' || column.id === 'numRaces' || column.id === 'position'
                               ? 'center'
@@ -171,14 +156,14 @@ const App: FC = () => {
                         {...restHeaderProps}
                       >
                         {column.render('Header')}
-                      </th>
+                      </Th>
                     );
                   })}
-                </tr>
+                </Tr>
               );
             })}
-          </thead>
-          <tbody>
+          </THead>
+          <Tbody>
             {rows.map((row, i) => {
               prepareRow(row);
               const { key, ...restRowProps } = row.getRowProps();
@@ -195,7 +180,7 @@ const App: FC = () => {
               }
               const backgroundColor = row.original.name === activeDataKey ? 'rgb(65, 41, 5, 0.2)' : rowColor;
               return (
-                <tr
+                <Tr
                   key={key}
                   {...restRowProps}
                   style={{ cursor: 'pointer', backgroundColor, borderBottom: '1px solid', borderColor: colors.tan }}
@@ -237,11 +222,11 @@ const App: FC = () => {
                       </StyledTableCell>
                     );
                   })}
-                </tr>
+                </Tr>
               );
             })}
-          </tbody>
-        </table>
+          </Tbody>
+        </Table>
       </LeaderboardTableWrapper>
       <Modal
         showModal={isRaceModalOpen}
