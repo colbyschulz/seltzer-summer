@@ -1,9 +1,5 @@
 import React, { FC, useMemo, useRef, useState } from 'react';
-import MaUTable from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
+
 import {
   AboutLabel,
   AboutText,
@@ -145,19 +141,21 @@ const App: FC = () => {
       </Card>
 
       <LeaderboardTableWrapper>
-        <MaUTable {...getTableProps()} stickyHeader padding="none">
-          <TableHead>
+        <table {...getTableProps()} cellSpacing="0" cellPadding="0" width="100%" style={{ borderCollapse: 'collapse' }}>
+          <thead>
             {headerGroups.map((headerGroup) => {
               const { key, ...restHeaderGroupProps } = headerGroup.getHeaderGroupProps();
               return (
-                <TableRow key={key} {...restHeaderGroupProps}>
+                <tr key={key} {...restHeaderGroupProps}>
                   {headerGroup.headers.map((column) => {
                     const { key, ...restHeaderProps } = column.getHeaderProps();
                     return (
-                      <TableCell
+                      <th
                         key={key}
                         style={{
-                          padding: '12px 8px',
+                          padding: '10px 5px',
+                          position: 'sticky',
+                          top: 0,
                           backgroundColor: colors.tan,
                           textAlign:
                             column.id === 'arrow' || column.id === 'numRaces' || column.id === 'position'
@@ -167,14 +165,14 @@ const App: FC = () => {
                         {...restHeaderProps}
                       >
                         {column.render('Header')}
-                      </TableCell>
+                      </th>
                     );
                   })}
-                </TableRow>
+                </tr>
               );
             })}
-          </TableHead>
-          <TableBody>
+          </thead>
+          <tbody>
             {rows.map((row, i) => {
               prepareRow(row);
               const { key, ...restRowProps } = row.getRowProps();
@@ -191,10 +189,10 @@ const App: FC = () => {
               }
               const backgroundColor = row.original.name === activeDataKey ? 'rgb(65, 41, 5, 0.2)' : rowColor;
               return (
-                <TableRow
+                <tr
                   key={key}
                   {...restRowProps}
-                  style={{ cursor: 'pointer', backgroundColor, borderColor: colors.tan }}
+                  style={{ cursor: 'pointer', backgroundColor, borderBottom: '1px solid', borderColor: colors.tan }}
                 >
                   {row.cells.map((cell) => {
                     const { key, ...restCellProps } = cell.getCellProps();
@@ -233,11 +231,11 @@ const App: FC = () => {
                       </StyledTableCell>
                     );
                   })}
-                </TableRow>
+                </tr>
               );
             })}
-          </TableBody>
-        </MaUTable>
+          </tbody>
+        </table>
       </LeaderboardTableWrapper>
       <Modal
         showModal={isRaceModalOpen}

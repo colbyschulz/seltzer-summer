@@ -1,8 +1,7 @@
 import styled from 'styled-components';
-import { TableCell } from '@material-ui/core';
 import colors from '../../colors';
 
-export const StyledTableCell = styled(TableCell)<{ isFaster?: boolean }>`
+export const StyledTableCell = styled.td<{ isFaster?: boolean }>`
   color: ${({ isFaster }) => (isFaster ? 'green' : 'red')};
 `;
 

@@ -21,7 +21,6 @@
   },
   "homepage": "https://github.com/colbyschulz/react-typescript-template#readme",
   "dependencies": {
-    "@material-ui/core": "^4.12.4",
     "@types/react-router-dom": "^5.3.3",
     "@types/styled-components": "^5.1.25",
     "date-fns": "^2.28.0",
@@ -60,7 +59,7 @@
     "typescript-plugin-styled-components": "2.0.0",
     "url-loader": "^4.1.1",
     "webpack": "5.72.1",
-    "webpack-cli": "4.9.2",
-    "webpack-dev-server": "4.9.0"
+    "webpack-cli": "^4.10.0",
+    "webpack-dev-server": "^4.10.0"
   }
 }

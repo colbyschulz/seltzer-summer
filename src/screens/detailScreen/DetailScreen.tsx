@@ -1,10 +1,8 @@
-import { TableHead, TableRow, TableCell, TableBody } from '@material-ui/core';
 import React, { useMemo } from 'react';
 import { Column, useTable } from 'react-table';
 import { calcPaceDifference, racesByNameId, secondsToPace } from '../../utils';
 import { StyledTableCell } from '../leaderboardScreen/leaderboardScreen.css';
 import { DetailScreenWrapper, DetailTableWrapper, MetricLabel, MetricValue } from './detailScreen.css';
-import MaUTable from '@material-ui/core/Table';
 import { useParams } from 'react-router-dom';
 import Breadcrumbs from '../../components/breadcrumbs/Breadcrumbs';
 import colors from '../../colors';
@@ -153,29 +151,41 @@ const DetailScreen = () => {
       </Card>
 
       <DetailTableWrapper>
-        <MaUTable {...getModalTableProps()} padding="none" stickyHeader>
-          <TableHead>
+        <table
+          {...getModalTableProps()}
+          cellSpacing="0"
+          cellPadding="0"
+          width="100%"
+          style={{ borderCollapse: 'collapse' }}
+        >
+          <thead>
             {modalHeaderGroups.map((headerGroup) => {
               const { key, ...restHeaderGroupProps } = headerGroup.getHeaderGroupProps();
               return (
-                <TableRow key={key} {...restHeaderGroupProps}>
+                <tr key={key} {...restHeaderGroupProps}>
                   {headerGroup.headers.map((column) => {
                     const { key, ...restColumnProps } = column.getHeaderProps();
                     return (
-                      <TableCell
-                        style={{ padding: '12px 8px', backgroundColor: colors.tan }}
+                      <th
+                        style={{
+                          padding: '10px 5px',
+                          position: 'sticky',
+                          top: 0,
+                          backgroundColor: colors.tan,
+                          textAlign: 'left',
+                        }}
                         key={key}
                         {...restColumnProps}
                       >
                         {column.render('Header')}
-                      </TableCell>
+                      </th>
                     );
                   })}
-                </TableRow>
+                </tr>
               );
             })}
-          </TableHead>
-          <TableBody>
+          </thead>
+          <tbody>
             {records &&
               modalRows.map((row) => {
                 modalPrepareRow(row);
@@ -190,7 +200,7 @@ const DetailScreen = () => {
                       : colors.red
                     : colors.grey;
                 return (
-                  <TableRow key={key} {...restRowProps} style={{ backgroundColor }}>
+                  <tr key={key} {...restRowProps} style={{ backgroundColor }}>
                     {row.cells.map((cell) => {
                       const { key, ...restCellProps } = cell.getCellProps();
 
@@ -207,7 +217,8 @@ const DetailScreen = () => {
                       return (
                         <StyledTableCell
                           style={{
-                            borderColor: colors.grey,
+                            borderBottom: '1px solid',
+                            borderColor: colors.tan,
                             padding: '12px 8px',
                             overflowWrap: 'break-word',
                             color,
@@ -220,11 +231,11 @@ const DetailScreen = () => {
                         </StyledTableCell>
                       );
                     })}
-                  </TableRow>
+                  </tr>
                 );
               })}
-          </TableBody>
-        </MaUTable>
+          </tbody>
+        </table>
       </DetailTableWrapper>
     </DetailScreenWrapper>
   );
