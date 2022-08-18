@@ -141,7 +141,13 @@ const App: FC = () => {
       </Card>
 
       <LeaderboardTableWrapper>
-        <table {...getTableProps()} cellSpacing="0" cellPadding="0" width="100%" style={{ borderCollapse: 'collapse' }}>
+        <table
+          {...getTableProps()}
+          cellSpacing="0"
+          cellPadding="0"
+          width="100%"
+          style={{ borderCollapse: 'collapse', overflowX: 'hidden', fontSize: '13px', fontWeight: 500 }}
+        >
           <thead>
             {headerGroups.map((headerGroup) => {
               const { key, ...restHeaderGroupProps } = headerGroup.getHeaderGroupProps();
@@ -153,7 +159,7 @@ const App: FC = () => {
                       <th
                         key={key}
                         style={{
-                          padding: '10px 5px',
+                          padding: '12px 5px',
                           position: 'sticky',
                           top: 0,
                           backgroundColor: colors.tan,

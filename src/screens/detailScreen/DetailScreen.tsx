@@ -156,7 +156,7 @@ const DetailScreen = () => {
           cellSpacing="0"
           cellPadding="0"
           width="100%"
-          style={{ borderCollapse: 'collapse' }}
+          style={{ borderCollapse: 'collapse', fontSize: '13px', fontWeight: 500 }}
         >
           <thead>
             {modalHeaderGroups.map((headerGroup) => {
@@ -168,7 +168,7 @@ const DetailScreen = () => {
                     return (
                       <th
                         style={{
-                          padding: '10px 5px',
+                          padding: '12px 5px',
                           position: 'sticky',
                           top: 0,
                           backgroundColor: colors.tan,
