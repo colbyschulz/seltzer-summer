@@ -73,20 +73,14 @@ const LeaderboardChart: FC<LeaderboardChartProps> = ({ activeDataKey, setActiveD
             return secondsToRaceTime(v);
           }}
         />
-        {/* <Tooltip
-          formatter={(v: number) => secondsToRaceTime(v)}
-          labelFormatter={(value) => {
-            const parsedDate = value && typeof value === 'string' && value.split('/');
-            const currentYear = new Date().getFullYear();
-            const dateString =
-              parsedDate && new Date(currentYear, parseInt(parsedDate[0]) - 1, parseInt(parsedDate[1]));
-            return format(dateString, 'MM/dd/yyyy');
-          }}
-        /> */}
         {Object.keys(dataNormalizedById).map((key) => {
           const raceArray = dataNormalizedById[key];
           const name = raceArray[0].name;
-          const color = activeDataKey === name ? colors.lightBrown : '#454545';
+          const isLineActive = activeDataKey === name;
+          const strokeColor = isLineActive ? colors.lightBrown : '#454545';
+          const fillColor = isLineActive ? colors.lightBrown : '#454545';
+          const radius = isLineActive ? 4 : 2;
+          const lineStrokeWidth = isLineActive ? 2 : 1;
           return (
             <Line
               cursor="pointer"
@@ -97,21 +91,17 @@ const LeaderboardChart: FC<LeaderboardChartProps> = ({ activeDataKey, setActiveD
               key={key}
               type="monotone"
               dataKey={name}
-              strokeWidth={3}
-              stroke={color}
+              strokeWidth={lineStrokeWidth}
+              stroke={strokeColor}
               dot={{
                 cursor: 'pointer',
-                fill: color,
-                r: 3,
-                stroke: color,
+                fill: fillColor,
+                strokeWidth: 2,
+                r: radius,
+                stroke: strokeColor,
                 onClick: () => {
                   setActiveDataKey(name);
                 },
-              }}
-              activeDot={{
-                fill: color,
-                r: 6,
-                stroke: color,
               }}
               connectNulls
             />
