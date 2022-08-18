@@ -6,4 +6,5 @@ export default {
   lightBrown: '#C1A06D',
   transparentTan: 'rgb(193, 160, 109, 0.3)',
   transparentWhite: 'rgba(255, 255, 255, 0.4)',
+  black: '#131313',
 };

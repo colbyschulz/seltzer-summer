@@ -1,27 +1,25 @@
 import React, { FC, useMemo, useRef, useState } from 'react';
+import { Column, useTable } from 'react-table';
+import { useNavigate } from 'react-router-dom';
 
+import ArrowRight from '../../assets/images/arrow-right.svg';
+import { racesByNameId } from '../../utils';
+import Breadcrumbs from '../../components/breadcrumbs/Breadcrumbs';
+import { useRecords } from '../../api/records';
+import LeaderboardChart from '../../components/leaderboardChart/LeaderboardChart';
+import colors from '../../colors';
+import Card from '../../components/card/Card';
+import RaceForm from '../../components/raceForm/RaceForm';
+import Modal from '../../components/modal/Modal';
+import Button from '../../components/button/Button';
 import {
   AboutLabel,
   AboutText,
   AboutWrapper,
   LeaderboardScreenWrapper,
   LeaderboardTableWrapper,
-  StyledButton,
   StyledTableCell,
-  TransparentButton,
 } from './leaderboardScreen.css';
-import { Column, useTable } from 'react-table';
-import ArrowRight from '../../assets/images/arrow-right.svg';
-import { racesByNameId } from '../../utils';
-import { useNavigate } from 'react-router-dom';
-import Breadcrumbs from '../../components/breadcrumbs/Breadcrumbs';
-import { useRecords } from '../../api/records';
-import LeaderboardChart from '../../components/leaderboardChart/LeaderboardChart';
-import colors from '../../colors';
-import Card from '../../components/card/Card';
-
-import RaceForm from '../../components/raceForm/RaceForm';
-import Modal from '../../components/modal/Modal';
 
 const App: FC = () => {
   const { data: records = [] } = useRecords();
@@ -90,7 +88,7 @@ const App: FC = () => {
       {
         Header: 'Details',
         Cell: () => (
-          <StyledButton
+          <Button
             style={{
               marginBottom: 0,
               width: 'auto',
@@ -106,7 +104,7 @@ const App: FC = () => {
               width={12}
               alt="Arrow"
             />
-          </StyledButton>
+          </Button>
         ),
         accessor: 'arrow',
       },
@@ -131,8 +129,10 @@ const App: FC = () => {
       >
         <Breadcrumbs config={[{ route: null, display: 'Leaderboard' }]} />
         <div style={{ display: 'flex' }}>
-          <TransparentButton onClick={() => setIsAboutModalOpen(true)}>About</TransparentButton>
-          <StyledButton onClick={() => setIsRaceModalOpen(true)}>Add Race</StyledButton>
+          <Button transparent style={{ marginRight: 15 }} onClick={() => setIsAboutModalOpen(true)}>
+            About
+          </Button>
+          <Button onClick={() => setIsRaceModalOpen(true)}>Add Race</Button>
         </div>
       </div>
 
@@ -207,9 +207,9 @@ const App: FC = () => {
                         ? cell.value.includes('-')
                           ? colors.green
                           : cell.value === '0%'
-                          ? '#131313'
+                          ? colors.black
                           : colors.red
-                        : '#131313';
+                        : colors.black;
                     return (
                       <StyledTableCell
                         key={key}

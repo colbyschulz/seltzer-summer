@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
+import colors from '../../colors';
+
 export const BreadcrumbsWrapper = styled.div`
   display: flex;
   align-items: center;
@@ -8,11 +10,11 @@ export const BreadcrumbsWrapper = styled.div`
 `;
 
 export const LinkCrumb = styled(Link)`
-  color: #131313;
+  color: ${colors.black};
 `;
 
 export const Crumb = styled.span`
-  color: #131313;
+  color: ${colors.black};
 `;
 
 export const CrumbWrapper = styled.div`

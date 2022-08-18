@@ -1,5 +1,6 @@
 import { createGlobalStyle } from 'styled-components';
 import Crumpled1 from './assets/images/crumpled1.jpg';
+import colors from './colors';
 export default createGlobalStyle`
   * {
     font-family: 'Walter Turncoat', Open-Sans, Helvetica, Sans-Serif !important;
@@ -12,7 +13,7 @@ export default createGlobalStyle`
     padding: 0;
     background-image: url(${Crumpled1});
     background-size: cover;
-    color: #131313;
+    color: ${colors.black};
   }
     
   #root {

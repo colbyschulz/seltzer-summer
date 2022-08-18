@@ -1,9 +1,10 @@
 import React from 'react';
-import GlobalCSS from '../../globalStyles.css';
-import Seltzer from '../../assets/images/seltzer.png';
 import { Route, Routes } from 'react-router-dom';
-import DetailScreen from '../../screens/detailScreen/DetailScreen';
+
+import Seltzer from '../../assets/images/seltzer.png';
+import DetailScreen from '../../screens/raceDetailScreen/RaceDetailScreen';
 import LeaderboardScreen from '../../screens/leaderboardScreen/LeaderboardScreen';
+import GlobalCSS from '../../globalStyles.css';
 import { FooterText, FooterWrapper, HeaderImage, HeaderWrapper } from './App.css';
 
 const App = () => {

@@ -1,15 +1,16 @@
 import React, { useMemo } from 'react';
 import { Column, useTable } from 'react-table';
-import { calcPaceDifference, racesByNameId, secondsToPace } from '../../utils';
-import { StyledTableCell } from '../leaderboardScreen/leaderboardScreen.css';
-import { DetailScreenWrapper, DetailTableWrapper, MetricLabel, MetricValue } from './detailScreen.css';
 import { useParams } from 'react-router-dom';
+import { format } from 'date-fns';
+
+import { calcPaceDifference, racesByNameId, secondsToPace } from '../../utils';
 import Breadcrumbs from '../../components/breadcrumbs/Breadcrumbs';
 import colors from '../../colors';
-import RaceComparisonChart from '../../components/raceComparisonChart/RaceComparisonChart';
+import RaceDetailChart from '../../components/raceDetailChart/RaceDetailChart';
 import { useRecords } from '../../api/records';
 import Card from '../../components/card/Card';
-import { format } from 'date-fns';
+import { DetailScreenWrapper, DetailTableWrapper, MetricLabel, MetricValue } from './raceDetailScreen.css';
+import { StyledTableCell } from '../leaderboardScreen/leaderboardScreen.css';
 
 interface RowData {
   name: string;
@@ -147,7 +148,7 @@ const DetailScreen = () => {
       </Card>
 
       <Card style={{ padding: '10px 12px 0 10px' }}>
-        <RaceComparisonChart />
+        <RaceDetailChart />
       </Card>
 
       <DetailTableWrapper>
@@ -193,7 +194,7 @@ const DetailScreen = () => {
                 const backgroundColor = colors.transparentWhite;
                 const color =
                   row.index === 0
-                    ? '#131313'
+                    ? colors.black
                     : row.original.isBestEffort
                     ? row.original.isBestEffortBetterThanBaseline
                       ? colors.green

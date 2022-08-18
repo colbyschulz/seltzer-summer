@@ -1,8 +1,9 @@
 import React, { Dispatch, FC, SetStateAction, useMemo } from 'react';
-import { useRecords } from '../../api/records';
-import { racesByNameId, secondsToRaceTime } from '../../utils';
 import { LineChart, CartesianGrid, XAxis, YAxis, Line, ResponsiveContainer } from 'recharts';
 import { format } from 'date-fns';
+
+import { useRecords } from '../../api/records';
+import { racesByNameId, secondsToRaceTime } from '../../utils';
 import colors from '../../colors';
 interface LeaderboardChartProps {
   activeDataKey: string;

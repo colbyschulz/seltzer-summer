@@ -1,13 +1,13 @@
 import React, { FC } from 'react';
 import * as Yup from 'yup';
-
 import { format } from 'date-fns';
 import { Field, FieldProps, Form, Formik } from 'formik';
+
 import { TableRecord } from '../../types';
 import { raceTimeToSeconds } from '../../utils';
-import { FormWrapper, Input, InputLabel, InputWrapper, StyledButton } from './raceForm.css';
 import { useCreateRecord } from '../../api/records';
-import colors from '../../colors';
+import { FormWrapper, Input, InputLabel, InputWrapper } from './raceForm.css';
+import Button from '../button/Button';
 
 interface RaceFormProps {
   formikRef: any;
@@ -180,12 +180,9 @@ const RaceForm: FC<RaceFormProps> = ({ formikRef, handleClose }) => {
                   </InputWrapper>
                 </div>
 
-                <StyledButton
-                  style={{ alignSelf: 'center', marginTop: '20px', backgroundColor: colors.tan }}
-                  type="submit"
-                >
+                <Button style={{ alignSelf: 'center', marginTop: '20px' }} type="submit">
                   Submit
-                </StyledButton>
+                </Button>
               </FormWrapper>
             </Form>
           );

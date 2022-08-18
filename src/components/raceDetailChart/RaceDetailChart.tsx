@@ -1,6 +1,6 @@
 import React, { FC, useMemo } from 'react';
-import { useRecords } from '../../api/records';
-import { racesByNameId, secondsToRaceTime } from '../../utils';
+import { format } from 'date-fns';
+import { useParams } from 'react-router-dom';
 import {
   LineChart,
   CartesianGrid,
@@ -12,11 +12,11 @@ import {
   ReferenceLine,
   TooltipProps,
 } from 'recharts';
-import { format } from 'date-fns';
-import { useParams } from 'react-router-dom';
-import colors from '../../colors';
-
 import { DefaultTooltipContent } from 'recharts/lib/component/DefaultTooltipContent';
+
+import { useRecords } from '../../api/records';
+import { racesByNameId, secondsToRaceTime } from '../../utils';
+import colors from '../../colors';
 
 const CustomTooltip: React.FC<TooltipProps<any, any>> = ({ payload, ...rest }) => {
   const newPayload = payload ? [...payload]?.sort((a, b) => b.value - a.value) : [];
@@ -92,13 +92,7 @@ const RaceComparisonChart: FC = () => {
         <CartesianGrid />
         <ReferenceLine y={fastestRaceTime} strokeDasharray="8 8" stroke={colors.green} strokeWidth={2} />
         <ReferenceLine y={slowestRaceTime} strokeDasharray="8 8" stroke={colors.red} strokeWidth={2} />
-        <ReferenceLine
-          y={baseRaceTime}
-          strokeDasharray="8 8"
-          stroke="black"
-          // label={{ position: 'bottom', value: 'Summer Baseline' }}
-          strokeWidth={2}
-        />
+        <ReferenceLine y={baseRaceTime} strokeDasharray="8 8" stroke="black" strokeWidth={2} />
 
         <XAxis dataKey="date" tick={{ fontSize: '14px' }} />
 

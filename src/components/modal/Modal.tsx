@@ -1,5 +1,6 @@
 import React, { FC, useEffect } from 'react';
 import ReactPortal from '../ReactPortal';
+
 import { HeaderRow, HeaderText, IconRow, ModalBackgroundWrapper, ModalContent, ModalWrapper } from './Modal.css';
 
 interface ModalProps {
