@@ -146,7 +146,7 @@ const App: FC = () => {
           cellSpacing="0"
           cellPadding="0"
           width="100%"
-          style={{ borderCollapse: 'collapse', overflowX: 'hidden', fontSize: '13px', fontWeight: 500 }}
+          style={{ borderCollapse: 'collapse', fontSize: '13px', fontWeight: 500 }}
         >
           <thead>
             {headerGroups.map((headerGroup) => {

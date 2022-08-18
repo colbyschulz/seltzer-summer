@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import colors from '../../colors';
 
 export const DetailScreenWrapper = styled.div`
   display: flex;
@@ -13,9 +14,10 @@ export const DetailScreenWrapper = styled.div`
 export const DetailTableWrapper = styled.div`
   -webkit-overflow-scrolling: touch;
   overflow-y: scroll;
-  margin: 10px 20px 20px 20px;
   border-radius: 5px;
+  margin: 10px 20px 20px 20px;
   box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2);
+  background-color: ${colors.transparentWhite};
 `;
 
 export const Metrics = styled.div`

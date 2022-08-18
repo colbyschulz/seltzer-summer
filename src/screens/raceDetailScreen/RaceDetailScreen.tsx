@@ -115,10 +115,10 @@ const DetailScreen = () => {
   );
 
   const {
-    getTableProps: getModalTableProps,
-    headerGroups: modalHeaderGroups,
-    rows: modalRows,
-    prepareRow: modalPrepareRow,
+    getTableProps: getRaceDetailTableProps,
+    headerGroups: raceDetailHeaderGroups,
+    rows: raceDetailRows,
+    prepareRow: raceDetailPrepareRow,
   } = useTable({
     columns: detailColumns,
     data: formatedAndSortedRowData,
@@ -153,21 +153,22 @@ const DetailScreen = () => {
 
       <DetailTableWrapper>
         <table
-          {...getModalTableProps()}
+          {...getRaceDetailTableProps()}
           cellSpacing="0"
           cellPadding="0"
           width="100%"
           style={{ borderCollapse: 'collapse', fontSize: '13px', fontWeight: 500 }}
         >
           <thead>
-            {modalHeaderGroups.map((headerGroup) => {
+            {raceDetailHeaderGroups.map((headerGroup) => {
               const { key, ...restHeaderGroupProps } = headerGroup.getHeaderGroupProps();
               return (
                 <tr key={key} {...restHeaderGroupProps}>
                   {headerGroup.headers.map((column) => {
-                    const { key, ...restColumnProps } = column.getHeaderProps();
+                    const { key, ...restHeaderProps } = column.getHeaderProps();
                     return (
                       <th
+                        key={key}
                         style={{
                           padding: '12px 5px',
                           position: 'sticky',
@@ -175,8 +176,7 @@ const DetailScreen = () => {
                           backgroundColor: colors.tan,
                           textAlign: 'left',
                         }}
-                        key={key}
-                        {...restColumnProps}
+                        {...restHeaderProps}
                       >
                         {column.render('Header')}
                       </th>
@@ -188,8 +188,8 @@ const DetailScreen = () => {
           </thead>
           <tbody>
             {records &&
-              modalRows.map((row) => {
-                modalPrepareRow(row);
+              raceDetailRows.map((row) => {
+                raceDetailPrepareRow(row);
                 const { key, ...restRowProps } = row.getRowProps();
                 const backgroundColor = colors.transparentWhite;
                 const color =
