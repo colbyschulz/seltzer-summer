@@ -6,6 +6,7 @@ const userRoutes = require('./routes/user.routes.js');
 const app = express();
 const port = process.env.PORT || 3000;
 
+// enable CORS for local dev
 const corsOptions = {
   origin: 'http://localhost:8080',
 };
