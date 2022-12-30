@@ -1,8 +1,3 @@
-// import Sequelize from 'sequelize';
-// import config from '../config/config.js';
-// import raceModel from './race.js';
-// import userModel from './user.js';
-
 const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
@@ -10,10 +5,7 @@ const process = require('process');
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
 const config = require(__dirname + '/../config/config.js')[env];
-// const config = require('../config/config.js');
 
-// const env = process.env.NODE_ENV || 'development';
-// const environmentConfig = config[env];
 const db = {};
 
 let sequelizeInstance;
@@ -22,9 +14,6 @@ if (config.use_env_variable) {
 } else {
   sequelizeInstance = new Sequelize(config.database, config.username, config.password, config);
 }
-
-// db.Race = raceModel(sequelizeInstance, Sequelize.DataTypes);
-// db.User = userModel(sequelizeInstance, Sequelize.DataTypes);
 
 fs.readdirSync(__dirname)
   .filter((file) => {
@@ -43,7 +32,5 @@ Object.keys(db).forEach((modelName) => {
 
 db.sequelize = sequelizeInstance;
 db.Sequelize = Sequelize;
-
-// console.log('DB INSTRANCE ON CREATION', db);
 
 module.exports = db;
