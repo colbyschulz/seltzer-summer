@@ -13,6 +13,9 @@ module.exports = {
       raceDate: {
         type: Sequelize.DATE,
       },
+      distanceInMeters: {
+        type: Sequelize.INTEGER,
+      },
       timeInSeconds: {
         type: Sequelize.INTEGER,
       },
@@ -35,7 +38,7 @@ module.exports = {
       },
     });
   },
-  async down(queryInterface, Sequelize) {
+  async down(queryInterface) {
     await queryInterface.dropTable('Races');
   },
 };

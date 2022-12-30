@@ -5,6 +5,7 @@ module.exports = (sequelize, DataTypes) => {
       raceName: DataTypes.STRING,
       raceDate: DataTypes.DATE,
       timeInSeconds: DataTypes.INTEGER,
+      distanceInMeters: DataTypes.INTEGER,
       userId: DataTypes.INTEGER,
     },
     { sequelize, modelName: 'Race' },
