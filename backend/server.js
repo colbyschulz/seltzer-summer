@@ -1,10 +1,7 @@
-// import express from 'express';
-// import cors from 'cors';
-// import raceRoutes from './routes/race.routes.js';
-
 const express = require('express');
 const cors = require('cors');
 const raceRoutes = require('./routes/race.routes.js');
+const userRoutes = require('./routes/user.routes.js');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -20,6 +17,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use('/api/', raceRoutes);
+app.use('/api/', userRoutes);
 
 app.listen(port, () => {
   console.log('App is listening on port', port);

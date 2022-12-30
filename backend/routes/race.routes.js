@@ -1,6 +1,3 @@
-// import express from 'express';
-// import racesController from '../controllers/race.controller.js';
-
 const express = require('express');
 const racesController = require('../controllers/race.controller.js');
 
