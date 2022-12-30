@@ -1,6 +1,6 @@
 const { DB_HOST, DB_USERNAME, DB_PASSWORD } = process.env;
 
-export default {
+module.exports = {
   development: {
     username: DB_USERNAME,
     password: DB_PASSWORD,

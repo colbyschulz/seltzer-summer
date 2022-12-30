@@ -1,39 +1,49 @@
-import Sequelize from 'sequelize';
-import config from '../config/config.js';
-import raceModel from './race.model.js';
-import userModel from './user.model.js';
+// import Sequelize from 'sequelize';
+// import config from '../config/config.js';
+// import raceModel from './race.js';
+// import userModel from './user.js';
 
+const fs = require('fs');
+const path = require('path');
+const Sequelize = require('sequelize');
+const process = require('process');
+const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
+const config = require(__dirname + '/../config/config.js')[env];
+// const config = require('../config/config.js');
 
-const environmentConfig = config[env];
-
+// const env = process.env.NODE_ENV || 'development';
+// const environmentConfig = config[env];
 const db = {};
 
-let sequelize;
-if (environmentConfig.use_env_variable) {
-  sequelize = new Sequelize(process.env[environmentConfig.use_env_variable], environmentConfig);
+let sequelizeInstance;
+if (config.use_env_variable) {
+  sequelizeInstance = new Sequelize(process.env[config.use_env_variable], config);
 } else {
-  sequelize = new Sequelize(
-    environmentConfig.database,
-    environmentConfig.username,
-    environmentConfig.password,
-    environmentConfig,
-  );
+  sequelizeInstance = new Sequelize(config.database, config.username, config.password, config);
 }
 
-db.sequelize = sequelize;
-db.Sequelize = Sequelize;
-db.Sequelize = Sequelize;
-db.races = raceModel(sequelize);
-db.users = userModel(sequelize);
+// db.Race = raceModel(sequelizeInstance, Sequelize.DataTypes);
+// db.User = userModel(sequelizeInstance, Sequelize.DataTypes);
 
-db.sequelize
-  .sync({ force: true })
-  .then(() => {
-    console.log('Synced db.');
+fs.readdirSync(__dirname)
+  .filter((file) => {
+    return file.indexOf('.') !== 0 && file !== basename && file.slice(-3) === '.js';
   })
-  .catch((err) => {
-    console.log('Failed to sync db: ' + err.message);
+  .forEach((file) => {
+    const model = require(path.join(__dirname, file))(sequelizeInstance, Sequelize.DataTypes);
+    db[model.name] = model;
   });
 
-export default db;
+Object.keys(db).forEach((modelName) => {
+  if (db[modelName].associate) {
+    db[modelName].associate(db);
+  }
+});
+
+db.sequelize = sequelizeInstance;
+db.Sequelize = Sequelize;
+
+// console.log('DB INSTRANCE ON CREATION', db);
+
+module.exports = db;

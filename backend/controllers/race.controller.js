@@ -1,4 +1,4 @@
-import db from '../models/index.js';
+const db = require('../models/index.js');
 const Race = db.races;
 
 const createRace = (req, res) => {
@@ -110,7 +110,7 @@ const deleteRace = (req, res) => {
     });
 };
 
-export default {
+module.exports = {
   createRace,
   findAllRaces,
   findOneRace,

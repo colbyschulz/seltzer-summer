@@ -1,5 +1,8 @@
-import express from 'express';
-import racesController from '../controllers/race.controller.js';
+// import express from 'express';
+// import racesController from '../controllers/race.controller.js';
+
+const express = require('express');
+const racesController = require('../controllers/race.controller.js');
 
 const router = express.Router();
 
@@ -17,4 +20,4 @@ router.put('/races/:id', racesController.updateRace);
 // Delete a Race with id
 router.delete('/races/:id', racesController.deleteRace);
 
-export default router;
+module.exports = router;

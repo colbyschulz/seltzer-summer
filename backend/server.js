@@ -1,6 +1,10 @@
-import express from 'express';
-import cors from 'cors';
-import raceRoutes from './routes/race.routes.js';
+// import express from 'express';
+// import cors from 'cors';
+// import raceRoutes from './routes/race.routes.js';
+
+const express = require('express');
+const cors = require('cors');
+const raceRoutes = require('./routes/race.routes.js');
 
 const app = express();
 const port = process.env.PORT || 3000;
