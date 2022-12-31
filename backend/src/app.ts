@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import raceRoutes from './routes/race.routes';
 import userRoutes from './routes/user.routes';
+import isAuth from './middlewares/isAuth';
 
 const app = express();
 const port = process.env.APP_PORT || 3000;
@@ -15,6 +16,9 @@ app.use(cors(corsOptions));
 app.use(express.json());
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
+
+// basic auth for all api routes
+app.use(isAuth);
 
 // Routes
 app.use('/api/', raceRoutes);
