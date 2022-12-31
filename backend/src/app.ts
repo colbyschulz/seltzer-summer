@@ -1,10 +1,11 @@
-const express = require('express');
-const cors = require('cors');
-const raceRoutes = require('./routes/race.routes.js');
-const userRoutes = require('./routes/user.routes.js');
+import express from 'express';
+import cors from 'cors';
+import raceRoutes from './routes/race.routes';
+import userRoutes from './routes/user.routes';
+import isAuth from './middlewares/isAuth';
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.APP_PORT || 3000;
 
 // enable CORS for local dev
 const corsOptions = {
@@ -15,6 +16,9 @@ app.use(cors(corsOptions));
 app.use(express.json());
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
+
+// basic auth for all api routes
+app.use(isAuth);
 
 // Routes
 app.use('/api/', raceRoutes);
