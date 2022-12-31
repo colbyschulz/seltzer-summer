@@ -12,7 +12,6 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   Race.associate = function (models) {
-    console.log('race assocaite models:', models);
     Race.belongsTo(models.User, {
       foreignKey: 'userId',
       onDelete: 'CASCADE',
