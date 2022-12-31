@@ -1,10 +1,10 @@
-const express = require('express');
-const cors = require('cors');
-const raceRoutes = require('./routes/race.routes.js');
-const userRoutes = require('./routes/user.routes.js');
+import express from 'express';
+import cors from 'cors';
+import raceRoutes from './routes/race.routes';
+import userRoutes from './routes/user.routes';
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.APP_PORT || 3000;
 
 // enable CORS for local dev
 const corsOptions = {
