@@ -1,6 +1,4 @@
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import prismaClient from '../prismaClient';
 
 const createUser = async (req, res) => {
   console.log(req.body);
@@ -20,7 +18,7 @@ const createUser = async (req, res) => {
   };
 
   try {
-    const result = await prisma.user.create({
+    const result = await prismaClient.user.create({
       data: user,
     });
     res.json(result);
@@ -33,7 +31,7 @@ const createUser = async (req, res) => {
 
 const findAllUsers = async (req, res) => {
   try {
-    const users = await prisma.user.findMany();
+    const users = await prismaClient.user.findMany();
     res.json(users);
   } catch (err) {
     res.status(500).send({
@@ -46,7 +44,7 @@ const findOneUser = async (req, res) => {
   const { id }: { id?: string } = req.params;
 
   try {
-    const user = await prisma.user.findUnique({
+    const user = await prismaClient.user.findUnique({
       where: { id: Number(id) },
     });
     res.json(user);
@@ -61,7 +59,7 @@ const updateUser = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const user = await prisma.user.update({
+    const user = await prismaClient.user.update({
       where: { id: Number(id) },
       data: req.body,
     });

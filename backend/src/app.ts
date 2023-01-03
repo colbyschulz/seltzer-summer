@@ -16,10 +16,8 @@ app.use(cors(corsOptions));
 app.use(express.json());
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
-
 // basic auth for all api routes
 app.use(isAuth);
-
 // Routes
 app.use('/api/', raceRoutes);
 app.use('/api/', userRoutes);

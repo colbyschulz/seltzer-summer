@@ -1,6 +1,4 @@
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import prismaClient from '../prismaClient';
 
 const createRace = async (req, res) => {
   const { raceDate, raceName, timeInSeconds, distanceInMeters, userId } = req.body;
@@ -22,7 +20,7 @@ const createRace = async (req, res) => {
   };
 
   try {
-    const result = await prisma.race.create({
+    const result = await prismaClient.race.create({
       data: race,
     });
     res.json(result);
@@ -35,7 +33,7 @@ const createRace = async (req, res) => {
 
 const findAllRaces = async (req, res) => {
   try {
-    const races = await prisma.race.findMany({
+    const races = await prismaClient.race.findMany({
       include: {
         user: true,
       },
@@ -52,7 +50,7 @@ const findOneRace = async (req, res) => {
   const { id }: { id?: string } = req.params;
 
   try {
-    const race = await prisma.race.findUnique({
+    const race = await prismaClient.race.findUnique({
       where: { id: Number(id) },
     });
     res.json(race);
@@ -76,7 +74,7 @@ const updateRace = async (req, res) => {
   };
 
   try {
-    const race = await prisma.race.update({
+    const race = await prismaClient.race.update({
       where: { id: Number(id) },
       data: updatedRace,
     });
@@ -91,7 +89,7 @@ const deleteRace = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const race = await prisma.race.delete({
+    const race = await prismaClient.race.delete({
       where: {
         id: Number(id),
       },
