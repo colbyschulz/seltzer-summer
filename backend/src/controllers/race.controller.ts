@@ -38,6 +38,8 @@ const findAllRaces = async (req, res) => {
         user: true,
       },
     });
+    console.log(races);
+
     res.json(races);
   } catch (err) {
     res.status(500).send({
