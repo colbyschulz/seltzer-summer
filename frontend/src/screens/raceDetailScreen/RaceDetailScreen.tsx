@@ -7,20 +7,17 @@ import { calcPaceDifference, racesByNameId, secondsToPace } from '../../utils';
 import Breadcrumbs from '../../components/breadcrumbs/Breadcrumbs';
 import colors from '../../colors';
 import RaceDetailChart from '../../components/raceDetailChart/RaceDetailChart';
-import { useRecords } from '../../api/records';
+import { useRaces } from '../../api/races';
 import Card from '../../components/card/Card';
 import { DetailScreenWrapper, DetailTableWrapper, MetricLabel, MetricValue } from './raceDetailScreen.css';
 import { StyledTableCell } from '../leaderboardScreen/leaderboardScreen.css';
 import { Table, Tbody, Th, THead, Tr } from '../../components/table/table.css';
+import { Race } from '../../types';
 
-interface RowData {
-  name: string;
-  time: number;
+interface RowData extends Race {
   isBestEffort?: boolean;
   isBaseline?: boolean;
   isBestEffortBetterThanBaseline?: boolean;
-  raceName: string;
-  date: string;
 }
 interface FormattedRowData {
   name: string;
@@ -33,20 +30,20 @@ interface FormattedRowData {
 }
 
 const DetailScreen = () => {
-  const { data: records = [] } = useRecords();
+  const { data: races = [] } = useRaces();
   const { nameId } = useParams();
 
-  const dataNormalizedById = useMemo(() => racesByNameId(records), [records]);
+  const dataNormalizedById = useMemo(() => racesByNameId(races), [races]);
   const raceArray = (nameId && dataNormalizedById[nameId]) || [];
-  const detailsName = raceArray[0]?.name || '';
+  const detailsName = raceArray[0]?.raceName || '';
   const breadcrumbsconfig = [
     { route: '/', display: 'Leaderboard' },
     { route: null, display: detailsName },
   ];
   const raceArrayMutable = [...raceArray];
-  const mutableSortedByDate = raceArrayMutable.sort(
-    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
-  ) as RowData[];
+  const mutableSortedByDate: RowData[] = raceArrayMutable.sort(
+    (a, b) => new Date(a.raceDate).getTime() - new Date(b.raceDate).getTime(),
+  );
   const baseRace = mutableSortedByDate.splice(0, 1)[0];
 
   const enhancedBaseRace = {
@@ -54,34 +51,35 @@ const DetailScreen = () => {
     isBaseline: true,
   };
 
-  const mutableMinusBaseSortedByTime = mutableSortedByDate.sort((a, b) => a.time - b.time);
+  const mutableMinusBaseSortedByTime = mutableSortedByDate.sort((a, b) => a.timeInSeconds - b.timeInSeconds);
   if (mutableMinusBaseSortedByTime[0]) {
     mutableMinusBaseSortedByTime[0].isBestEffort = true;
   }
 
-  if (mutableMinusBaseSortedByTime[0] && mutableMinusBaseSortedByTime[0].time < baseRace.time) {
+  if (mutableMinusBaseSortedByTime[0] && mutableMinusBaseSortedByTime[0].timeInSeconds < baseRace.timeInSeconds) {
     mutableMinusBaseSortedByTime[0].isBestEffortBetterThanBaseline = true;
   }
 
   const rowData = [enhancedBaseRace, ...mutableMinusBaseSortedByTime];
 
-  const basePace = secondsToPace(baseRace?.time);
-  const bestEffortPace = secondsToPace(mutableMinusBaseSortedByTime[0]?.time);
+  const basePace = secondsToPace(baseRace?.timeInSeconds);
+  const bestEffortPace = secondsToPace(mutableMinusBaseSortedByTime[0]?.timeInSeconds);
   const paceDifference = calcPaceDifference(bestEffortPace, basePace);
 
-  const formatRowData = ({ name, raceName, time, date, ...rest }: RowData) => {
-    const minutes = Math.floor(Math.abs(time) / 60).toString();
-    const seconds = (Math.abs(time) % 60).toLocaleString('US', {
+  const formatRowData = ({ user, raceName, timeInSeconds, raceDate, ...rest }: RowData) => {
+    const minutes = Math.floor(Math.abs(timeInSeconds) / 60).toString();
+    const seconds = (Math.abs(timeInSeconds) % 60).toLocaleString('US', {
       minimumIntegerDigits: 2,
       useGrouping: false,
     });
 
-    const parsedDate = date.split('-');
-    const dateString = new Date(parseInt(parsedDate[0]), parseInt(parsedDate[1]) - 1, parseInt(parsedDate[2]));
+    // const parsedDate = raceDate.split('-');
+    // const dateString = new Date(parseInt(parsedDate[0]), parseInt(parsedDate[1]) - 1, parseInt(parsedDate[2]));
+    const dateString = new Date(raceDate);
 
     return {
       ...rest,
-      name,
+      name: user?.firstName || 'unknown"',
       date: format(dateString, 'M/dd'),
       raceName,
       time: `${minutes}:${seconds}`,
@@ -92,10 +90,10 @@ const DetailScreen = () => {
     if (!rowData.length || !raceArray.length) {
       return [];
     }
-    rowData.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    rowData.sort((a, b) => new Date(a.raceDate).getTime() - new Date(b.raceDate).getTime());
     const data = rowData.map(formatRowData);
     return data;
-  }, [records]);
+  }, [races]);
 
   const detailColumns: Array<Column<FormattedRowData>> = useMemo(
     () => [
@@ -140,9 +138,13 @@ const DetailScreen = () => {
         <div>
           <MetricLabel>Best Effort Pace: </MetricLabel>
           <MetricValue>{bestEffortPace ? bestEffortPace : basePace}</MetricValue>
-          <MetricValue color={baseRace?.time < mutableMinusBaseSortedByTime[0]?.time ? colors.red : colors.green}>
+          <MetricValue
+            color={baseRace?.timeInSeconds < mutableMinusBaseSortedByTime[0]?.timeInSeconds ? colors.red : colors.green}
+          >
             {bestEffortPace
-              ? ` (${baseRace?.time < mutableMinusBaseSortedByTime[0]?.time ? '' : '-'}${paceDifference})`
+              ? ` (${
+                  baseRace?.timeInSeconds < mutableMinusBaseSortedByTime[0]?.timeInSeconds ? '' : '-'
+                }${paceDifference})`
               : ''}
           </MetricValue>
         </div>
@@ -178,7 +180,7 @@ const DetailScreen = () => {
             })}
           </THead>
           <Tbody>
-            {records &&
+            {races &&
               raceDetailRows.map((row) => {
                 raceDetailPrepareRow(row);
                 const { key, ...restRowProps } = row.getRowProps();

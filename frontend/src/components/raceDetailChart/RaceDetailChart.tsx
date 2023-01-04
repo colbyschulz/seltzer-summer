@@ -14,7 +14,7 @@ import {
 } from 'recharts';
 import { DefaultTooltipContent } from 'recharts/lib/component/DefaultTooltipContent';
 
-import { useRecords } from '../../api/records';
+import { useRaces } from '../../api/races';
 import { racesByNameId, secondsToRaceTime } from '../../utils';
 import colors from '../../colors';
 
@@ -26,39 +26,41 @@ const CustomTooltip: React.FC<TooltipProps<any, any>> = ({ payload, ...rest }) =
 
 const RaceComparisonChart: FC = () => {
   const { innerWidth } = window;
-  const { data: records = [] } = useRecords();
+  const { data: races = [] } = useRaces();
   const { nameId } = useParams();
 
-  const dataNormalizedById = useMemo(() => racesByNameId(records), [records]);
+  const dataNormalizedById = useMemo(() => racesByNameId(races), [races]);
   const raceArray = (nameId && dataNormalizedById[nameId]) || [];
   const raceArrayMutable = [...raceArray];
-  const sortedByDate = raceArrayMutable?.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  const baseRaceTime = sortedByDate?.splice(0, 1)[0]?.time;
+  const sortedByDate = raceArrayMutable?.sort(
+    (a, b) => new Date(a.raceDate).getTime() - new Date(b.raceDate).getTime(),
+  );
+  const baseRaceTime = sortedByDate?.splice(0, 1)[0]?.timeInSeconds;
 
   const fastestRaceTime = raceArrayMutable?.find(
-    (race) => race.time === Math.min(...raceArray.map((race) => race.time)),
-  )?.time;
+    (race) => race.timeInSeconds === Math.min(...raceArray.map((race) => race.timeInSeconds)),
+  )?.timeInSeconds;
 
   const slowestRaceTime = raceArrayMutable?.find(
-    (race) => race.time === Math.max(...raceArray.map((race) => race.time)),
-  )?.time;
+    (race) => race.timeInSeconds === Math.max(...raceArray.map((race) => race.timeInSeconds)),
+  )?.timeInSeconds;
 
   const raceTimes: number[] = [];
 
   const chartDataNormalizedByDate = Object.values(dataNormalizedById).reduce((accum, raceArray) => {
-    raceArray.forEach(({ name, date, time }) => {
-      if (!accum[date]) {
-        accum[date] = {
-          date,
-          [name]: time,
+    raceArray.forEach(({ raceName, raceDate, timeInSeconds }) => {
+      if (!accum[raceDate]) {
+        accum[raceDate] = {
+          raceDate,
+          [raceName]: timeInSeconds,
         };
       } else {
-        accum[date] = {
-          ...accum[date],
-          [name]: time,
+        accum[raceDate] = {
+          ...accum[raceDate],
+          [raceName]: timeInSeconds,
         };
       }
-      raceTimes.push(time);
+      raceTimes.push(timeInSeconds);
     });
 
     return accum;
@@ -81,8 +83,9 @@ const RaceComparisonChart: FC = () => {
   const chartData = Object.values(chartDataNormalizedByDate)
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
     .map((data) => {
-      const parsedDate = data.date.split('-');
-      const dateString = new Date(parseInt(parsedDate[0]), parseInt(parsedDate[1]) - 1, parseInt(parsedDate[2]));
+      // const parsedDate = data.date.split('-');
+      // const dateString = new Date(parseInt(parsedDate[0]), parseInt(parsedDate[1]) - 1, parseInt(parsedDate[2]));
+      const dateString = new Date(data.raceDate);
       return { ...data, date: format(dateString, 'M/dd') };
     });
 
@@ -124,7 +127,7 @@ const RaceComparisonChart: FC = () => {
         {Object.keys(dataNormalizedById).map((key) => {
           const raceArray = dataNormalizedById[key];
           const isActiveLine = key === nameId;
-          const name = raceArray[0].name;
+          const name = raceArray[0].raceName;
           const color = isActiveLine ? colors.lightBrown : '#c7c7c7';
           const dotRadius = isActiveLine ? 4 : 2;
           const activeDotRadius = 4;

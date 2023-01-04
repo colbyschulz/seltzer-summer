@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import ArrowRight from '../../assets/images/arrow-right.svg';
 import { racesByNameId } from '../../utils';
 import Breadcrumbs from '../../components/breadcrumbs/Breadcrumbs';
-import { useRecords } from '../../api/records';
+import { useRaces } from '../../api/races';
 import LeaderboardChart from '../../components/leaderboardChart/LeaderboardChart';
 import colors from '../../colors';
 import Card from '../../components/card/Card';
@@ -24,32 +24,37 @@ import {
 import { Table, Tbody, Th, THead, Tr } from '../../components/table/table.css';
 
 const App: FC = () => {
-  const { data: records = [] } = useRecords();
+  const { data: races = [] } = useRaces();
   const [isRaceModalOpen, setIsRaceModalOpen] = React.useState(false);
   const [isAboutModalOpen, setIsAboutModalOpen] = React.useState(false);
+  console.log(races);
 
   const formikRef = useRef<any>(null);
   const navigate = useNavigate();
 
   const [activeDataKey, setActiveDataKey] = useState<string>('');
 
-  const dataNormalizedById = useMemo(() => racesByNameId(records), [records]);
+  const dataNormalizedById = useMemo(() => racesByNameId(races), [races]);
 
   const leaderboardData = useMemo(() => {
     const enhancedData = Object.keys(dataNormalizedById).map((nameId) => {
       const raceArray = dataNormalizedById[nameId];
       const raceArrayMutable = [...raceArray];
-      const sortedByDate = raceArrayMutable.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      const sortedByDate = raceArrayMutable.sort(
+        (a, b) => new Date(a.raceDate).getTime() - new Date(b.raceDate).getTime(),
+      );
       const baseRace = sortedByDate.splice(0, 1)[0];
       const fastestRemainingRace = raceArrayMutable.find(
-        (race) => race.time === Math.min(...raceArrayMutable.map((race) => race.time)),
+        (race) => race.timeInSeconds === Math.min(...raceArrayMutable.map((race) => race.timeInSeconds)),
       );
       const deltaAsPercentage =
-        (fastestRemainingRace?.time && ((fastestRemainingRace?.time - baseRace.time) / baseRace.time) * 100) || 0;
+        (fastestRemainingRace?.timeInSeconds &&
+          ((fastestRemainingRace?.timeInSeconds - baseRace.timeInSeconds) / baseRace.timeInSeconds) * 100) ||
+        0;
 
       return {
         nameId,
-        name: baseRace.name,
+        name: baseRace.raceName,
         numRaces: raceArray.length.toString(),
         deltaAsPercentage,
       };
@@ -65,7 +70,7 @@ const App: FC = () => {
         delta: deltaAsPercentage === 0 ? `${deltaAsPercentage}%` : `${deltaAsPercentage.toFixed(2)}%`,
         arrow: '',
       }));
-  }, [records]);
+  }, [races]);
 
   const leaderboardColumns: Array<
     Column<{ position: string; name: string; numRaces: string; delta: string; nameId: string; arrow: string }>
@@ -113,6 +118,8 @@ const App: FC = () => {
     ],
     [],
   );
+
+  console.log(leaderboardData);
 
   const { getTableProps, headerGroups, rows, prepareRow } = useTable({
     columns: leaderboardColumns,

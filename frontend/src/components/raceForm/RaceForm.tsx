@@ -3,9 +3,9 @@ import * as Yup from 'yup';
 import { format } from 'date-fns';
 import { Field, FieldProps, Form, Formik } from 'formik';
 
-import { TableRecord } from '../../types';
+import { Race } from '../../types';
 import { raceTimeToSeconds } from '../../utils';
-import { useCreateRecord } from '../../api/records';
+import { useCreateRace } from '../../api/races';
 import { FormWrapper, Input, InputLabel, InputWrapper } from './raceForm.css';
 import Button from '../button/Button';
 
@@ -39,7 +39,7 @@ const validationSchema = Yup.object().shape({
 });
 
 const RaceForm: FC<RaceFormProps> = ({ formikRef, handleClose }) => {
-  const { mutate: createRecordMutation } = useCreateRecord();
+  const { mutate: createRecordMutation } = useCreateRace();
 
   return (
     <div style={{ display: 'flex' }}>
@@ -55,16 +55,24 @@ const RaceForm: FC<RaceFormProps> = ({ formikRef, handleClose }) => {
         innerRef={formikRef}
         validationSchema={validationSchema}
         onSubmit={({ date, raceName, firstName, lastName, minutes, seconds }: FormValues, { resetForm }) => {
-          const recordValues: TableRecord = {
-            fields: {
-              date,
-              raceName,
-              name: `${firstName.trim()} ${lastName.trim()}`.toLowerCase(),
-              distance: '5k',
-              time: raceTimeToSeconds(minutes, seconds),
-            },
+          // const recordValues: Race = {
+          //   fields: {
+          //     date,
+          //     raceName,
+          //     name: `${firstName.trim()} ${lastName.trim()}`.toLowerCase(),
+          //     distance: '5k',
+          //     time: raceTimeToSeconds(minutes, seconds),
+          //   },
+          // };
+
+          const newRace: Race = {
+            raceDate: date,
+            raceName,
+            distanceInMeters: 5000,
+            timeInSeconds: raceTimeToSeconds(minutes, seconds),
+            userId: 1,
           };
-          createRecordMutation(recordValues);
+          createRecordMutation(newRace);
           handleClose();
           resetForm();
         }}

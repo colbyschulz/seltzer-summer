@@ -2,7 +2,7 @@ import React, { Dispatch, FC, SetStateAction, useMemo } from 'react';
 import { LineChart, CartesianGrid, XAxis, YAxis, Line, ResponsiveContainer } from 'recharts';
 import { format } from 'date-fns';
 
-import { useRecords } from '../../api/records';
+import { useRaces } from '../../api/races';
 import { racesByNameId, secondsToRaceTime } from '../../utils';
 import colors from '../../colors';
 interface LeaderboardChartProps {
@@ -12,25 +12,25 @@ interface LeaderboardChartProps {
 const LeaderboardChart: FC<LeaderboardChartProps> = ({ activeDataKey, setActiveDataKey }) => {
   const { innerWidth } = window;
 
-  const { data: records = [] } = useRecords();
-  const dataNormalizedById = useMemo(() => racesByNameId(records), [records]);
+  const { data: races = [] } = useRaces();
+  const dataNormalizedById = useMemo(() => racesByNameId(races), [races]);
 
   const raceTimes: number[] = [];
 
   const chartDataNormalizedByDate = Object.values(dataNormalizedById).reduce((accum, raceArray) => {
-    raceArray.forEach(({ name, date, time }) => {
-      if (!accum[date]) {
-        accum[date] = {
-          date,
-          [name]: time,
+    raceArray.forEach(({ raceName, raceDate, timeInSeconds }) => {
+      if (!accum[raceDate]) {
+        accum[raceDate] = {
+          raceDate,
+          [raceName]: timeInSeconds,
         };
       } else {
-        accum[date] = {
-          ...accum[date],
-          [name]: time,
+        accum[raceDate] = {
+          ...accum[raceDate],
+          [raceName]: timeInSeconds,
         };
       }
-      raceTimes.push(time);
+      raceTimes.push(timeInSeconds);
     });
 
     return accum;
@@ -51,10 +51,11 @@ const LeaderboardChart: FC<LeaderboardChartProps> = ({ activeDataKey, setActiveD
   }
 
   const chartData = Object.values(chartDataNormalizedByDate)
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    .sort((a, b) => new Date(a.raceDate).getTime() - new Date(b.raceDate).getTime())
     .map((data) => {
-      const parsedDate = data.date.split('-');
-      const dateString = new Date(parseInt(parsedDate[0]), parseInt(parsedDate[1]) - 1, parseInt(parsedDate[2]));
+      // const parsedDate = data.raceDate.split('-');
+      // const dateString = new Date(parseInt(parsedDate[0]), parseInt(parsedDate[1]) - 1, parseInt(parsedDate[2]));
+      const dateString = new Date(data.raceDate);
       return { ...data, date: format(dateString, 'MM/dd') };
     });
 
@@ -76,7 +77,7 @@ const LeaderboardChart: FC<LeaderboardChartProps> = ({ activeDataKey, setActiveD
         />
         {Object.keys(dataNormalizedById).map((key) => {
           const raceArray = dataNormalizedById[key];
-          const name = raceArray[0].name;
+          const name = raceArray[0].raceName;
           const isLineActive = activeDataKey === name;
           const strokeColor = isLineActive ? colors.lightBrown : '#454545';
           const fillColor = isLineActive ? colors.lightBrown : '#454545';
