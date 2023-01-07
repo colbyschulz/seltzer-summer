@@ -3,14 +3,14 @@ import { Column, useTable } from 'react-table';
 import { useNavigate } from 'react-router-dom';
 
 import ArrowRight from '../../assets/images/arrow-right.svg';
-import { racesByNameId } from '../../utils';
+import { racesByUserId } from '../../utils';
 import Breadcrumbs from '../../components/breadcrumbs/Breadcrumbs';
 import { useRaces } from '../../api/races';
 import LeaderboardChart from '../../components/leaderboardChart/LeaderboardChart';
 import colors from '../../colors';
 import Card from '../../components/card/Card';
 import RaceForm from '../../components/raceForm/RaceForm';
-import Modal from '../../components/modal/Modal';
+// import Modal from '../../components/modal/Modal';
 import Button from '../../components/button/Button';
 import {
   AboutLabel,
@@ -19,22 +19,23 @@ import {
   HeaderControls,
   LeaderboardScreenWrapper,
   LeaderboardTableWrapper,
+  StyledModal,
   StyledTableCell,
 } from './leaderboardScreen.css';
 import { Table, Tbody, Th, THead, Tr } from '../../components/table/table.css';
+import { Form } from 'antd';
 
 const App: FC = () => {
   const { data: races = [] } = useRaces();
-  const [isRaceModalOpen, setIsRaceModalOpen] = React.useState(false);
+  const [isRaceModalOpen, setIsRaceModalOpen] = React.useState(true);
   const [isAboutModalOpen, setIsAboutModalOpen] = React.useState(false);
-  console.log(races);
 
-  const formikRef = useRef<any>(null);
+  const [formRef] = Form.useForm();
   const navigate = useNavigate();
 
   const [activeDataKey, setActiveDataKey] = useState<string>('');
 
-  const dataNormalizedById = useMemo(() => racesByNameId(races), [races]);
+  const dataNormalizedById = useMemo(() => racesByUserId(races), [races]);
 
   const leaderboardData = useMemo(() => {
     const enhancedData = Object.keys(dataNormalizedById).map((nameId) => {
@@ -119,8 +120,6 @@ const App: FC = () => {
     [],
   );
 
-  console.log(leaderboardData);
-
   const { getTableProps, headerGroups, rows, prepareRow } = useTable({
     columns: leaderboardColumns,
     data: leaderboardData,
@@ -131,10 +130,15 @@ const App: FC = () => {
       <HeaderControls>
         <Breadcrumbs config={[{ route: null, display: 'Leaderboard' }]} />
         <div style={{ display: 'flex' }}>
-          <Button transparent style={{ marginRight: 15 }} onClick={() => setIsAboutModalOpen(true)}>
+          <Button
+            style={{ marginRight: 15, borderColor: colors.black, color: colors.black }}
+            onClick={() => setIsAboutModalOpen(true)}
+          >
             About
           </Button>
-          <Button onClick={() => setIsRaceModalOpen(true)}>Add Race</Button>
+          <Button type="primary" onClick={() => setIsRaceModalOpen(true)}>
+            Add Race
+          </Button>
         </div>
       </HeaderControls>
 
@@ -235,22 +239,43 @@ const App: FC = () => {
           </Tbody>
         </Table>
       </LeaderboardTableWrapper>
-      <Modal
-        showModal={isRaceModalOpen}
-        onClose={() => {
+      <StyledModal
+        okText="Submit"
+        bodyStyle={{ marginTop: 20 }}
+        open={isRaceModalOpen}
+        onCancel={() => {
           setIsRaceModalOpen(false);
-          if (formikRef) {
-            formikRef.current?.resetForm();
-          }
+          formRef.resetFields();
         }}
+        footer={null}
+        maskClosable={false}
       >
-        <RaceForm formikRef={formikRef} handleClose={() => setIsRaceModalOpen(false)} />
-      </Modal>
-      <Modal
-        showModal={isAboutModalOpen}
-        onClose={() => {
+        <RaceForm
+          formRef={formRef}
+          handleClose={() => {
+            setIsRaceModalOpen(false);
+            formRef.resetFields();
+          }}
+        />
+      </StyledModal>
+
+      <StyledModal
+        open={isAboutModalOpen}
+        onCancel={() => {
           setIsAboutModalOpen(false);
         }}
+        footer={[
+          <Button
+            key="ok"
+            type="primary"
+            onClick={() => {
+              setIsAboutModalOpen(false);
+            }}
+          >
+            Cool
+          </Button>,
+        ]}
+        maskClosable={false}
       >
         <div style={{ display: 'flex', flexDirection: 'column', fontSize: '13px' }}>
           <h3 style={{ marginTop: 0, fontSize: '16px' }}>Summer of Speed 5k Challenge</h3>
@@ -275,7 +300,7 @@ const App: FC = () => {
             <AboutText>{`e.g  16:00 to 15:50 (-1.04%) vs 20:00 to 19:50(-.83%)`} </AboutText>
           </AboutWrapper>
         </div>
-      </Modal>
+      </StyledModal>
     </LeaderboardScreenWrapper>
   );
 };

@@ -23,12 +23,12 @@ export interface Race {
   distanceInMeters: number;
   raceName: string;
   user?: User;
-  userId: number;
+  userId?: number;
 }
 
 export interface User {
-  id: number;
+  id?: number;
   firstName: string;
   lastName: string;
-  races: Race[];
+  races?: Race[];
 }

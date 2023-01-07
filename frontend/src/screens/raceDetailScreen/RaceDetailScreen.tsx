@@ -3,7 +3,7 @@ import { Column, useTable } from 'react-table';
 import { useParams } from 'react-router-dom';
 import { format } from 'date-fns';
 
-import { calcPaceDifference, racesByNameId, secondsToPace } from '../../utils';
+import { calcPaceDifference, racesByUserId, secondsToPace } from '../../utils';
 import Breadcrumbs from '../../components/breadcrumbs/Breadcrumbs';
 import colors from '../../colors';
 import RaceDetailChart from '../../components/raceDetailChart/RaceDetailChart';
@@ -33,7 +33,7 @@ const DetailScreen = () => {
   const { data: races = [] } = useRaces();
   const { nameId } = useParams();
 
-  const dataNormalizedById = useMemo(() => racesByNameId(races), [races]);
+  const dataNormalizedById = useMemo(() => racesByUserId(races), [races]);
   const raceArray = (nameId && dataNormalizedById[nameId]) || [];
   const detailsName = raceArray[0]?.raceName || '';
   const breadcrumbsconfig = [

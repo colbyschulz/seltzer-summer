@@ -1,16 +1,15 @@
-import React, { FC } from 'react';
+import React, { FC, MouseEventHandler } from 'react';
 import { StyledButton } from './button.css';
 
 interface ButtonProps {
-  style?: Record<string, string | number>;
+  type?: 'link' | 'text' | 'default' | 'ghost' | 'primary' | 'dashed';
   children: React.ReactNode;
-  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
-  transparent?: boolean;
-  type?: 'button' | 'submit' | 'reset' | undefined;
+  style?: any;
+  onClick?: (MouseEventHandler<HTMLAnchorElement> & MouseEventHandler<HTMLButtonElement>) | undefined;
+  htmlType?: 'button' | 'submit' | 'reset';
 }
-
-const Button: FC<ButtonProps> = ({ style, children, onClick, transparent, type = 'button' }) => (
-  <StyledButton onClick={onClick} style={style} transparent={transparent} type={type}>
+const Button: FC<ButtonProps> = ({ type, children, style, htmlType, onClick }) => (
+  <StyledButton style={style} type={type} htmlType={htmlType} onClick={onClick}>
     {children}
   </StyledButton>
 );

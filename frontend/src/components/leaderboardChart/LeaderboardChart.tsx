@@ -3,7 +3,7 @@ import { LineChart, CartesianGrid, XAxis, YAxis, Line, ResponsiveContainer } fro
 import { format } from 'date-fns';
 
 import { useRaces } from '../../api/races';
-import { racesByNameId, secondsToRaceTime } from '../../utils';
+import { racesByUserId, secondsToRaceTime } from '../../utils';
 import colors from '../../colors';
 interface LeaderboardChartProps {
   activeDataKey: string;
@@ -13,7 +13,7 @@ const LeaderboardChart: FC<LeaderboardChartProps> = ({ activeDataKey, setActiveD
   const { innerWidth } = window;
 
   const { data: races = [] } = useRaces();
-  const dataNormalizedById = useMemo(() => racesByNameId(races), [races]);
+  const dataNormalizedById = useMemo(() => racesByUserId(races), [races]);
 
   const raceTimes: number[] = [];
 

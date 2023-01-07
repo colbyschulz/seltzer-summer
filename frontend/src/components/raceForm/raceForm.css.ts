@@ -1,19 +1,12 @@
+import { Form, Input, Select } from 'antd';
 import styled from 'styled-components';
 import colors from '../../colors';
-
-export const FormWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-`;
+import DatePicker from '../datepicker/Datepicker';
 
 interface InputProps {
   error?: boolean;
 }
-export const Input = styled.input<InputProps>`
-  padding: 2px 5px;
-  margin-bottom: 20px;
-  margin-top: 5px;
+export const StyledInput = styled(Input)<InputProps>`
   border: none;
   border-radius: none;
   box-shadow: none;
@@ -23,19 +16,41 @@ export const Input = styled.input<InputProps>`
   background-color: transparent;
 `;
 
-export const Select = styled.select`
-  padding: 5px;
-  margin-bottom: 20px;
-  margin-top: 5px;
+interface InputProps {
+  error?: boolean;
+}
+export const StyledSelect = styled(Select)<InputProps>`
+  color: ${colors.black};
+  outline: none;
+  border-bottom: ${({ error }) => (error ? `1px solid ${colors.red}` : '1px solid black')};
+  background-color: transparent;
+  width: 100%;
 `;
 
-export const InputWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
+interface InputProps {
+  error?: boolean;
+}
+export const StyledDatePicker = styled(DatePicker)<InputProps>`
+  color: ${colors.black};
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  outline: none;
+  border-bottom: ${({ error }) => (error ? `1px solid ${colors.red}` : '1px solid black')};
+  background-color: transparent;
+  width: 100%;
 `;
 
-export const InputLabel = styled.label<InputProps>`
-  font-size: 14px;
-  margin-bottom: 3px;
-  color: ${({ error }) => (error ? colors.red : colors.black)};
+export const FormItem = styled(Form.Item)`
+  margin: 0 0 20px 0;
+
+  .ant-form-item-label {
+    padding: 0 0 5px;
+  }
+  .ant-form-item-explain-error {
+    font-size: 12px;
+  }
+  .ant-select-status-error {
+    border-color: ${colors.red};
+  }
 `;

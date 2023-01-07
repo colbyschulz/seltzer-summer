@@ -1,4 +1,6 @@
+import { Modal } from 'antd';
 import styled from 'styled-components';
+import Crumpled1 from '../../assets/images/crumpled1.jpg';
 import colors from '../../colors';
 
 export const StyledTableCell = styled.td<{ isFaster?: boolean }>`
@@ -45,3 +47,5 @@ export const AboutText = styled.label`
     font-size: 12px;
   }
 `;
+
+export const StyledModal = styled(Modal)``;

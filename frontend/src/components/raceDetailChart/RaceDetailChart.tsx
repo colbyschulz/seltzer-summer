@@ -15,7 +15,7 @@ import {
 import { DefaultTooltipContent } from 'recharts/lib/component/DefaultTooltipContent';
 
 import { useRaces } from '../../api/races';
-import { racesByNameId, secondsToRaceTime } from '../../utils';
+import { racesByUserId, secondsToRaceTime } from '../../utils';
 import colors from '../../colors';
 
 const CustomTooltip: React.FC<TooltipProps<any, any>> = ({ payload, ...rest }) => {
@@ -29,7 +29,7 @@ const RaceComparisonChart: FC = () => {
   const { data: races = [] } = useRaces();
   const { nameId } = useParams();
 
-  const dataNormalizedById = useMemo(() => racesByNameId(races), [races]);
+  const dataNormalizedById = useMemo(() => racesByUserId(races), [races]);
   const raceArray = (nameId && dataNormalizedById[nameId]) || [];
   const raceArrayMutable = [...raceArray];
   const sortedByDate = raceArrayMutable?.sort(

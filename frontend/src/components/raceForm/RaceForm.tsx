@@ -1,201 +1,219 @@
 import React, { FC } from 'react';
-import * as Yup from 'yup';
-import { format } from 'date-fns';
-import { Field, FieldProps, Form, Formik } from 'formik';
 
 import { Race } from '../../types';
 import { raceTimeToSeconds } from '../../utils';
 import { useCreateRace } from '../../api/races';
-import { FormWrapper, Input, InputLabel, InputWrapper } from './raceForm.css';
+import { StyledInput, StyledSelect, StyledDatePicker, FormItem } from './raceForm.css';
 import Button from '../button/Button';
+import { useUsers } from '../../api/users';
+import { Col, Form, FormInstance, Row, Select } from 'antd';
 
 interface RaceFormProps {
-  formikRef: any;
+  formRef: FormInstance<FormValues>;
   handleClose: () => void;
 }
 
 interface FormValues {
+  userId: string;
   firstName: string;
   lastName: string;
   raceName: string;
   minutes: string;
   seconds: string;
   date: string;
+  distance: string;
 }
 
-const validationSchema = Yup.object().shape({
-  firstName: Yup.string().min(2, 'Too Short!').max(50, 'Too Long!').required('Required'),
-  lastName: Yup.string().min(2, 'Too Short!').max(50, 'Too Long!').required('Required'),
-  raceName: Yup.string().required('Required'),
-  minutes: Yup.string()
-    .required('Required')
-    .max(2)
-    .matches(/(1[0-9]|[2-5][0-9])/, ''),
-  seconds: Yup.string()
-    .required('Required')
-    .max(2)
-    .matches(/^[0-5]?[0-9]$/, ''),
-  date: Yup.string().required('Required'),
-});
+const DISTANCE_OPTIONS = [
+  { label: '1 Mile', value: '1609.34' },
+  { label: '5k', value: '5000' },
+  { label: '10k', value: '10000' },
+  { label: '10 Mile', value: '16093.4' },
+  { label: 'Half Marathon', value: '21097.5' },
+  { label: 'Marathon', value: '42195' },
+];
 
-const RaceForm: FC<RaceFormProps> = ({ formikRef, handleClose }) => {
+const RaceForm: FC<RaceFormProps> = ({ formRef, handleClose }) => {
   const { mutate: createRecordMutation } = useCreateRace();
+  const { data: users } = useUsers();
+  const reset = formRef.resetFields;
+  const userId = Form.useWatch('userId', formRef);
+
+  const userFormOptions =
+    users?.map((user) => (
+      <Select.Option key={user.id} value={user.id?.toString()}>
+        {`${user.firstName} ${user.lastName}`}
+      </Select.Option>
+    )) || [];
+  userFormOptions.unshift(
+    <Select.Option key="new" value="new" style={{ borderBottom: '1px solid lightGrey', borderRadius: 0 }}>
+      + Add New Racer
+    </Select.Option>,
+  );
 
   return (
-    <div style={{ display: 'flex' }}>
-      <Formik
-        initialValues={{
-          firstName: '',
-          lastName: '',
-          minutes: '',
-          seconds: '',
-          raceName: '',
-          date: format(new Date(), 'yyyy-MM-dd'),
-        }}
-        innerRef={formikRef}
-        validationSchema={validationSchema}
-        onSubmit={({ date, raceName, firstName, lastName, minutes, seconds }: FormValues, { resetForm }) => {
-          // const recordValues: Race = {
-          //   fields: {
-          //     date,
-          //     raceName,
-          //     name: `${firstName.trim()} ${lastName.trim()}`.toLowerCase(),
-          //     distance: '5k',
-          //     time: raceTimeToSeconds(minutes, seconds),
-          //   },
-          // };
-
-          const newRace: Race = {
-            raceDate: date,
-            raceName,
-            distanceInMeters: 5000,
-            timeInSeconds: raceTimeToSeconds(minutes, seconds),
-            userId: 1,
+    <Form
+      form={formRef}
+      layout="vertical"
+      name="raceForm"
+      validateMessages={{
+        required: 'Required',
+        pattern: { mismatch: 'Invalid format' },
+        string: { min: 'Must be 2 chars', max: 'Invalid format' },
+        number: { max: '' },
+      }}
+      initialValues={{
+        userId: null,
+        firstName: '',
+        lastName: '',
+        minutes: '',
+        seconds: '',
+        raceName: '',
+        distance: null,
+        date: new Date(),
+      }}
+      onFinish={({ date, raceName, minutes, seconds, userId, firstName, lastName }: FormValues) => {
+        const newRace: Race = {
+          raceDate: date,
+          raceName,
+          distanceInMeters: 5000,
+          timeInSeconds: raceTimeToSeconds(minutes, seconds),
+        };
+        if (userId === 'new') {
+          newRace.user = {
+            firstName,
+            lastName,
           };
-          createRecordMutation(newRace);
-          handleClose();
-          resetForm();
-        }}
+        } else {
+          newRace.userId = parseInt(userId);
+        }
+
+        createRecordMutation(newRace);
+        reset();
+        handleClose();
+      }}
+    >
+      <FormItem
+        wrapperCol={{ span: 24 }}
+        label="Name"
+        name="userId"
+        rules={[{ required: true }]}
+        required={false}
+        validateTrigger="onBlur"
       >
-        {({ handleChange, errors, touched }) => {
-          return (
-            <Form>
-              <FormWrapper>
-                <div style={{ display: 'flex', width: '100%' }}>
-                  <Field name="firstName" id="firstName">
-                    {({ field, form: { touched, errors } }: FieldProps) => (
-                      <InputWrapper>
-                        <InputLabel error={touched.firstName && !!errors.firstName} htmlFor="firstName">
-                          First Name
-                        </InputLabel>
-                        <Input
-                          type="text"
-                          placeholder="Seltzer"
-                          error={touched.firstName && !!errors.firstName}
-                          {...field}
-                        />
-                      </InputWrapper>
-                    )}
-                  </Field>
+        <StyledSelect
+          bordered={false}
+          dropdownStyle={{
+            borderRadius: 2,
+          }}
+          showSearch
+          placeholder="Name"
+          filterOption={(input, option) => {
+            if (option?.value === 'new') {
+              return true;
+            }
+            return (option?.children ?? '').toLowerCase().includes(input.toLowerCase());
+          }}
+        >
+          {userFormOptions}
+        </StyledSelect>
+      </FormItem>
+      {userId === 'new' && (
+        <Row gutter={10}>
+          <Col span={12}>
+            <FormItem
+              label="Name"
+              name="firstName"
+              id="lastName"
+              rules={[{ required: userId === 'new' ? true : false }, { min: 2 }]}
+              required={false}
+              validateTrigger="onBlur"
+            >
+              <StyledInput placeholder="First Name" />
+            </FormItem>
+          </Col>
 
-                  <Field name="lastName" id="lastName">
-                    {({ field, form: { touched, errors } }: FieldProps) => (
-                      <InputWrapper style={{ flex: 1 }}>
-                        <InputLabel error={touched.lastName && !!errors.lastName} htmlFor="lastName">
-                          Last Name
-                        </InputLabel>
-                        <Input
-                          error={touched.lastName && !!errors.lastName}
-                          type="text"
-                          placeholder="Enthusiast"
-                          {...field}
-                        />
-                      </InputWrapper>
-                    )}
-                  </Field>
-                </div>
+          <Col span={12}>
+            <FormItem
+              label=" "
+              name="lastName"
+              id="lastName"
+              rules={[{ required: userId === 'new' ? true : false }, { min: 2 }]}
+              required={false}
+              validateTrigger="onBlur"
+            >
+              <StyledInput placeholder="Last Name" />
+            </FormItem>
+          </Col>
+        </Row>
+      )}
 
-                <div style={{ display: 'flex', width: '100%' }}>
-                  <Field name="raceName" id="raceName">
-                    {({ field, form: { touched, errors } }: FieldProps) => (
-                      <InputWrapper style={{ width: '100%' }}>
-                        <InputLabel error={touched.raceName && !!errors.raceName} htmlFor="raceName">
-                          Race Name
-                        </InputLabel>
-                        <Input
-                          error={touched.raceName && !!errors.raceName}
-                          type="text"
-                          placeholder="Seltzer Summer 5k"
-                          {...field}
-                        />
-                      </InputWrapper>
-                    )}
-                  </Field>
-                </div>
+      <FormItem
+        wrapperCol={{ span: 24 }}
+        label="Distance"
+        name="distance"
+        rules={[{ required: true }]}
+        required={false}
+        validateTrigger="onBlur"
+      >
+        <StyledSelect
+          bordered={false}
+          dropdownStyle={{
+            borderRadius: 2,
+          }}
+          placeholder="Distance"
+          options={DISTANCE_OPTIONS}
+        />
+      </FormItem>
 
-                <div style={{ display: 'flex', alignItems: 'flex-end' }}>
-                  <Field name="date" id="date">
-                    {({ field, form: { touched, errors } }: FieldProps) => (
-                      <InputWrapper>
-                        <InputLabel error={touched.date && !!errors.date} htmlFor="date">
-                          Date
-                        </InputLabel>
-                        <Input
-                          error={touched.date && !!errors.date}
-                          id="date"
-                          type="date"
-                          {...field}
-                          onChange={handleChange}
-                        />
-                      </InputWrapper>
-                    )}
-                  </Field>
-
-                  <InputWrapper>
-                    <InputLabel error={(touched.minutes && !!errors.minutes) || (touched.seconds && !!errors.seconds)}>
-                      Time
-                    </InputLabel>
-                    <div style={{ display: 'flex', alignItems: 'flex-end' }}>
-                      <Field name="minutes" id="minutes">
-                        {({ field, form: { touched, errors } }: FieldProps) => (
-                          <>
-                            <Input
-                              error={touched.minutes && !!errors.minutes}
-                              placeholder="Mins"
-                              type="number"
-                              {...field}
-                              style={{ width: '65px' }}
-                            />
-                          </>
-                        )}
-                      </Field>
-                      <div style={{ marginBottom: '20px' }}>:</div>
-                      <Field name="seconds" id="seconds">
-                        {({ field, form: { touched, errors } }: FieldProps) => (
-                          <>
-                            <Input
-                              error={touched.seconds && !!errors.seconds}
-                              placeholder="Secs"
-                              type="number"
-                              {...field}
-                              style={{ width: '100%' }}
-                            />
-                          </>
-                        )}
-                      </Field>
-                    </div>
-                  </InputWrapper>
-                </div>
-
-                <Button style={{ alignSelf: 'center', marginTop: '20px' }} type="submit">
-                  Submit
-                </Button>
-              </FormWrapper>
-            </Form>
-          );
-        }}
-      </Formik>
-    </div>
+      <FormItem
+        label="Race Name"
+        name="raceName"
+        rules={[{ required: true }, { min: 2 }]}
+        required={false}
+        validateTrigger="onBlur"
+      >
+        <StyledInput type="text" placeholder="Seltzer Summer 5k" />
+      </FormItem>
+      <FormItem label="Date" name="date" rules={[{ required: true }]} required={false} validateTrigger="onBlur">
+        <StyledDatePicker format={'MM-DD-YYYY'} />
+      </FormItem>
+      <Row gutter={0} align="bottom">
+        <Col>
+          <FormItem
+            label="Race Time"
+            name="minutes"
+            id="minutes"
+            rules={[{ pattern: new RegExp(/^[1-9]?[0-9]$/) }, { max: 2 }, { required: true }]}
+            required={false}
+            validateTrigger="onBlur"
+          >
+            <StyledInput placeholder="Mins" type="number" />
+          </FormItem>
+        </Col>
+        <Col style={{ marginBottom: 20, textAlign: 'center', fontSize: 18 }}>:</Col>
+        <Col>
+          <FormItem
+            label=" "
+            name="seconds"
+            id="seconds"
+            rules={[{ pattern: new RegExp(/^[0-5]?[0-9]$/) }, { max: 2 }, { required: true }]}
+            required={false}
+            validateTrigger="onBlur"
+          >
+            <StyledInput placeholder="Secs" type="number" />
+          </FormItem>
+        </Col>
+      </Row>
+      <Row justify="end">
+        <Button style={{ margin: '20px 20px 0 0' }} onClick={handleClose}>
+          Cancel
+        </Button>
+        <Button style={{ marginTop: '20px' }} type="primary" htmlType="submit">
+          Submit
+        </Button>
+      </Row>
+    </Form>
   );
 };
 

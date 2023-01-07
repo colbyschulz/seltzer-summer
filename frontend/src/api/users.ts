@@ -1,10 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { queryKeys } from './config';
-import { Race } from '../types';
+import { User } from '../types';
 import { baseUrl } from './config';
 
-const getRaces = async () => {
-  const response = await fetch(`${baseUrl}/races`, {
+const getUsers = async () => {
+  const response = await fetch(`${baseUrl}/users`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${process.env.PUBLIC_API_KEY}`,
@@ -15,33 +15,33 @@ const getRaces = async () => {
     throw new Error(response.statusText);
   }
 
-  const races: Race[] = await response.json();
+  const users: User[] = await response.json();
 
-  return races;
+  return users;
 };
 
-export const useRaces = () => useQuery(queryKeys.races, getRaces);
+export const useUsers = () => useQuery(queryKeys.users, getUsers);
 
-const createRace = async (newRace: Race) => {
-  const response = await fetch(`${baseUrl}/races`, {
+const createUser = async (newUser: User) => {
+  const response = await fetch(baseUrl, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${process.env.PUBLIC_API_KEY}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(newRace),
+    body: JSON.stringify(newUser),
   });
-  const race: Race = await response.json();
+  const race: User = await response.json();
 
   return race;
 };
 
-export const useCreateRace = () => {
+export const useCreateUser = () => {
   const queryClient = useQueryClient();
 
-  return useMutation(createRace, {
+  return useMutation(createUser, {
     onSuccess: () => {
-      queryClient.invalidateQueries();
+      queryClient.invalidateQueries(queryKeys.users);
     },
     onError: (e) => {
       console.log(e);

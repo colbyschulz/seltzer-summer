@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon",
-    "db:create": "npx sequelize-cli db:create"
+    "db:create": "npx sequelize-cli db:create",
+    "db:reset": "npx prisma migrate reset"
   },
   "author": "",
   "license": "ISC",

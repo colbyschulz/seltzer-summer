@@ -5,5 +5,6 @@ export const baseUrl =
 
 export const queryKeys = {
   races: 'races',
+  users: 'users',
   race: 'race',
 };

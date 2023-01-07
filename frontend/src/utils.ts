@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import { Race, TableRecordFields } from './types';
+import { Race } from './types';
 
 export const capitalize = (string: string) => {
   const capitalized = string
@@ -24,13 +24,17 @@ export const secondsToRaceTime = (timeInSeconds: number) => {
   return `${minutes}:${seconds}`;
 };
 
-export const racesByNameId = (races: Race[]) => {
+export const racesByUserId = (races: Race[]) => {
   if (races) {
     const byId = races.reduce((accum, race) => {
-      if (!accum[race.userId]) {
-        accum[race.userId] = [race];
+      const userId = race.userId;
+      if (!userId) {
+        return accum;
+      }
+      if (!accum[userId]) {
+        accum[userId] = [race];
       } else {
-        accum[race.userId].push(race);
+        accum[userId].push(race);
       }
 
       return accum;

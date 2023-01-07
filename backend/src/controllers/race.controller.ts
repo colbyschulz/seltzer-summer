@@ -1,33 +1,55 @@
 import prismaClient from '../prismaClient';
 
 const createRace = async (req, res) => {
-  const { raceDate, raceName, timeInSeconds, distanceInMeters, userId } = req.body;
+  const { raceDate, raceName, timeInSeconds, distanceInMeters, userId, user } = req.body;
   // Validate request
-  if (!raceDate || !raceName || !timeInSeconds || !distanceInMeters || !userId) {
+  if (!raceDate || !raceName || !timeInSeconds || !distanceInMeters) {
     res.status(400).send({
       message: 'Must include all fields',
     });
     return;
   }
 
-  // Create a Race
-  const race = {
-    raceDate: new Date(raceDate),
-    raceName,
-    timeInSeconds: Number(timeInSeconds),
-    distanceInMeters: Number(distanceInMeters),
-    user: { connect: { id: Number(userId) } },
-  };
+  if (userId) {
+    // Create a Race
+    const race = {
+      raceDate: new Date(raceDate),
+      raceName,
+      timeInSeconds: Number(timeInSeconds),
+      distanceInMeters: Number(distanceInMeters),
+      user: { connect: { id: Number(userId) } },
+    };
 
-  try {
-    const result = await prismaClient.race.create({
-      data: race,
-    });
-    res.json(result);
-  } catch (err) {
-    res.status(500).send({
-      message: err.message || 'Some error occurred while creating the Race.',
-    });
+    try {
+      const result = await prismaClient.race.create({
+        data: race,
+      });
+      res.json(result);
+    } catch (err) {
+      res.status(500).send({
+        message: err.message || 'Some error occurred while creating the Race.',
+      });
+    }
+  } else {
+    // Create a Race with new user
+    const race = {
+      raceDate: new Date(raceDate),
+      raceName,
+      timeInSeconds: Number(timeInSeconds),
+      distanceInMeters: Number(distanceInMeters),
+      user: { create: { firstName: user.firstName, lastName: user.lastName } },
+    };
+
+    try {
+      const result = await prismaClient.race.create({
+        data: race,
+      });
+      res.json(result);
+    } catch (err) {
+      res.status(500).send({
+        message: err.message || 'Some error occurred while creating the Race.',
+      });
+    }
   }
 };
 
@@ -38,7 +60,6 @@ const findAllRaces = async (req, res) => {
         user: true,
       },
     });
-    console.log(races);
 
     res.json(races);
   } catch (err) {
