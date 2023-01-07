@@ -1,6 +1,7 @@
-import React, { FC, useMemo, useRef, useState } from 'react';
-import { Column, useTable } from 'react-table';
+import React, { FC, useMemo, useState } from 'react';
+import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { useNavigate } from 'react-router-dom';
+import { Form } from 'antd';
 
 import ArrowRight from '../../assets/images/arrow-right.svg';
 import { racesByUserId } from '../../utils';
@@ -10,7 +11,6 @@ import LeaderboardChart from '../../components/leaderboardChart/LeaderboardChart
 import colors from '../../colors';
 import Card from '../../components/card/Card';
 import RaceForm from '../../components/raceForm/RaceForm';
-// import Modal from '../../components/modal/Modal';
 import Button from '../../components/button/Button';
 import {
   AboutLabel,
@@ -23,30 +23,78 @@ import {
   StyledTableCell,
 } from './leaderboardScreen.css';
 import { Table, Tbody, Th, THead, Tr } from '../../components/table/table.css';
-import { Form } from 'antd';
 
-const App: FC = () => {
+type LeaderboardData = {
+  position: string;
+  userFullName: string | undefined;
+  numRaces: string;
+  delta: string;
+  arrow: string;
+};
+const columnHelper = createColumnHelper<LeaderboardData>();
+const columns = [
+  columnHelper.accessor('position', {
+    cell: (info) => info.getValue(),
+    header: () => 'Pos',
+  }),
+  columnHelper.accessor('userFullName', {
+    cell: (info) => info.getValue(),
+    header: () => 'Name',
+  }),
+  columnHelper.accessor('numRaces', {
+    header: () => 'Races',
+    cell: (info) => info.getValue(),
+  }),
+  columnHelper.accessor('delta', {
+    header: () => 'Delta',
+    cell: (info) => info.getValue(),
+  }),
+  columnHelper.accessor('arrow', {
+    header: () => 'Details',
+    cell: () => (
+      <Button
+        style={{
+          marginBottom: 0,
+          width: 'auto',
+          padding: '7px',
+          minHeight: 'unset',
+          maxWidth: '80px',
+          backgroundColor: colors.tan,
+        }}
+      >
+        <img
+          style={{ alignSelf: 'center', display: 'flex', width: '12px', padding: 0 }}
+          src={ArrowRight}
+          width={12}
+          alt="Arrow"
+        />
+      </Button>
+    ),
+  }),
+];
+
+const LeaderboardScreen: FC = () => {
   const { data: races = [] } = useRaces();
-  const [isRaceModalOpen, setIsRaceModalOpen] = React.useState(true);
-  const [isAboutModalOpen, setIsAboutModalOpen] = React.useState(false);
-
-  const [formRef] = Form.useForm();
   const navigate = useNavigate();
-
+  const [isRaceModalOpen, setIsRaceModalOpen] = React.useState(false);
+  const [isAboutModalOpen, setIsAboutModalOpen] = React.useState(false);
   const [activeDataKey, setActiveDataKey] = useState<string>('');
+  const [formRef] = Form.useForm();
 
-  const dataNormalizedById = useMemo(() => racesByUserId(races), [races]);
+  const dataNormalizedByUserId = useMemo(() => racesByUserId(races), [races]);
 
   const leaderboardData = useMemo(() => {
-    const enhancedData = Object.keys(dataNormalizedById).map((nameId) => {
-      const raceArray = dataNormalizedById[nameId];
-      const raceArrayMutable = [...raceArray];
-      const sortedByDate = raceArrayMutable.sort(
+    const enhancedData = Object.keys(dataNormalizedByUserId).map((userId) => {
+      const userRaceArray = dataNormalizedByUserId[userId];
+      const userRaceArrayMutable = [...userRaceArray];
+      const sortedByDate = userRaceArrayMutable.sort(
         (a, b) => new Date(a.raceDate).getTime() - new Date(b.raceDate).getTime(),
       );
+      // Users first race by which all comparisons are made
       const baseRace = sortedByDate.splice(0, 1)[0];
-      const fastestRemainingRace = raceArrayMutable.find(
-        (race) => race.timeInSeconds === Math.min(...raceArrayMutable.map((race) => race.timeInSeconds)),
+      // Users fastest race not including base race
+      const fastestRemainingRace = userRaceArrayMutable.find(
+        (race) => race.timeInSeconds === Math.min(...userRaceArrayMutable.map((race) => race.timeInSeconds)),
       );
       const deltaAsPercentage =
         (fastestRemainingRace?.timeInSeconds &&
@@ -54,75 +102,27 @@ const App: FC = () => {
         0;
 
       return {
-        nameId,
-        name: baseRace.raceName,
-        numRaces: raceArray.length.toString(),
+        userFullName: baseRace?.user?.userFullName,
+        numRaces: userRaceArray.length.toString(),
         deltaAsPercentage,
       };
     });
 
     return enhancedData
       .sort((a, b) => a.deltaAsPercentage - b.deltaAsPercentage)
-      .map(({ name, numRaces, deltaAsPercentage, nameId }, i) => ({
-        nameId,
-        name,
+      .map(({ numRaces, deltaAsPercentage, userFullName }, i) => ({
         position: (i + 1).toString(),
+        userFullName,
         numRaces,
         delta: deltaAsPercentage === 0 ? `${deltaAsPercentage}%` : `${deltaAsPercentage.toFixed(2)}%`,
         arrow: '',
       }));
   }, [races]);
 
-  const leaderboardColumns: Array<
-    Column<{ position: string; name: string; numRaces: string; delta: string; nameId: string; arrow: string }>
-  > = useMemo(
-    () => [
-      {
-        Header: 'Pos',
-        accessor: 'position',
-      },
-      {
-        Header: 'Name',
-        accessor: 'name',
-      },
-      {
-        Header: 'Races',
-        accessor: 'numRaces',
-      },
-      {
-        Header: 'Delta',
-        accessor: 'delta',
-      },
-      {
-        Header: 'Details',
-        Cell: () => (
-          <Button
-            style={{
-              marginBottom: 0,
-              width: 'auto',
-              padding: '7px',
-              minHeight: 'unset',
-              maxWidth: '80px',
-              backgroundColor: colors.tan,
-            }}
-          >
-            <img
-              style={{ alignSelf: 'center', display: 'flex', width: '12px', padding: 0 }}
-              src={ArrowRight}
-              width={12}
-              alt="Arrow"
-            />
-          </Button>
-        ),
-        accessor: 'arrow',
-      },
-    ],
-    [],
-  );
-
-  const { getTableProps, headerGroups, rows, prepareRow } = useTable({
-    columns: leaderboardColumns,
+  const table = useReactTable({
     data: leaderboardData,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
   });
 
   return (
@@ -147,38 +147,28 @@ const App: FC = () => {
       </Card>
 
       <LeaderboardTableWrapper>
-        <Table {...getTableProps()} cellSpacing="0" cellPadding="0" width="100%">
+        <Table cellSpacing="0" cellPadding="0" width="100%">
           <THead>
-            {headerGroups.map((headerGroup) => {
-              const { key, ...restHeaderGroupProps } = headerGroup.getHeaderGroupProps();
-              return (
-                <Tr key={key} {...restHeaderGroupProps}>
-                  {headerGroup.headers.map((column) => {
-                    const { key, ...restHeaderProps } = column.getHeaderProps();
-                    return (
-                      <Th
-                        key={key}
-                        style={{
-                          textAlign:
-                            column.id === 'arrow' || column.id === 'numRaces' || column.id === 'position'
-                              ? 'center'
-                              : 'left',
-                        }}
-                        {...restHeaderProps}
-                      >
-                        {column.render('Header')}
-                      </Th>
-                    );
-                  })}
-                </Tr>
-              );
-            })}
+            {table.getHeaderGroups().map((headerGroup) => (
+              <Tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <Th
+                    key={header.id}
+                    style={{
+                      textAlign:
+                        header.id === 'arrow' || header.id === 'numRaces' || header.id === 'position'
+                          ? 'center'
+                          : 'left',
+                    }}
+                  >
+                    {flexRender(header.column.columnDef.header, header.getContext())}
+                  </Th>
+                ))}
+              </Tr>
+            ))}
           </THead>
           <Tbody>
-            {rows.map((row, i) => {
-              prepareRow(row);
-              const { key, ...restRowProps } = row.getRowProps();
-
+            {table.getRowModel().rows.map((row, i) => {
               let rowColor;
               if (i === 0) {
                 rowColor = 'rgb(220, 188, 15, 0.15)';
@@ -189,31 +179,34 @@ const App: FC = () => {
               } else {
                 rowColor = 'transparent';
               }
-              const backgroundColor = row.original.name === activeDataKey ? 'rgb(65, 41, 5, 0.2)' : rowColor;
+
+              const backgroundColor = row.original.userFullName === activeDataKey ? 'rgb(65, 41, 5, 0.2)' : rowColor;
+
               return (
                 <Tr
-                  key={key}
-                  {...restRowProps}
+                  key={row.id}
                   style={{ cursor: 'pointer', backgroundColor, borderBottom: '1px solid', borderColor: colors.tan }}
                 >
-                  {row.cells.map((cell) => {
-                    const { key, ...restCellProps } = cell.getCellProps();
+                  {row.getVisibleCells().map((cell) => {
+                    const cellValue = cell.getValue() as string;
+
                     const cellColor =
-                      cell.column.Header === 'Delta'
-                        ? cell.value.includes('-')
+                      cell.column.id === 'delta'
+                        ? cellValue.includes('-')
                           ? colors.green
-                          : cell.value === '0%'
+                          : cellValue === '0%'
                           ? colors.black
                           : colors.red
                         : colors.black;
+
                     return (
                       <StyledTableCell
-                        key={key}
+                        key={cell.id}
                         onClick={() => {
                           if (cell.column.id === 'arrow') {
-                            navigate(`/${row.original.nameId}`);
+                            navigate(`/${row.original.userFullName}`);
                           } else {
-                            setActiveDataKey(row.original.name);
+                            setActiveDataKey(row.original.userFullName ?? '');
                           }
                         }}
                         style={{
@@ -227,9 +220,8 @@ const App: FC = () => {
                               ? 'center'
                               : 'left',
                         }}
-                        {...restCellProps}
                       >
-                        {cell.render('Cell')}
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </StyledTableCell>
                     );
                   })}
@@ -305,4 +297,4 @@ const App: FC = () => {
   );
 };
 
-export default App;
+export default LeaderboardScreen;

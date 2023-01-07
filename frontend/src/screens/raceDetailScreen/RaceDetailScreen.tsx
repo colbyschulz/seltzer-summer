@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Column, useTable } from 'react-table';
+// import { Column, useTable } from 'react-table';
 import { useParams } from 'react-router-dom';
 import { format } from 'date-fns';
 
@@ -95,33 +95,33 @@ const DetailScreen = () => {
     return data;
   }, [races]);
 
-  const detailColumns: Array<Column<FormattedRowData>> = useMemo(
-    () => [
-      {
-        Header: 'Date',
-        accessor: 'date',
-      },
-      {
-        Header: 'Race',
-        accessor: 'raceName',
-      },
-      {
-        Header: 'Time',
-        accessor: 'time',
-      },
-    ],
-    [],
-  );
+  // const detailColumns: Array<Column<FormattedRowData>> = useMemo(
+  //   () => [
+  //     {
+  //       Header: 'Date',
+  //       accessor: 'date',
+  //     },
+  //     {
+  //       Header: 'Race',
+  //       accessor: 'raceName',
+  //     },
+  //     {
+  //       Header: 'Time',
+  //       accessor: 'time',
+  //     },
+  //   ],
+  //   [],
+  // );
 
-  const {
-    getTableProps: getRaceDetailTableProps,
-    headerGroups: raceDetailHeaderGroups,
-    rows: raceDetailRows,
-    prepareRow: raceDetailPrepareRow,
-  } = useTable({
-    columns: detailColumns,
-    data: formatedAndSortedRowData,
-  });
+  // const {
+  //   getTableProps: getRaceDetailTableProps,
+  //   headerGroups: raceDetailHeaderGroups,
+  //   rows: raceDetailRows,
+  //   prepareRow: raceDetailPrepareRow,
+  // } = useTable({
+  //   columns: detailColumns,
+  //   data: formatedAndSortedRowData,
+  // });
 
   return (
     <DetailScreenWrapper>
@@ -155,7 +155,7 @@ const DetailScreen = () => {
       </Card>
 
       <DetailTableWrapper>
-        <Table {...getRaceDetailTableProps()} cellSpacing="0" cellPadding="0" width="100%">
+        {/* <Table {...getRaceDetailTableProps()} cellSpacing="0" cellPadding="0" width="100%">
           <THead>
             {raceDetailHeaderGroups.map((headerGroup) => {
               const { key, ...restHeaderGroupProps } = headerGroup.getHeaderGroupProps();
@@ -229,7 +229,7 @@ const DetailScreen = () => {
                 );
               })}
           </Tbody>
-        </Table>
+        </Table> */}
       </DetailTableWrapper>
     </DetailScreenWrapper>
   );

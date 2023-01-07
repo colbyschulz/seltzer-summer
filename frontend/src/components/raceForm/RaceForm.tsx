@@ -83,6 +83,7 @@ const RaceForm: FC<RaceFormProps> = ({ formRef, handleClose }) => {
           newRace.user = {
             firstName,
             lastName,
+            userFullName: `${firstName} ${lastName}`,
           };
         } else {
           newRace.userId = parseInt(userId);

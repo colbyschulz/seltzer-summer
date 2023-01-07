@@ -15,6 +15,7 @@ const createUser = async (req, res) => {
   const user = {
     firstName,
     lastName,
+    userFullName: `${firstName} ${lastName}`,
   };
 
   try {

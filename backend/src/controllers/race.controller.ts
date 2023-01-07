@@ -37,7 +37,13 @@ const createRace = async (req, res) => {
       raceName,
       timeInSeconds: Number(timeInSeconds),
       distanceInMeters: Number(distanceInMeters),
-      user: { create: { firstName: user.firstName, lastName: user.lastName } },
+      user: {
+        create: {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          userFullName: `${user.firstName} ${user.lastName}`,
+        },
+      },
     };
 
     try {
