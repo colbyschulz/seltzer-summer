@@ -1,9 +1,9 @@
-import React, { Dispatch, FC, SetStateAction, useMemo } from 'react';
+import React, { Dispatch, FC, SetStateAction } from 'react';
 import { LineChart, CartesianGrid, XAxis, YAxis, Line, ResponsiveContainer } from 'recharts';
 import { format } from 'date-fns';
 
 import { useRaces } from '../../api/races';
-import { racesByUserId, secondsToRaceTime } from '../../utils';
+import { secondsToRaceTime } from '../../utils';
 import colors from '../../colors';
 interface LeaderboardChartProps {
   activeDataKey: string;
@@ -11,36 +11,31 @@ interface LeaderboardChartProps {
 }
 const LeaderboardChart: FC<LeaderboardChartProps> = ({ activeDataKey, setActiveDataKey }) => {
   const { innerWidth } = window;
-
   const { data: races = [] } = useRaces();
-  const dataNormalizedById = useMemo(() => racesByUserId(races), [races]);
-
-  const raceTimes: number[] = [];
-
-  const chartDataNormalizedByDate = Object.values(dataNormalizedById).reduce((accum, raceArray) => {
-    raceArray.forEach(({ raceName, raceDate, timeInSeconds }) => {
-      if (!accum[raceDate]) {
-        accum[raceDate] = {
-          raceDate,
-          [raceName]: timeInSeconds,
-        };
-      } else {
-        accum[raceDate] = {
-          ...accum[raceDate],
-          [raceName]: timeInSeconds,
-        };
-      }
-      raceTimes.push(timeInSeconds);
-    });
-
+  const allRaceTimes = races.map((race) => race.timeInSeconds).sort((a, b) => a - b);
+  const users: string[] = [];
+  const racesNormalizedByDate = races.reduce((accum, race) => {
+    const { user, timeInSeconds, raceDate } = race;
+    const userName = user?.userFullName ?? 'user';
+    const formattedDate = format(new Date(raceDate), 'M/dd');
+    if (!accum[formattedDate]) {
+      accum[formattedDate] = {
+        [userName]: timeInSeconds,
+        raceDate: formattedDate,
+      };
+    } else {
+      accum[formattedDate] = {
+        ...accum[formattedDate],
+        [userName]: timeInSeconds,
+      };
+    }
+    users.push(userName);
     return accum;
-  }, {} as { [dataKey: string]: any });
+  }, {} as { [date: string]: { [name: string]: number | string } });
+  const chartData = Object.values(racesNormalizedByDate);
 
-  raceTimes.sort((a, b) => a - b);
-
-  const upperBound = raceTimes[raceTimes.length - 1];
-  const lowerBound = raceTimes[0];
-
+  const upperBound = allRaceTimes[allRaceTimes.length - 1];
+  const lowerBound = allRaceTimes[0];
   const floor = Math.floor(lowerBound / 60);
   const ceiling = Math.ceil(upperBound / 60);
   const floorTime = floor * 60;
@@ -50,22 +45,13 @@ const LeaderboardChart: FC<LeaderboardChartProps> = ({ activeDataKey, setActiveD
     ticks.push(i);
   }
 
-  const chartData = Object.values(chartDataNormalizedByDate)
-    .sort((a, b) => new Date(a.raceDate).getTime() - new Date(b.raceDate).getTime())
-    .map((data) => {
-      // const parsedDate = data.raceDate.split('-');
-      // const dateString = new Date(parseInt(parsedDate[0]), parseInt(parsedDate[1]) - 1, parseInt(parsedDate[2]));
-      const dateString = new Date(data.raceDate);
-      return { ...data, date: format(dateString, 'MM/dd') };
-    });
-
   return (
     <ResponsiveContainer aspect={1.6} maxHeight={450} minHeight={innerWidth > 840 ? 450 : 206}>
       <LineChart data={chartData} margin={{ top: 10, right: 10, left: -10, bottom: 5 }}>
         <CartesianGrid />
-        <XAxis dataKey="date" tick={{ fontSize: '14px' }} />
+        <XAxis dataKey="raceDate" tick={{ fontSize: '12px' }} />
         <YAxis
-          tick={{ fontSize: '14px' }}
+          tick={{ fontSize: '12px' }}
           ticks={ticks}
           interval={1}
           scale="linear"
@@ -75,10 +61,8 @@ const LeaderboardChart: FC<LeaderboardChartProps> = ({ activeDataKey, setActiveD
             return secondsToRaceTime(v);
           }}
         />
-        {Object.keys(dataNormalizedById).map((key) => {
-          const raceArray = dataNormalizedById[key];
-          const name = raceArray[0].raceName;
-          const isLineActive = activeDataKey === name;
+        {users.map((userFullNameDatakey) => {
+          const isLineActive = activeDataKey === userFullNameDatakey;
           const strokeColor = isLineActive ? colors.lightBrown : '#454545';
           const fillColor = isLineActive ? colors.lightBrown : '#454545';
           const radius = isLineActive ? 4 : 2;
@@ -87,12 +71,12 @@ const LeaderboardChart: FC<LeaderboardChartProps> = ({ activeDataKey, setActiveD
             <Line
               cursor="pointer"
               onClick={() => {
-                setActiveDataKey(name);
+                setActiveDataKey(userFullNameDatakey);
               }}
               isAnimationActive={false}
-              key={key}
+              key={userFullNameDatakey}
               type="monotone"
-              dataKey={name}
+              dataKey={userFullNameDatakey}
               strokeWidth={lineStrokeWidth}
               stroke={strokeColor}
               dot={{
@@ -102,7 +86,7 @@ const LeaderboardChart: FC<LeaderboardChartProps> = ({ activeDataKey, setActiveD
                 r: radius,
                 stroke: strokeColor,
                 onClick: () => {
-                  setActiveDataKey(name);
+                  setActiveDataKey(userFullNameDatakey);
                 },
               }}
               connectNulls
