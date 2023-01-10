@@ -22,6 +22,25 @@ const getUsers = async () => {
 
 export const useUsers = () => useQuery(queryKeys.users, getUsers);
 
+const getUser = async (userId?: string) => {
+  const response = await fetch(`${baseUrl}/users/${userId}`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${process.env.PUBLIC_API_KEY}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+
+  const user: User = await response.json();
+
+  return user;
+};
+
+export const useUser = (userId?: string) => useQuery([queryKeys.users, userId], () => getUser(userId));
+
 const createUser = async (newUser: User) => {
   const response = await fetch(baseUrl, {
     method: 'POST',

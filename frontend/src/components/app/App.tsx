@@ -29,7 +29,7 @@ const App = () => {
 
         <Routes>
           <Route path="/" element={<LeaderboardScreen />} />
-          <Route path="/:nameId" element={<DetailScreen />} />
+          <Route path="/:userId" element={<DetailScreen />} />
         </Routes>
 
         <FooterWrapper>

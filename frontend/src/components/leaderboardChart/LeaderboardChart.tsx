@@ -5,15 +5,16 @@ import { format } from 'date-fns';
 import { useRaces } from '../../api/races';
 import { secondsToRaceTime } from '../../utils';
 import colors from '../../colors';
+import { User } from '../../types';
 interface LeaderboardChartProps {
-  activeDataKey: string;
-  setActiveDataKey: Dispatch<SetStateAction<string>>;
+  activeDataKey: number | null;
+  setActiveDataKey: Dispatch<SetStateAction<number | null>>;
 }
 const LeaderboardChart: FC<LeaderboardChartProps> = ({ activeDataKey, setActiveDataKey }) => {
   const { innerWidth } = window;
   const { data: races = [] } = useRaces();
   const allRaceTimes = races.map((race) => race.timeInSeconds).sort((a, b) => a - b);
-  const users: string[] = [];
+  const users: User[] = [];
   const racesNormalizedByDate = races.reduce((accum, race) => {
     const { user, timeInSeconds, raceDate } = race;
     const userName = user?.userFullName ?? 'user';
@@ -29,7 +30,7 @@ const LeaderboardChart: FC<LeaderboardChartProps> = ({ activeDataKey, setActiveD
         [userName]: timeInSeconds,
       };
     }
-    users.push(userName);
+    user && users.push(user);
     return accum;
   }, {} as { [date: string]: { [name: string]: number | string } });
   const chartData = Object.values(racesNormalizedByDate);
@@ -61,8 +62,8 @@ const LeaderboardChart: FC<LeaderboardChartProps> = ({ activeDataKey, setActiveD
             return secondsToRaceTime(v);
           }}
         />
-        {users.map((userFullNameDatakey) => {
-          const isLineActive = activeDataKey === userFullNameDatakey;
+        {users.map(({ userFullName, id }) => {
+          const isLineActive = activeDataKey === id;
           const strokeColor = isLineActive ? colors.lightBrown : '#454545';
           const fillColor = isLineActive ? colors.lightBrown : '#454545';
           const radius = isLineActive ? 4 : 2;
@@ -71,12 +72,12 @@ const LeaderboardChart: FC<LeaderboardChartProps> = ({ activeDataKey, setActiveD
             <Line
               cursor="pointer"
               onClick={() => {
-                setActiveDataKey(userFullNameDatakey);
+                setActiveDataKey(id ?? null);
               }}
               isAnimationActive={false}
-              key={userFullNameDatakey}
+              key={userFullName}
               type="monotone"
-              dataKey={userFullNameDatakey}
+              dataKey={userFullName}
               strokeWidth={lineStrokeWidth}
               stroke={strokeColor}
               dot={{
@@ -86,7 +87,7 @@ const LeaderboardChart: FC<LeaderboardChartProps> = ({ activeDataKey, setActiveD
                 r: radius,
                 stroke: strokeColor,
                 onClick: () => {
-                  setActiveDataKey(userFullNameDatakey);
+                  setActiveDataKey(id ?? null);
                 },
               }}
               connectNulls

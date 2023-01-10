@@ -26,7 +26,8 @@ import { Table, Tbody, Th, THead, Tr } from '../../components/table/table.css';
 
 type LeaderboardData = {
   position: string;
-  userFullName: string | undefined;
+  userFullName: string;
+  userId?: number;
   numRaces: string;
   delta: string;
   arrow: string;
@@ -78,7 +79,7 @@ const LeaderboardScreen: FC = () => {
   const navigate = useNavigate();
   const [isRaceModalOpen, setIsRaceModalOpen] = React.useState(false);
   const [isAboutModalOpen, setIsAboutModalOpen] = React.useState(false);
-  const [activeDataKey, setActiveDataKey] = useState<string>('');
+  const [activeDataKey, setActiveDataKey] = useState<number | null>(null);
   const [formRef] = Form.useForm();
 
   const dataNormalizedByUserId = useMemo(() => racesByUserId(races), [races]);
@@ -102,17 +103,19 @@ const LeaderboardScreen: FC = () => {
         0;
 
       return {
-        userFullName: baseRace?.user?.userFullName,
+        userFullName: baseRace?.user?.userFullName ?? 'userName',
         numRaces: userRaceArray.length.toString(),
         deltaAsPercentage,
+        userId: baseRace?.userId,
       };
     });
 
     return enhancedData
       .sort((a, b) => a.deltaAsPercentage - b.deltaAsPercentage)
-      .map(({ numRaces, deltaAsPercentage, userFullName }, i) => ({
+      .map(({ numRaces, deltaAsPercentage, userFullName, userId }, i) => ({
         position: (i + 1).toString(),
         userFullName,
+        userId,
         numRaces,
         delta: deltaAsPercentage === 0 ? `${deltaAsPercentage}%` : `${deltaAsPercentage.toFixed(2)}%`,
         arrow: '',
@@ -180,7 +183,7 @@ const LeaderboardScreen: FC = () => {
                 rowColor = 'transparent';
               }
 
-              const backgroundColor = row.original.userFullName === activeDataKey ? 'rgb(65, 41, 5, 0.2)' : rowColor;
+              const backgroundColor = row.original.userId === activeDataKey ? 'rgb(65, 41, 5, 0.2)' : rowColor;
 
               return (
                 <Tr
@@ -204,9 +207,9 @@ const LeaderboardScreen: FC = () => {
                         key={cell.id}
                         onClick={() => {
                           if (cell.column.id === 'arrow') {
-                            navigate(`/${row.original.userFullName}`);
+                            navigate(`/${row.original.userId}`);
                           } else {
-                            setActiveDataKey(row.original.userFullName ?? '');
+                            setActiveDataKey(row.original.userId ?? null);
                           }
                         }}
                         style={{

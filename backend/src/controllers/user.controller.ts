@@ -47,6 +47,7 @@ const findOneUser = async (req, res) => {
   try {
     const user = await prismaClient.user.findUnique({
       where: { id: Number(id) },
+      include: { races: true },
     });
     res.json(user);
   } catch (err) {

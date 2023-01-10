@@ -67,6 +67,8 @@ const findAllRaces = async (req, res) => {
       },
     });
 
+    races.sort((a, b) => new Date(a.raceDate).getTime() - new Date(b.raceDate).getTime());
+
     res.json(races);
   } catch (err) {
     res.status(500).send({
