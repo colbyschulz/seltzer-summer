@@ -31,7 +31,6 @@ const LeaderboardChart: FC<LeaderboardChartProps> = ({ activeDataKey, setActiveD
         [userName]: timeInSeconds,
       };
     }
-    user && users.push(user);
     return accum;
   }, {} as { [date: string]: { [name: string]: number | string } });
 
