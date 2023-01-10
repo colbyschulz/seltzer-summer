@@ -100,7 +100,7 @@ const RaceForm: FC<RaceFormProps> = ({ formRef, handleClose }) => {
         name="userId"
         rules={[{ required: true }]}
         required={false}
-        validateTrigger="onBlur"
+        validateTrigger={['onBlur', 'onChange']}
       >
         <StyledSelect
           bordered={false}
@@ -155,7 +155,7 @@ const RaceForm: FC<RaceFormProps> = ({ formRef, handleClose }) => {
         name="distance"
         rules={[{ required: true }]}
         required={false}
-        validateTrigger="onBlur"
+        validateTrigger={['onBlur', 'onChange']}
       >
         <StyledSelect
           bordered={false}
