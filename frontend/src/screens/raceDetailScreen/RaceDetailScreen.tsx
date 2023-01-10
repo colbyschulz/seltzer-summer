@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-// import { Column, useTable } from 'react-table';
 import { useParams } from 'react-router-dom';
 import { format } from 'date-fns';
 
@@ -39,14 +38,8 @@ const columns = [
 
 const DetailScreen = () => {
   const { userId } = useParams();
-  console.log('userId', userId);
-
   const { data: user } = useUser(userId);
-  console.log('user', user);
-
   const raceArray = user?.races ?? [];
-  console.log('race Array', raceArray);
-
   const userFullName = user?.userFullName ?? 'Racer';
   const breadcrumbsconfig = [
     { route: '/', display: 'Leaderboard' },
@@ -85,7 +78,7 @@ const DetailScreen = () => {
   const bestEffortPace = secondsToPace(remainingRacesSortedByTime[0]?.timeInSeconds);
   const paceDifference = calcPaceDifference(bestEffortPace, basePace);
 
-  const formatTableData = ({ user, raceDate, timeInSeconds, ...rest }: DetailTableData) => {
+  const formatTableData = ({ raceDate, timeInSeconds, ...rest }: DetailTableData) => {
     const minutes = Math.floor(Math.abs(timeInSeconds) / 60).toString();
     const seconds = (Math.abs(timeInSeconds) % 60).toLocaleString('US', {
       minimumIntegerDigits: 2,
@@ -110,7 +103,6 @@ const DetailScreen = () => {
     const data = raceData.map(formatTableData);
     return data;
   }, [user]);
-  console.log(formatedAndSortedTableData);
 
   const table = useReactTable({
     data: formatedAndSortedTableData,

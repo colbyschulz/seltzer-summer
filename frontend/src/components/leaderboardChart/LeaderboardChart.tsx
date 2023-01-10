@@ -5,7 +5,7 @@ import { format } from 'date-fns';
 import { useRaces } from '../../api/races';
 import { secondsToRaceTime } from '../../utils';
 import colors from '../../colors';
-import { User } from '../../types';
+import { useUsers } from '../../api/users';
 interface LeaderboardChartProps {
   activeDataKey: number | null;
   setActiveDataKey: Dispatch<SetStateAction<number | null>>;
@@ -13,8 +13,9 @@ interface LeaderboardChartProps {
 const LeaderboardChart: FC<LeaderboardChartProps> = ({ activeDataKey, setActiveDataKey }) => {
   const { innerWidth } = window;
   const { data: races = [] } = useRaces();
+  const { data: users = [] } = useUsers();
+
   const allRaceTimes = races.map((race) => race.timeInSeconds).sort((a, b) => a - b);
-  const users: User[] = [];
   const racesNormalizedByDate = races.reduce((accum, race) => {
     const { user, timeInSeconds, raceDate } = race;
     const userName = user?.userFullName ?? 'user';
@@ -33,6 +34,7 @@ const LeaderboardChart: FC<LeaderboardChartProps> = ({ activeDataKey, setActiveD
     user && users.push(user);
     return accum;
   }, {} as { [date: string]: { [name: string]: number | string } });
+
   const chartData = Object.values(racesNormalizedByDate);
 
   const upperBound = allRaceTimes[allRaceTimes.length - 1];
@@ -75,7 +77,7 @@ const LeaderboardChart: FC<LeaderboardChartProps> = ({ activeDataKey, setActiveD
                 setActiveDataKey(id ?? null);
               }}
               isAnimationActive={false}
-              key={userFullName}
+              key={id}
               type="monotone"
               dataKey={userFullName}
               strokeWidth={lineStrokeWidth}

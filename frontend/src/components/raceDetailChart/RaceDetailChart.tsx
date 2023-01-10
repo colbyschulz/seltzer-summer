@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from 'react';
+import React, { FC } from 'react';
 import { format } from 'date-fns';
 import { useParams } from 'react-router-dom';
 import {
@@ -15,8 +15,9 @@ import {
 import { DefaultTooltipContent } from 'recharts/lib/component/DefaultTooltipContent';
 
 import { useRaces } from '../../api/races';
-import { racesByUserId, secondsToRaceTime } from '../../utils';
+import { secondsToRaceTime } from '../../utils';
 import colors from '../../colors';
+import { useUser, useUsers } from '../../api/users';
 
 const CustomTooltip: React.FC<TooltipProps<any, any>> = ({ payload, ...rest }) => {
   const newPayload = payload ? [...payload]?.sort((a, b) => b.value - a.value) : [];
@@ -25,52 +26,48 @@ const CustomTooltip: React.FC<TooltipProps<any, any>> = ({ payload, ...rest }) =
 };
 
 const RaceComparisonChart: FC = () => {
+  const { userId: userIdFromParams } = useParams();
   const { innerWidth } = window;
   const { data: races = [] } = useRaces();
-  const { nameId } = useParams();
+  const { data: user } = useUser(userIdFromParams);
+  const { data: users = [] } = useUsers();
+  const allRaceTimes = races.map((race) => race.timeInSeconds).sort((a, b) => a - b);
 
-  const dataNormalizedById = useMemo(() => racesByUserId(races), [races]);
-  const raceArray = (nameId && dataNormalizedById[nameId]) || [];
-  const raceArrayMutable = [...raceArray];
-  const sortedByDate = raceArrayMutable?.sort(
+  const userRaces = user?.races || [];
+  const userRacesMutable = [...userRaces];
+  const userRacesMutableSortedByDate = userRacesMutable?.sort(
     (a, b) => new Date(a.raceDate).getTime() - new Date(b.raceDate).getTime(),
   );
-  const baseRaceTime = sortedByDate?.splice(0, 1)[0]?.timeInSeconds;
-
-  const fastestRaceTime = raceArrayMutable?.find(
-    (race) => race.timeInSeconds === Math.min(...raceArray.map((race) => race.timeInSeconds)),
+  const baseRaceTime = userRacesMutableSortedByDate?.splice(0, 1)[0]?.timeInSeconds;
+  const fastestRemainingTime = userRacesMutable?.find(
+    (race) => race.timeInSeconds === Math.min(...userRaces.map((race) => race.timeInSeconds)),
+  )?.timeInSeconds;
+  const slowestRemainingTime = userRacesMutable?.find(
+    (race) => race.timeInSeconds === Math.max(...userRaces.map((race) => race.timeInSeconds)),
   )?.timeInSeconds;
 
-  const slowestRaceTime = raceArrayMutable?.find(
-    (race) => race.timeInSeconds === Math.max(...raceArray.map((race) => race.timeInSeconds)),
-  )?.timeInSeconds;
-
-  const raceTimes: number[] = [];
-
-  const chartDataNormalizedByDate = Object.values(dataNormalizedById).reduce((accum, raceArray) => {
-    raceArray.forEach(({ raceName, raceDate, timeInSeconds }) => {
-      if (!accum[raceDate]) {
-        accum[raceDate] = {
-          raceDate,
-          [raceName]: timeInSeconds,
-        };
-      } else {
-        accum[raceDate] = {
-          ...accum[raceDate],
-          [raceName]: timeInSeconds,
-        };
-      }
-      raceTimes.push(timeInSeconds);
-    });
-
+  const racesNormalizedByDate = races.reduce((accum, race) => {
+    const { user, timeInSeconds, raceDate } = race;
+    const userName = user?.userFullName ?? 'user';
+    const formattedDate = format(new Date(raceDate), 'M/dd');
+    if (!accum[formattedDate]) {
+      accum[formattedDate] = {
+        [userName]: timeInSeconds,
+        raceDate: formattedDate,
+      };
+    } else {
+      accum[formattedDate] = {
+        ...accum[formattedDate],
+        [userName]: timeInSeconds,
+      };
+    }
     return accum;
-  }, {} as { [dataKey: string]: any });
+  }, {} as { [date: string]: { [name: string]: number | string } });
 
-  raceTimes.sort((a, b) => a - b);
+  const chartData = Object.values(racesNormalizedByDate);
 
-  const upperBound = raceTimes[raceTimes.length - 1];
-  const lowerBound = raceTimes[0];
-
+  const upperBound = allRaceTimes[allRaceTimes.length - 1];
+  const lowerBound = allRaceTimes[0];
   const floor = Math.floor(lowerBound / 60);
   const ceiling = Math.ceil(upperBound / 60);
   const floorTime = floor * 60;
@@ -80,27 +77,18 @@ const RaceComparisonChart: FC = () => {
     ticks.push(i);
   }
 
-  const chartData = Object.values(chartDataNormalizedByDate)
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-    .map((data) => {
-      // const parsedDate = data.date.split('-');
-      // const dateString = new Date(parseInt(parsedDate[0]), parseInt(parsedDate[1]) - 1, parseInt(parsedDate[2]));
-      const dateString = new Date(data.raceDate);
-      return { ...data, date: format(dateString, 'M/dd') };
-    });
-
   return (
     <ResponsiveContainer aspect={1.6} maxHeight={350} minHeight={innerWidth > 840 ? 350 : 180}>
       <LineChart data={chartData} margin={{ top: 10, right: 10, left: -10, bottom: 5 }}>
         <CartesianGrid />
-        <ReferenceLine y={fastestRaceTime} strokeDasharray="8 8" stroke={colors.green} strokeWidth={2} />
-        <ReferenceLine y={slowestRaceTime} strokeDasharray="8 8" stroke={colors.red} strokeWidth={2} />
+        <ReferenceLine y={fastestRemainingTime} strokeDasharray="8 8" stroke={colors.green} strokeWidth={2} />
+        <ReferenceLine y={slowestRemainingTime} strokeDasharray="8 8" stroke={colors.red} strokeWidth={2} />
         <ReferenceLine y={baseRaceTime} strokeDasharray="8 8" stroke="black" strokeWidth={2} />
 
-        <XAxis dataKey="date" tick={{ fontSize: '14px' }} />
+        <XAxis dataKey="date" tick={{ fontSize: '12px' }} />
 
         <YAxis
-          tick={{ fontSize: '14px' }}
+          tick={{ fontSize: '12px' }}
           ticks={ticks}
           interval={1}
           scale="linear"
@@ -115,19 +103,10 @@ const RaceComparisonChart: FC = () => {
           labelStyle={{ fontSize: '12px' }}
           content={<CustomTooltip />}
           formatter={(v: number) => secondsToRaceTime(v)}
-          labelFormatter={(value) => {
-            const parsedDate = value && typeof value === 'string' && value.split('/');
-            const currentYear = new Date().getFullYear();
-            const dateString =
-              parsedDate && new Date(currentYear, parseInt(parsedDate[0]) - 1, parseInt(parsedDate[1]));
-            return format(dateString, 'MM/dd/yyyy');
-          }}
         />
 
-        {Object.keys(dataNormalizedById).map((key) => {
-          const raceArray = dataNormalizedById[key];
-          const isActiveLine = key === nameId;
-          const name = raceArray[0].raceName;
+        {users.map(({ userFullName, id }) => {
+          const isActiveLine = userIdFromParams && id === parseInt(userIdFromParams);
           const color = isActiveLine ? colors.lightBrown : '#c7c7c7';
           const dotRadius = isActiveLine ? 4 : 2;
           const activeDotRadius = 4;
@@ -135,9 +114,9 @@ const RaceComparisonChart: FC = () => {
           return (
             <Line
               isAnimationActive={false}
-              key={key}
+              key={id}
               type="monotone"
-              dataKey={name}
+              dataKey={userFullName}
               strokeWidth={isActiveLine ? 2 : 1}
               stroke={color}
               connectNulls
