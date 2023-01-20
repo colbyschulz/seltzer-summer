@@ -277,17 +277,26 @@ const LeaderboardScreen: FC = () => {
           <AboutWrapper>
             <AboutLabel>Objective:</AboutLabel>
             <AboutText>
-              Starting with a recent baseline 5k, make the most progress lowering your 5k time through the summer.
+              Starting with a recent baseline race, make the most progress lowering your effective 5k time throughout
+              the summer.
             </AboutText>
           </AboutWrapper>
 
           <AboutWrapper>
             <AboutLabel>Rules:</AboutLabel>
-            <AboutText>Entries must be a 5k effort.</AboutText>
+            <AboutText>nOo RuLeSsS</AboutText>
           </AboutWrapper>
 
           <AboutWrapper>
             <AboutLabel>Measurement:</AboutLabel>
+            <AboutText>{`Effective 5k time is calculated via Pete Reigel's formula from his work 'Athletic Records and Human Endurance' published in American Scientist.`}</AboutText>
+          </AboutWrapper>
+
+          <AboutWrapper>
+            <AboutText>{`Formula: t2 = t1 * (d2 / d1)^1.06`}</AboutText>
+          </AboutWrapper>
+
+          <AboutWrapper>
             <AboutText>
               The leaderboard is based on percentages relative to baseline effort. So, as you get faster, each second
               counts for more.

@@ -15,20 +15,21 @@ const LeaderboardChart: FC<LeaderboardChartProps> = ({ activeDataKey, setActiveD
   const { data: races = [] } = useRaces();
   const { data: users = [] } = useUsers();
 
-  const allRaceTimes = races.map((race) => race.timeInSeconds).sort((a, b) => a - b);
+  const allEffectiveRaceTimes = races.map((race) => race.effectiveTimeInSeconds).sort((a, b) => a - b);
+
   const racesNormalizedByDate = races.reduce((accum, race) => {
-    const { user, timeInSeconds, raceDate } = race;
+    const { user, effectiveTimeInSeconds, raceDate } = race;
     const userName = user?.userFullName ?? 'user';
     const formattedDate = format(new Date(raceDate), 'M/dd');
     if (!accum[formattedDate]) {
       accum[formattedDate] = {
-        [userName]: timeInSeconds,
+        [userName]: effectiveTimeInSeconds,
         raceDate: formattedDate,
       };
     } else {
       accum[formattedDate] = {
         ...accum[formattedDate],
-        [userName]: timeInSeconds,
+        [userName]: effectiveTimeInSeconds,
       };
     }
     return accum;
@@ -36,8 +37,8 @@ const LeaderboardChart: FC<LeaderboardChartProps> = ({ activeDataKey, setActiveD
 
   const chartData = Object.values(racesNormalizedByDate);
 
-  const upperBound = allRaceTimes[allRaceTimes.length - 1];
-  const lowerBound = allRaceTimes[0];
+  const upperBound = allEffectiveRaceTimes[allEffectiveRaceTimes.length - 1];
+  const lowerBound = allEffectiveRaceTimes[0];
   const floor = Math.floor(lowerBound / 60);
   const ceiling = Math.ceil(upperBound / 60);
   const floorTime = floor * 60;

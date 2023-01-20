@@ -46,10 +46,11 @@ export const racesByUserId = (races: Race[]) => {
   return {};
 };
 
-export const secondsToPace = (timeInSeconds: number, distanceInMiles = 3.10686) => {
+export const secondsToPace = (timeInSeconds: number, distanceInMeters = 10000) => {
   if (!timeInSeconds) {
     return '';
   }
+  const distanceInMiles = distanceInMeters / 1609.34;
   const secondsPerMile = timeInSeconds / distanceInMiles;
   const paceMinutesPerMile = secondsPerMile / 60;
   const paceSecondsPerMile = secondsPerMile % 60;

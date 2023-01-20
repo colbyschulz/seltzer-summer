@@ -34,7 +34,7 @@ const DISTANCE_OPTIONS = [
 ];
 
 const RaceForm: FC<RaceFormProps> = ({ formRef, handleClose }) => {
-  const { mutate: createRecordMutation } = useCreateRace();
+  const { mutate: createRaceMutation } = useCreateRace();
   const { data: users } = useUsers();
   const reset = formRef.resetFields;
   const userId = Form.useWatch('userId', formRef);
@@ -72,11 +72,13 @@ const RaceForm: FC<RaceFormProps> = ({ formRef, handleClose }) => {
         distance: null,
         date: new Date(),
       }}
-      onFinish={({ date, raceName, minutes, seconds, userId, firstName, lastName }: FormValues) => {
+      onFinish={({ date, raceName, minutes, seconds, userId, firstName, lastName, distance }: FormValues) => {
         const newRace: Race = {
           raceDate: date,
           raceName,
-          distanceInMeters: 5000,
+          distanceInMeters: parseInt(distance),
+          effectiveDistanceInmeters: 1,
+          effectiveTimeInSeconds: 1,
           timeInSeconds: raceTimeToSeconds(minutes, seconds),
         };
         if (userId === 'new') {
@@ -89,7 +91,7 @@ const RaceForm: FC<RaceFormProps> = ({ formRef, handleClose }) => {
           newRace.userId = parseInt(userId);
         }
 
-        createRecordMutation(newRace);
+        createRaceMutation(newRace);
         reset();
         handleClose();
       }}
@@ -185,7 +187,7 @@ const RaceForm: FC<RaceFormProps> = ({ formRef, handleClose }) => {
             label="Race Time"
             name="minutes"
             id="minutes"
-            rules={[{ pattern: new RegExp(/^[1-9]?[0-9]$/) }, { max: 2 }, { required: true }]}
+            rules={[{ pattern: new RegExp(/^[1-9]?[0-9]$/) }]}
             required={false}
             validateTrigger="onBlur"
           >
@@ -198,7 +200,7 @@ const RaceForm: FC<RaceFormProps> = ({ formRef, handleClose }) => {
             label=" "
             name="seconds"
             id="seconds"
-            rules={[{ pattern: new RegExp(/^[0-5]?[0-9]$/) }, { max: 2 }, { required: true }]}
+            rules={[{ pattern: new RegExp(/^[0-5]?[0-9]$/) }]}
             required={false}
             validateTrigger="onBlur"
           >
