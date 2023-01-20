@@ -1,6 +1,8 @@
 import prismaClient from '../prismaClient';
 import { getEffectiveTime } from '../utils/getEffectiveTime';
 
+const EFFECTIVE_DISTANCE = 5000;
+
 const createRace = async (req, res) => {
   const { raceDate, raceName, timeInSeconds, distanceInMeters, userId, user } = req.body;
   // Validate request
@@ -13,12 +15,15 @@ const createRace = async (req, res) => {
 
   const parsedTimeInSeconds = Number(timeInSeconds);
   const parsedDistanceInMeters = Number(distanceInMeters);
-  const effectiveTimeInSeconds = getEffectiveTime({
-    timeInSeconds: parsedTimeInSeconds,
-    distanceInMeters: parsedDistanceInMeters,
-    // use 10k as effective time
-    effectiveDistanceInMeters: 10000,
-  });
+  const effectiveTimeInSeconds =
+    parsedDistanceInMeters === EFFECTIVE_DISTANCE
+      ? parsedTimeInSeconds
+      : getEffectiveTime({
+          timeInSeconds: parsedTimeInSeconds,
+          distanceInMeters: parsedDistanceInMeters,
+          // use 10k as effective time
+          effectiveDistanceInMeters: EFFECTIVE_DISTANCE,
+        });
 
   let race;
   if (userId) {
@@ -29,7 +34,7 @@ const createRace = async (req, res) => {
       timeInSeconds: parsedTimeInSeconds,
       effectiveTimeInSeconds,
       distanceInMeters: parsedDistanceInMeters,
-      effectiveDistanceInMeters: 10000,
+      effectiveDistanceInMeters: EFFECTIVE_DISTANCE,
       user: { connect: { id: Number(userId) } },
     };
   } else {
@@ -40,7 +45,7 @@ const createRace = async (req, res) => {
       timeInSeconds: parsedTimeInSeconds,
       effectiveTimeInSeconds,
       distanceInMeters: parsedDistanceInMeters,
-      effectiveDistanceInMeters: 10000,
+      effectiveDistanceInMeters: EFFECTIVE_DISTANCE,
       user: {
         create: {
           firstName: user.firstName,

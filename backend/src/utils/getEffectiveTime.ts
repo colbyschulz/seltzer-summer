@@ -6,4 +6,4 @@ export const getEffectiveTime = ({
   timeInSeconds: number;
   distanceInMeters: number;
   effectiveDistanceInMeters: number;
-}) => (timeInSeconds * (effectiveDistanceInMeters / distanceInMeters)) ^ 1.06;
+}) => Math.round(timeInSeconds * (effectiveDistanceInMeters / distanceInMeters) ** 1.06);
