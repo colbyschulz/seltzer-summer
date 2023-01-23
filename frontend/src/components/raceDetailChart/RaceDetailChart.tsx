@@ -31,34 +31,34 @@ const RaceComparisonChart: FC = () => {
   const { data: races = [] } = useRaces();
   const { data: user } = useUser(userIdFromParams);
   const { data: users = [] } = useUsers();
-  const allRaceTimes = races.map((race) => race.timeInSeconds).sort((a, b) => a - b);
+  const allRaceTimes = races.map((race) => race.effectiveTimeInSeconds).sort((a, b) => a - b);
 
   const userRaces = user?.races || [];
   const userRacesMutable = [...userRaces];
   const userRacesMutableSortedByDate = userRacesMutable?.sort(
     (a, b) => new Date(a.raceDate).getTime() - new Date(b.raceDate).getTime(),
   );
-  const baseRaceTime = userRacesMutableSortedByDate?.splice(0, 1)[0]?.timeInSeconds;
+  const baseRaceTime = userRacesMutableSortedByDate?.splice(0, 1)[0]?.effectiveTimeInSeconds;
   const fastestRemainingTime = userRacesMutable?.find(
-    (race) => race.timeInSeconds === Math.min(...userRaces.map((race) => race.timeInSeconds)),
-  )?.timeInSeconds;
+    (race) => race.effectiveTimeInSeconds === Math.min(...userRaces.map((race) => race.effectiveTimeInSeconds)),
+  )?.effectiveTimeInSeconds;
   const slowestRemainingTime = userRacesMutable?.find(
-    (race) => race.timeInSeconds === Math.max(...userRaces.map((race) => race.timeInSeconds)),
-  )?.timeInSeconds;
+    (race) => race.effectiveTimeInSeconds === Math.max(...userRaces.map((race) => race.effectiveTimeInSeconds)),
+  )?.effectiveTimeInSeconds;
 
   const racesNormalizedByDate = races.reduce((accum, race) => {
-    const { user, timeInSeconds, raceDate } = race;
+    const { user, effectiveTimeInSeconds, raceDate } = race;
     const userName = user?.userFullName ?? 'user';
     const formattedDate = format(new Date(raceDate), 'M/dd');
     if (!accum[formattedDate]) {
       accum[formattedDate] = {
-        [userName]: timeInSeconds,
+        [userName]: effectiveTimeInSeconds,
         raceDate: formattedDate,
       };
     } else {
       accum[formattedDate] = {
         ...accum[formattedDate],
-        [userName]: timeInSeconds,
+        [userName]: effectiveTimeInSeconds,
       };
     }
     return accum;

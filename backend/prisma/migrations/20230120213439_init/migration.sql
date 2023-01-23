@@ -5,9 +5,9 @@ CREATE TABLE "Race" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "raceDate" TIMESTAMP(3) NOT NULL,
     "timeInSeconds" INTEGER NOT NULL,
+    "distanceInMeters" DOUBLE PRECISION NOT NULL,
     "effectiveTimeInSeconds" INTEGER NOT NULL,
-    "effectiveDistanceInMeters" INTEGER NOT NULL,
-    "distanceInMeters" INTEGER NOT NULL,
+    "effectiveDistanceInMeters" DOUBLE PRECISION NOT NULL,
     "raceName" VARCHAR(255) NOT NULL,
     "userId" INTEGER NOT NULL,
 

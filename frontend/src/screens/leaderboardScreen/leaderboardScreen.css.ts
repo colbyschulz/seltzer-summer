@@ -38,12 +38,24 @@ export const AboutWrapper = styled.div`
   margin-bottom: 10px;
 `;
 
-export const AboutLabel = styled.label``;
+export const AboutLabel = styled.label`
+  font-size: 18px;
+  @media (max-width: 415px) {
+    font-size: 16px;
+  }
+`;
 
 export const AboutText = styled.label`
   font-size: 16px;
   @media (max-width: 415px) {
     font-size: 12px;
+  }
+`;
+
+export const AboutHeader = styled.h3`
+  font-size: 20px;
+  @media (max-width: 415px) {
+    font-size: 18px;
   }
 `;
 

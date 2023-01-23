@@ -10,18 +10,35 @@ export const capitalize = (string: string) => {
   return capitalized;
 };
 
-export const raceTimeToSeconds = (minutes: string, seconds: string) => {
-  return Number(minutes) * 60 + Number(seconds);
+export const raceTimeToSeconds = ({
+  hours = '0',
+  minutes,
+  seconds,
+}: {
+  hours: string;
+  minutes: string;
+  seconds: string;
+}) => {
+  return Number(hours) * 3600 + Number(minutes) * 60 + Number(seconds);
 };
 
 export const secondsToRaceTime = (timeInSeconds: number) => {
-  const minutes = Math.floor(Math.abs(timeInSeconds) / 60).toString();
-  const seconds = (Math.abs(timeInSeconds) % 60).toLocaleString('US', {
+  let secondsLeft = timeInSeconds;
+  const hours = Math.floor(Math.abs(timeInSeconds) / 3600);
+  secondsLeft = secondsLeft - hours * 3600;
+  const minutes = Math.floor(Math.abs(secondsLeft) / 60);
+  secondsLeft = secondsLeft - minutes * 60;
+  const seconds = Math.abs(secondsLeft).toLocaleString('US', {
     minimumIntegerDigits: 2,
     useGrouping: false,
   });
 
-  return `${minutes}:${seconds}`;
+  return hours
+    ? `${hours}:${minutes.toLocaleString('US', {
+        minimumIntegerDigits: 2,
+        useGrouping: false,
+      })}:${seconds}`
+    : `${minutes}:${seconds}`;
 };
 
 export const racesByUserId = (races: Race[]) => {
@@ -46,12 +63,12 @@ export const racesByUserId = (races: Race[]) => {
   return {};
 };
 
-export const secondsToPace = (timeInSeconds: number, distanceInMeters = 10000) => {
+export const secondsToPace = (timeInSeconds: number, distanceInMeters = 5000) => {
   if (!timeInSeconds) {
     return '';
   }
   const distanceInMiles = distanceInMeters / 1609.34;
-  const secondsPerMile = timeInSeconds / distanceInMiles;
+  const secondsPerMile = Math.round(timeInSeconds / distanceInMiles);
   const paceMinutesPerMile = secondsPerMile / 60;
   const paceSecondsPerMile = secondsPerMile % 60;
   const pace = `${Math.floor(paceMinutesPerMile)}:${Math.abs(Math.round(paceSecondsPerMile)).toLocaleString('US', {
@@ -79,4 +96,13 @@ export const calcPaceDifference = (pace1: string, pace2: string) => {
 export const formatDate = (date: string) => {
   const dateObj = new Date(date);
   return format(dateObj, 'MM/dd/yyyy');
+};
+
+export const metersToDisplayNameMap: Record<number, string> = {
+  1609.34: '1 Mile',
+  5000: '5k',
+  10000: '10k',
+  16093.4: '10 Mile',
+  21097.5: 'Half Marathon',
+  42195: 'Marathon',
 };

@@ -13,6 +13,7 @@ import Card from '../../components/card/Card';
 import RaceForm from '../../components/raceForm/RaceForm';
 import Button from '../../components/button/Button';
 import {
+  AboutHeader,
   AboutLabel,
   AboutText,
   AboutWrapper,
@@ -95,11 +96,14 @@ const LeaderboardScreen: FC = () => {
       const baseRace = sortedByDate.splice(0, 1)[0];
       // Users fastest race not including base race
       const fastestRemainingRace = userRaceArrayMutable.find(
-        (race) => race.timeInSeconds === Math.min(...userRaceArrayMutable.map((race) => race.timeInSeconds)),
+        (race) =>
+          race.effectiveTimeInSeconds === Math.min(...userRaceArrayMutable.map((race) => race.effectiveTimeInSeconds)),
       );
       const deltaAsPercentage =
-        (fastestRemainingRace?.timeInSeconds &&
-          ((fastestRemainingRace?.timeInSeconds - baseRace.timeInSeconds) / baseRace.timeInSeconds) * 100) ||
+        (fastestRemainingRace?.effectiveTimeInSeconds &&
+          ((fastestRemainingRace?.effectiveTimeInSeconds - baseRace.effectiveTimeInSeconds) /
+            baseRace.effectiveTimeInSeconds) *
+            100) ||
         0;
 
       return {
@@ -273,7 +277,7 @@ const LeaderboardScreen: FC = () => {
         maskClosable={false}
       >
         <div style={{ display: 'flex', flexDirection: 'column', fontSize: '13px' }}>
-          <h3 style={{ marginTop: 0, fontSize: '16px' }}>Summer of Speed 5k Challenge</h3>
+          <AboutHeader>Summer of Speed</AboutHeader>
           <AboutWrapper>
             <AboutLabel>Objective:</AboutLabel>
             <AboutText>
