@@ -217,7 +217,6 @@ const LeaderboardScreen: FC = () => {
                           }
                         }}
                         style={{
-                          borderColor: colors.grey,
                           color: cellColor,
                           padding: '12px 8px',
                           overflowWrap: 'break-word',

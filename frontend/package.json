@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/colbyschulz/react-typescript-template#readme",
   "dependencies": {
+    "@ant-design/icons": "^5.0.1",
     "@tanstack/react-table": "^8.7.4",
     "antd": "^5.1.2",
     "date-fns": "^2.28.0",

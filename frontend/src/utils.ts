@@ -103,6 +103,6 @@ export const metersToDisplayNameMap: Record<number, string> = {
   5000: '5k',
   10000: '10k',
   16093.4: '10 Mile',
-  21097.5: 'Half Marathon',
-  42195: 'Marathon',
+  21097.5: '13.1',
+  42195: '26.2',
 };

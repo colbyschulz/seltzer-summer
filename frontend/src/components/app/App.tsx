@@ -20,7 +20,11 @@ const App = () => {
             borderRadius: 2,
             colorError: colors.red,
           },
-          components: {},
+          components: {
+            Popover: {
+              // borderRadiusLG: 6,
+            },
+          },
         }}
       >
         <HeaderWrapper>

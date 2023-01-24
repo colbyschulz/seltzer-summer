@@ -1,6 +1,7 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { format } from 'date-fns';
+import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 
 import { calcPaceDifference, metersToDisplayNameMap, secondsToPace, secondsToRaceTime } from '../../utils';
 import Breadcrumbs from '../../components/breadcrumbs/Breadcrumbs';
@@ -11,8 +12,10 @@ import { DetailScreenWrapper, DetailTableWrapper, MetricLabel, MetricValue } fro
 import { StyledTableCell } from '../leaderboardScreen/leaderboardScreen.css';
 import { Table, Tbody, Th, THead, Tr } from '../../components/table/table.css';
 import { Race } from '../../types';
-import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { useUser } from '../../api/users';
+import SettingsPopover from './SettingsPopover';
+
+const columnHelper = createColumnHelper<DetailTableData>();
 
 interface DetailTableData extends Race {
   isBestEffort?: boolean;
@@ -20,43 +23,58 @@ interface DetailTableData extends Race {
   isBestEffortBetterThanBaseline?: boolean;
   raceTime?: string;
   effectiveRaceTime?: string;
+  edit?: string;
 }
-const columnHelper = createColumnHelper<DetailTableData>();
-const columns = [
-  columnHelper.accessor('raceDate', {
-    cell: (info) => info.getValue(),
-    header: () => 'Date',
-  }),
-  columnHelper.accessor('raceName', {
-    cell: (info) => info.getValue(),
-    header: () => 'Race',
-  }),
-  columnHelper.accessor('raceTime', {
-    header: () => 'Time',
-    cell: (info) => info.getValue(),
-  }),
-  columnHelper.accessor('distanceInMeters', {
-    header: () => 'Distance',
-    cell: (info) => {
-      const meters = info.getValue();
-      return metersToDisplayNameMap[meters] ?? meters;
-    },
-  }),
-  columnHelper.accessor('effectiveRaceTime', {
-    header: () => 'Eff. 5k',
-    cell: (info) => info.getValue(),
-  }),
-];
 
 const DetailScreen = () => {
   const { userId } = useParams();
+  const [activeRaceId, setActiveRaceId] = useState<number | null>(null);
   const { data: user } = useUser(userId);
   const raceArray = user?.races ?? [];
+
+  const activeRaceToBeEdited = activeRaceId && raceArray.find((race) => race.id === activeRaceId);
   const userFullName = user?.userFullName ?? 'Racer';
   const breadcrumbsconfig = [
     { route: '/', display: 'Leaderboard' },
     { route: null, display: userFullName },
   ];
+
+  const columns = [
+    columnHelper.accessor('raceDate', {
+      cell: (info) => info.getValue(),
+      header: () => 'Date',
+    }),
+    columnHelper.accessor('raceName', {
+      cell: (info) => info.getValue(),
+      header: () => 'Race',
+    }),
+    columnHelper.accessor('raceTime', {
+      header: () => 'Time',
+      cell: (info) => info.getValue(),
+    }),
+    columnHelper.accessor('distanceInMeters', {
+      header: () => 'Dist.',
+      cell: (info) => {
+        const meters = info.getValue();
+        return metersToDisplayNameMap[meters] ?? meters;
+      },
+    }),
+    columnHelper.accessor('effectiveRaceTime', {
+      header: () => 'Eff. 5k',
+      cell: (info) => info.getValue(),
+    }),
+    columnHelper.accessor('edit', {
+      header: () => '',
+      cell: ({
+        row: {
+          original: { id },
+        },
+      }) => {
+        return <SettingsPopover setActiveRaceId={setActiveRaceId} raceId={id} />;
+      },
+    }),
+  ];
+
   const raceArrayMutable = [...raceArray] as DetailTableData[];
 
   // remove base race from array
@@ -194,16 +212,14 @@ const DetailScreen = () => {
                             whiteSpace: 'nowrap',
                             textOverflow: 'ellipsis',
                             overflow: 'hidden',
-                            maxWidth: '75px',
+                            maxWidth: '65px',
                           }
                         : {};
 
                     return (
                       <StyledTableCell
                         style={{
-                          borderBottom: '1px solid',
-                          borderColor: colors.tan,
-                          padding: '12px 8px',
+                          padding: '6px 10px',
                           overflowWrap: 'break-word',
                           fontSize: '12px',
                           color,

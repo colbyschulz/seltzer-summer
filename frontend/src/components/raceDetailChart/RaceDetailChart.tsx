@@ -85,7 +85,7 @@ const RaceComparisonChart: FC = () => {
         <ReferenceLine y={slowestRemainingTime} strokeDasharray="8 8" stroke={colors.red} strokeWidth={2} />
         <ReferenceLine y={baseRaceTime} strokeDasharray="8 8" stroke="black" strokeWidth={2} />
 
-        <XAxis dataKey="date" tick={{ fontSize: '12px' }} />
+        <XAxis dataKey="raceDate" tick={{ fontSize: '12px' }} />
 
         <YAxis
           tick={{ fontSize: '12px' }}

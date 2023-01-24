@@ -3,6 +3,8 @@ import styled from 'styled-components';
 import colors from '../../colors';
 
 export const StyledTableCell = styled.td<{ isFaster?: boolean }>`
+  border-bottom: 1px solid;
+  border-color: ${colors.transparentTan};
   color: ${({ isFaster }) => (isFaster ? 'green' : 'red')};
 `;
 
