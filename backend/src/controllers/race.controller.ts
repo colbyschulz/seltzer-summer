@@ -1,4 +1,7 @@
 import prismaClient from '../prismaClient';
+import { getEffectiveTime } from '../utils/getEffectiveTime';
+
+const EFFECTIVE_DISTANCE = 5000;
 
 const createRace = async (req, res) => {
   const { raceDate, raceName, timeInSeconds, distanceInMeters, userId, user } = req.body;
@@ -10,33 +13,39 @@ const createRace = async (req, res) => {
     return;
   }
 
+  const parsedTimeInSeconds = Number(timeInSeconds);
+  const parsedDistanceInMeters = Number(distanceInMeters);
+  const effectiveTimeInSeconds =
+    parsedDistanceInMeters === EFFECTIVE_DISTANCE
+      ? parsedTimeInSeconds
+      : getEffectiveTime({
+          timeInSeconds: parsedTimeInSeconds,
+          distanceInMeters: parsedDistanceInMeters,
+          // use 10k as effective time
+          effectiveDistanceInMeters: EFFECTIVE_DISTANCE,
+        });
+
+  let race;
   if (userId) {
-    // Create a Race
-    const race = {
+    // Create a Race with exsiting user
+    race = {
       raceDate: new Date(raceDate),
       raceName,
-      timeInSeconds: Number(timeInSeconds),
-      distanceInMeters: Number(distanceInMeters),
+      timeInSeconds: parsedTimeInSeconds,
+      effectiveTimeInSeconds,
+      distanceInMeters: parsedDistanceInMeters,
+      effectiveDistanceInMeters: EFFECTIVE_DISTANCE,
       user: { connect: { id: Number(userId) } },
     };
-
-    try {
-      const result = await prismaClient.race.create({
-        data: race,
-      });
-      res.json(result);
-    } catch (err) {
-      res.status(500).send({
-        message: err.message || 'Some error occurred while creating the Race.',
-      });
-    }
   } else {
     // Create a Race with new user
-    const race = {
+    race = {
       raceDate: new Date(raceDate),
       raceName,
-      timeInSeconds: Number(timeInSeconds),
-      distanceInMeters: Number(distanceInMeters),
+      timeInSeconds: parsedTimeInSeconds,
+      effectiveTimeInSeconds,
+      distanceInMeters: parsedDistanceInMeters,
+      effectiveDistanceInMeters: EFFECTIVE_DISTANCE,
       user: {
         create: {
           firstName: user.firstName,
@@ -45,17 +54,17 @@ const createRace = async (req, res) => {
         },
       },
     };
+  }
 
-    try {
-      const result = await prismaClient.race.create({
-        data: race,
-      });
-      res.json(result);
-    } catch (err) {
-      res.status(500).send({
-        message: err.message || 'Some error occurred while creating the Race.',
-      });
-    }
+  try {
+    const result = await prismaClient.race.create({
+      data: race,
+    });
+    res.json(result);
+  } catch (err) {
+    res.status(500).send({
+      message: err.message || 'Some error occurred while creating the Race.',
+    });
   }
 };
 

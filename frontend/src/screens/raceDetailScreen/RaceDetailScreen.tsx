@@ -1,8 +1,9 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { format } from 'date-fns';
+import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 
-import { calcPaceDifference, secondsToPace } from '../../utils';
+import { calcPaceDifference, metersToDisplayNameMap, secondsToPace, secondsToRaceTime } from '../../utils';
 import Breadcrumbs from '../../components/breadcrumbs/Breadcrumbs';
 import colors from '../../colors';
 import RaceDetailChart from '../../components/raceDetailChart/RaceDetailChart';
@@ -11,40 +12,69 @@ import { DetailScreenWrapper, DetailTableWrapper, MetricLabel, MetricValue } fro
 import { StyledTableCell } from '../leaderboardScreen/leaderboardScreen.css';
 import { Table, Tbody, Th, THead, Tr } from '../../components/table/table.css';
 import { Race } from '../../types';
-import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { useUser } from '../../api/users';
+import SettingsPopover from './SettingsPopover';
+
+const columnHelper = createColumnHelper<DetailTableData>();
 
 interface DetailTableData extends Race {
   isBestEffort?: boolean;
   isBaseline?: boolean;
   isBestEffortBetterThanBaseline?: boolean;
-  time?: string;
+  raceTime?: string;
+  effectiveRaceTime?: string;
+  edit?: string;
 }
-const columnHelper = createColumnHelper<DetailTableData>();
-const columns = [
-  columnHelper.accessor('raceDate', {
-    cell: (info) => info.getValue(),
-    header: () => 'Date',
-  }),
-  columnHelper.accessor('raceName', {
-    cell: (info) => info.getValue(),
-    header: () => 'Race Name',
-  }),
-  columnHelper.accessor('time', {
-    header: () => 'Time',
-    cell: (info) => info.getValue(),
-  }),
-];
 
 const DetailScreen = () => {
   const { userId } = useParams();
+  const [activeRaceId, setActiveRaceId] = useState<number | null>(null);
   const { data: user } = useUser(userId);
   const raceArray = user?.races ?? [];
+
+  const activeRaceToBeEdited = activeRaceId && raceArray.find((race) => race.id === activeRaceId);
   const userFullName = user?.userFullName ?? 'Racer';
   const breadcrumbsconfig = [
     { route: '/', display: 'Leaderboard' },
     { route: null, display: userFullName },
   ];
+
+  const columns = [
+    columnHelper.accessor('raceDate', {
+      cell: (info) => info.getValue(),
+      header: () => 'Date',
+    }),
+    columnHelper.accessor('raceName', {
+      cell: (info) => info.getValue(),
+      header: () => 'Race',
+    }),
+    columnHelper.accessor('raceTime', {
+      header: () => 'Time',
+      cell: (info) => info.getValue(),
+    }),
+    columnHelper.accessor('distanceInMeters', {
+      header: () => 'Dist.',
+      cell: (info) => {
+        const meters = info.getValue();
+        return metersToDisplayNameMap[meters] ?? meters;
+      },
+    }),
+    columnHelper.accessor('effectiveRaceTime', {
+      header: () => 'Eff. 5k',
+      cell: (info) => info.getValue(),
+    }),
+    columnHelper.accessor('edit', {
+      header: () => '',
+      cell: ({
+        row: {
+          original: { id },
+        },
+      }) => {
+        return <SettingsPopover setActiveRaceId={setActiveRaceId} raceId={id} />;
+      },
+    }),
+  ];
+
   const raceArrayMutable = [...raceArray] as DetailTableData[];
 
   // remove base race from array
@@ -59,48 +89,45 @@ const DetailScreen = () => {
   };
 
   // Add flag for best effort
-  const remainingRacesSortedByTime = mutableSortedByDate.sort((a, b) => a.timeInSeconds - b.timeInSeconds);
+  const remainingRacesSortedByTime = mutableSortedByDate.sort(
+    (a, b) => a.effectiveTimeInSeconds - b.effectiveTimeInSeconds,
+  );
   const bestEffortRace = remainingRacesSortedByTime[0];
   if (bestEffortRace) {
     bestEffortRace.isBestEffort = true;
 
-    if (bestEffortRace.timeInSeconds < baseRace.timeInSeconds) {
+    if (bestEffortRace.effectiveTimeInSeconds < baseRace.effectiveTimeInSeconds) {
       bestEffortRace.isBestEffortBetterThanBaseline = true;
     }
   }
 
   // combine enhanced races back together
-  const raceData = raceArrayMutable.length
-    ? [enhancedBaseRace, ...remainingRacesSortedByTime]
-    : [...remainingRacesSortedByTime];
+  const raceData = raceArrayMutable.length ? [enhancedBaseRace, ...remainingRacesSortedByTime] : [enhancedBaseRace];
 
-  const basePace = secondsToPace(baseRace?.timeInSeconds);
-  const bestEffortPace = secondsToPace(remainingRacesSortedByTime[0]?.timeInSeconds);
+  const basePace = secondsToPace(baseRace?.effectiveTimeInSeconds);
+  const bestEffortPace = secondsToPace(remainingRacesSortedByTime[0]?.effectiveTimeInSeconds);
   const paceDifference = calcPaceDifference(bestEffortPace, basePace);
-
-  const formatTableData = ({ raceDate, timeInSeconds, ...rest }: DetailTableData) => {
-    const minutes = Math.floor(Math.abs(timeInSeconds) / 60).toString();
-    const seconds = (Math.abs(timeInSeconds) % 60).toLocaleString('US', {
-      minimumIntegerDigits: 2,
-      useGrouping: false,
-    });
-    const dateString = new Date(raceDate);
-
-    return {
-      ...rest,
-      userFullName: userFullName,
-      raceDate: format(dateString, 'M/dd'),
-      time: `${minutes}:${seconds}`,
-      timeInSeconds,
-    };
-  };
 
   const formatedAndSortedTableData = useMemo(() => {
     if (!raceData.length || !raceArray.length) {
       return [];
     }
     raceData.sort((a, b) => new Date(a.raceDate).getTime() - new Date(b.raceDate).getTime());
-    const data = raceData.map(formatTableData);
+
+    const data = raceData.map((race) => {
+      const { raceDate, effectiveTimeInSeconds, timeInSeconds } = race;
+      const raceTime = secondsToRaceTime(timeInSeconds);
+      const effectiveRaceTime = secondsToRaceTime(effectiveTimeInSeconds);
+
+      return {
+        ...race,
+        userFullName: userFullName,
+        raceDate: format(new Date(raceDate), 'M/dd'),
+        raceTime: raceTime,
+        effectiveRaceTime: effectiveRaceTime,
+      };
+    });
+
     return data;
   }, [user]);
 
@@ -118,19 +145,23 @@ const DetailScreen = () => {
 
       <Card style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
         <div style={{ marginBottom: '5px' }}>
-          <MetricLabel>Baseline Pace: </MetricLabel>
+          <MetricLabel>Baseline Effective 5k Pace: </MetricLabel>
           <MetricValue>{basePace}</MetricValue>
         </div>
 
         <div>
-          <MetricLabel>Best Effort Pace: </MetricLabel>
+          <MetricLabel>Best Effective 5k Pace: </MetricLabel>
           <MetricValue>{bestEffortPace ? bestEffortPace : basePace}</MetricValue>
           <MetricValue
-            color={baseRace?.timeInSeconds < remainingRacesSortedByTime[0]?.timeInSeconds ? colors.red : colors.green}
+            color={
+              baseRace?.effectiveTimeInSeconds < remainingRacesSortedByTime[0]?.effectiveTimeInSeconds
+                ? colors.red
+                : colors.green
+            }
           >
             {bestEffortPace
               ? ` (${
-                  baseRace?.timeInSeconds < remainingRacesSortedByTime[0]?.timeInSeconds ? '' : '-'
+                  baseRace?.effectiveTimeInSeconds < remainingRacesSortedByTime[0]?.effectiveTimeInSeconds ? '' : '-'
                 }${paceDifference})`
               : ''}
           </MetricValue>
@@ -160,7 +191,7 @@ const DetailScreen = () => {
             ))}
           </THead>
           <Tbody>
-            {table.getRowModel().rows.map((row, i) => {
+            {table.getRowModel().rows.map((row) => {
               const backgroundColor = colors.transparentWhite;
               const color =
                 row.index === 0
@@ -181,17 +212,16 @@ const DetailScreen = () => {
                             whiteSpace: 'nowrap',
                             textOverflow: 'ellipsis',
                             overflow: 'hidden',
-                            maxWidth: '95px',
+                            maxWidth: '65px',
                           }
                         : {};
 
                     return (
                       <StyledTableCell
                         style={{
-                          borderBottom: '1px solid',
-                          borderColor: colors.tan,
-                          padding: '12px 8px',
+                          padding: '6px 10px',
                           overflowWrap: 'break-word',
+                          fontSize: '12px',
                           color,
                           ...raceNameExtras,
                         }}

@@ -16,7 +16,9 @@ model Race {
   updatedAt DateTime @updatedAt
   raceDate DateTime
   timeInSeconds Int
-  distanceInMeters Int
+  distanceInMeters Float
+  effectiveTimeInSeconds Int
+  effectiveDistanceInMeters Float
   raceName String @db.VarChar(255) 
   user User @relation(fields: [userId], references: [id])
   userId Int

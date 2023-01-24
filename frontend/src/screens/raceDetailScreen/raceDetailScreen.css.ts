@@ -32,5 +32,6 @@ export const MetricLabel = styled.label`
 
 export const MetricValue = styled.span<{ color?: string }>`
   font-size: 14px;
+  margin-left: 5px;
   color: ${({ color }) => color ?? 'inherit'};
 `;

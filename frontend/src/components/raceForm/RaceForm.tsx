@@ -18,6 +18,7 @@ interface FormValues {
   firstName: string;
   lastName: string;
   raceName: string;
+  hours: string;
   minutes: string;
   seconds: string;
   date: string;
@@ -34,7 +35,7 @@ const DISTANCE_OPTIONS = [
 ];
 
 const RaceForm: FC<RaceFormProps> = ({ formRef, handleClose }) => {
-  const { mutate: createRecordMutation } = useCreateRace();
+  const { mutate: createRaceMutation } = useCreateRace();
   const { data: users } = useUsers();
   const reset = formRef.resetFields;
   const userId = Form.useWatch('userId', formRef);
@@ -72,12 +73,14 @@ const RaceForm: FC<RaceFormProps> = ({ formRef, handleClose }) => {
         distance: null,
         date: new Date(),
       }}
-      onFinish={({ date, raceName, minutes, seconds, userId, firstName, lastName }: FormValues) => {
+      onFinish={({ date, raceName, hours, minutes, seconds, userId, firstName, lastName, distance }: FormValues) => {
         const newRace: Race = {
           raceDate: date,
           raceName,
-          distanceInMeters: 5000,
-          timeInSeconds: raceTimeToSeconds(minutes, seconds),
+          distanceInMeters: parseFloat(distance),
+          effectiveDistanceInmeters: 1,
+          effectiveTimeInSeconds: 1,
+          timeInSeconds: raceTimeToSeconds({ hours, minutes, seconds }),
         };
         if (userId === 'new') {
           newRace.user = {
@@ -89,7 +92,7 @@ const RaceForm: FC<RaceFormProps> = ({ formRef, handleClose }) => {
           newRace.userId = parseInt(userId);
         }
 
-        createRecordMutation(newRace);
+        createRaceMutation(newRace);
         reset();
         handleClose();
       }}
@@ -179,13 +182,25 @@ const RaceForm: FC<RaceFormProps> = ({ formRef, handleClose }) => {
       <FormItem label="Date" name="date" rules={[{ required: true }]} required={false} validateTrigger="onBlur">
         <StyledDatePicker format={'MM-DD-YYYY'} />
       </FormItem>
-      <Row gutter={0} align="bottom">
+      <Row gutter={0} align="bottom" wrap={false}>
         <Col>
           <FormItem
             label="Race Time"
+            name="hours"
+            id="hours"
+            rules={[{ pattern: new RegExp(/^[1-9]?[0-9]$/) }]}
+            required={false}
+            validateTrigger="onBlur"
+          >
+            <StyledInput placeholder="Hours" type="number" />
+          </FormItem>
+        </Col>
+        <Col style={{ marginBottom: 20, textAlign: 'center', fontSize: 18 }}>:</Col>
+        <Col>
+          <FormItem
             name="minutes"
             id="minutes"
-            rules={[{ pattern: new RegExp(/^[1-9]?[0-9]$/) }, { max: 2 }, { required: true }]}
+            rules={[{ required: true }, { pattern: new RegExp(/^[1-9]?[0-9]$/) }]}
             required={false}
             validateTrigger="onBlur"
           >
@@ -198,7 +213,7 @@ const RaceForm: FC<RaceFormProps> = ({ formRef, handleClose }) => {
             label=" "
             name="seconds"
             id="seconds"
-            rules={[{ pattern: new RegExp(/^[0-5]?[0-9]$/) }, { max: 2 }, { required: true }]}
+            rules={[{ required: true }, { pattern: new RegExp(/^[0-5]?[0-9]$/) }]}
             required={false}
             validateTrigger="onBlur"
           >

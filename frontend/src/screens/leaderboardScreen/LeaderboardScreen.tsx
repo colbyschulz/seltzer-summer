@@ -13,6 +13,7 @@ import Card from '../../components/card/Card';
 import RaceForm from '../../components/raceForm/RaceForm';
 import Button from '../../components/button/Button';
 import {
+  AboutHeader,
   AboutLabel,
   AboutText,
   AboutWrapper,
@@ -95,11 +96,14 @@ const LeaderboardScreen: FC = () => {
       const baseRace = sortedByDate.splice(0, 1)[0];
       // Users fastest race not including base race
       const fastestRemainingRace = userRaceArrayMutable.find(
-        (race) => race.timeInSeconds === Math.min(...userRaceArrayMutable.map((race) => race.timeInSeconds)),
+        (race) =>
+          race.effectiveTimeInSeconds === Math.min(...userRaceArrayMutable.map((race) => race.effectiveTimeInSeconds)),
       );
       const deltaAsPercentage =
-        (fastestRemainingRace?.timeInSeconds &&
-          ((fastestRemainingRace?.timeInSeconds - baseRace.timeInSeconds) / baseRace.timeInSeconds) * 100) ||
+        (fastestRemainingRace?.effectiveTimeInSeconds &&
+          ((fastestRemainingRace?.effectiveTimeInSeconds - baseRace.effectiveTimeInSeconds) /
+            baseRace.effectiveTimeInSeconds) *
+            100) ||
         0;
 
       return {
@@ -213,7 +217,6 @@ const LeaderboardScreen: FC = () => {
                           }
                         }}
                         style={{
-                          borderColor: colors.grey,
                           color: cellColor,
                           padding: '12px 8px',
                           overflowWrap: 'break-word',
@@ -273,21 +276,30 @@ const LeaderboardScreen: FC = () => {
         maskClosable={false}
       >
         <div style={{ display: 'flex', flexDirection: 'column', fontSize: '13px' }}>
-          <h3 style={{ marginTop: 0, fontSize: '16px' }}>Summer of Speed 5k Challenge</h3>
+          <AboutHeader>Summer of Speed</AboutHeader>
           <AboutWrapper>
             <AboutLabel>Objective:</AboutLabel>
             <AboutText>
-              Starting with a recent baseline 5k, make the most progress lowering your 5k time through the summer.
+              Starting with a recent baseline race, make the most progress lowering your effective 5k time throughout
+              the summer.
             </AboutText>
           </AboutWrapper>
 
           <AboutWrapper>
             <AboutLabel>Rules:</AboutLabel>
-            <AboutText>Entries must be a 5k effort.</AboutText>
+            <AboutText>nOo RuLeSsS</AboutText>
           </AboutWrapper>
 
           <AboutWrapper>
             <AboutLabel>Measurement:</AboutLabel>
+            <AboutText>{`Effective 5k time is calculated via Pete Reigel's formula from his work 'Athletic Records and Human Endurance' published in American Scientist.`}</AboutText>
+          </AboutWrapper>
+
+          <AboutWrapper>
+            <AboutText>{`Formula: t2 = t1 * (d2 / d1)^1.06`}</AboutText>
+          </AboutWrapper>
+
+          <AboutWrapper>
             <AboutText>
               The leaderboard is based on percentages relative to baseline effort. So, as you get faster, each second
               counts for more.
