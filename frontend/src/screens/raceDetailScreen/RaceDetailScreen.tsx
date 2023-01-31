@@ -23,7 +23,8 @@ import { useUser } from '../../api/users';
 import SettingsPopover from './SettingsPopover';
 import { Form, Modal } from 'antd';
 import RaceForm from '../../components/raceForm/RaceForm';
-import { useUpdateRace } from '../../api/races';
+import { useDeleteRace, useUpdateRace } from '../../api/races';
+import Button from '../../components/button/Button';
 
 const columnHelper = createColumnHelper<DetailTableData>();
 
@@ -38,12 +39,14 @@ interface DetailTableData extends Race {
 
 const DetailScreen = () => {
   const { userId } = useParams();
-  const [activeRaceId, setActiveRaceId] = useState<number | null>(null);
+  const [activeEditId, setActiveEditId] = useState<number | null>(null);
+  const [activeDeleteId, setActiveDeleteId] = useState<number | null>(null);
   const { mutate: updateRaceMutation } = useUpdateRace();
+  const { mutate: deleteRaceMutation } = useDeleteRace();
   const { data: user } = useUser(userId);
   const raceArray = user?.races ?? [];
   const [formRef] = Form.useForm();
-  const activeRaceToBeEdited = !!activeRaceId ? raceArray.find((race) => race.id === activeRaceId) : null;
+  const activeRaceToBeEdited = !!activeEditId ? raceArray.find((race) => race.id === activeEditId) : null;
   const userFullName = user?.userFullName ?? 'Racer';
   const breadcrumbsconfig = [
     { route: '/', display: 'Leaderboard' },
@@ -81,7 +84,7 @@ const DetailScreen = () => {
           original: { id },
         },
       }) => {
-        return <SettingsPopover setActiveRaceId={setActiveRaceId} raceId={id} />;
+        return <SettingsPopover setActiveEditId={setActiveEditId} setActiveDeleteId={setActiveDeleteId} raceId={id} />;
       },
     }),
   ];
@@ -252,11 +255,10 @@ const DetailScreen = () => {
       </DetailTableWrapper>
 
       <Modal
-        okText="Submit"
         bodyStyle={{ marginTop: 20 }}
-        open={!!activeRaceId}
+        open={!!activeEditId}
         onCancel={() => {
-          setActiveRaceId(null);
+          setActiveEditId(null);
           formRef.resetFields();
         }}
         footer={null}
@@ -267,7 +269,7 @@ const DetailScreen = () => {
           initialValues={getInitialRaceFormValues({ race: activeRaceToBeEdited, user })}
           formRef={formRef}
           handleClose={() => {
-            setActiveRaceId(null);
+            setActiveEditId(null);
             formRef.resetFields();
           }}
           handleSubmit={(formValues) => {
@@ -293,6 +295,31 @@ const DetailScreen = () => {
             updateRaceMutation(updatedRace);
           }}
         />
+      </Modal>
+      <Modal
+        title="Are you sure?"
+        bodyStyle={{ marginTop: 20 }}
+        open={!!activeDeleteId}
+        onCancel={() => {
+          setActiveDeleteId(null);
+          formRef.resetFields();
+        }}
+        footer={false}
+        maskClosable={false}
+      >
+        <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
+          <Button
+            style={{ margin: '20px 20px 0 0' }}
+            onClick={() => {
+              setActiveDeleteId(null);
+            }}
+          >
+            Cancel
+          </Button>
+          <Button style={{ marginTop: '20px' }} type="primary" onClick={() => deleteRaceMutation(activeDeleteId)}>
+            {"Put 'er down"}
+          </Button>
+        </div>
       </Modal>
     </DetailScreenWrapper>
   );

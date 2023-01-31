@@ -76,3 +76,29 @@ export const useUpdateRace = () => {
     },
   });
 };
+
+const deleteRace = async (raceId: number | null) => {
+  const response = await fetch(`${baseUrl}/races/${raceId}`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${process.env.PUBLIC_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+  });
+  const race: Race = await response.json();
+
+  return race;
+};
+
+export const useDeleteRace = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation(deleteRace, {
+    onSuccess: () => {
+      queryClient.invalidateQueries();
+    },
+    onError: (e) => {
+      console.log(e);
+    },
+  });
+};

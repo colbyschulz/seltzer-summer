@@ -219,7 +219,7 @@ const RaceForm: FC<RaceFormProps> = ({
           Cancel
         </Button>
         <Button style={{ marginTop: '20px' }} type="primary" htmlType="submit">
-          Submit
+          {editMode ? 'Update' : 'Submit'}
         </Button>
       </Row>
     </Form>

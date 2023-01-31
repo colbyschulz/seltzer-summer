@@ -5,11 +5,12 @@ import styled from 'styled-components';
 import colors from '../../colors';
 
 interface SettingsPopoverProps {
-  setActiveRaceId: Dispatch<SetStateAction<number | null>>;
+  setActiveEditId: Dispatch<SetStateAction<number | null>>;
+  setActiveDeleteId: Dispatch<SetStateAction<number | null>>;
   raceId?: number;
 }
 
-const SettingsPopover: FC<SettingsPopoverProps> = ({ setActiveRaceId, raceId }) => {
+const SettingsPopover: FC<SettingsPopoverProps> = ({ setActiveEditId, setActiveDeleteId, raceId }) => {
   const [isSettingsMenuOpen, setIsSettingsMenuOpen] = useState(false);
 
   return (
@@ -27,7 +28,7 @@ const SettingsPopover: FC<SettingsPopoverProps> = ({ setActiveRaceId, raceId }) 
               key: 'edit',
               icon: <EditOutlined />,
               onClick: () => {
-                setActiveRaceId(raceId ?? null);
+                setActiveEditId(raceId ?? null);
                 setIsSettingsMenuOpen(false);
               },
             },
@@ -37,7 +38,7 @@ const SettingsPopover: FC<SettingsPopoverProps> = ({ setActiveRaceId, raceId }) 
               icon: <DeleteOutlined />,
               danger: true,
               onClick: () => {
-                setActiveRaceId(raceId ?? null);
+                setActiveDeleteId(raceId ?? null);
                 setIsSettingsMenuOpen(false);
               },
             },
