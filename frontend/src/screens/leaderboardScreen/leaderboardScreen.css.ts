@@ -1,4 +1,3 @@
-import { Modal } from 'antd';
 import styled from 'styled-components';
 import colors from '../../colors';
 
@@ -60,5 +59,3 @@ export const AboutHeader = styled.h3`
     font-size: 18px;
   }
 `;
-
-export const StyledModal = styled(Modal)``;

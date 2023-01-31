@@ -5,9 +5,9 @@ export interface Race {
   updatedAt?: string;
   raceDate: string;
   timeInSeconds: number;
-  effectiveTimeInSeconds: number;
+  effectiveTimeInSeconds?: number;
   distanceInMeters: number;
-  effectiveDistanceInmeters: number;
+  effectiveDistanceInmeters?: number;
   raceName: string;
   user?: User;
   userId?: number;

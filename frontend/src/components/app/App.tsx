@@ -21,8 +21,8 @@ const App = () => {
             colorError: colors.red,
           },
           components: {
-            Popover: {
-              // borderRadiusLG: 6,
+            Modal: {
+              borderRadiusLG: 6,
             },
           },
         }}

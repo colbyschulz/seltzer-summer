@@ -48,3 +48,31 @@ export const useCreateRace = () => {
     },
   });
 };
+
+const updateRace = async (updatedRace: Race) => {
+  const raceId = updatedRace.id;
+  const response = await fetch(`${baseUrl}/races/${raceId}`, {
+    method: 'PUT',
+    headers: {
+      Authorization: `Bearer ${process.env.PUBLIC_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(updatedRace),
+  });
+  const race: Race = await response.json();
+
+  return race;
+};
+
+export const useUpdateRace = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation(updateRace, {
+    onSuccess: () => {
+      queryClient.invalidateQueries();
+    },
+    onError: (e) => {
+      console.log(e);
+    },
+  });
+};
