@@ -220,7 +220,7 @@ const LeaderboardScreen: FC = () => {
                         }}
                         style={{
                           color: cellColor,
-                          padding: '12px 8px',
+                          padding: '8px',
                           overflowWrap: 'break-word',
                           display: 'table-cell',
                           textAlign:
