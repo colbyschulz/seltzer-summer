@@ -1,5 +1,5 @@
-import { format } from 'date-fns';
-import { Race } from './types';
+import { format, parseISO } from 'date-fns';
+import { Race, User } from './types';
 
 export const capitalize = (string: string) => {
   const capitalized = string
@@ -22,7 +22,10 @@ export const raceTimeToSeconds = ({
   return Number(hours) * 3600 + Number(minutes) * 60 + Number(seconds);
 };
 
-export const secondsToRaceTime = (timeInSeconds: number) => {
+export const secondsToRaceTime = (timeInSeconds?: number) => {
+  if (!timeInSeconds) {
+    return '0:0:0';
+  }
   let secondsLeft = timeInSeconds;
   const hours = Math.floor(Math.abs(timeInSeconds) / 3600);
   secondsLeft = secondsLeft - hours * 3600;
@@ -63,7 +66,7 @@ export const racesByUserId = (races: Race[]) => {
   return {};
 };
 
-export const secondsToPace = (timeInSeconds: number, distanceInMeters = 5000) => {
+export const secondsToPace = (timeInSeconds?: number, distanceInMeters = 5000) => {
   if (!timeInSeconds) {
     return '';
   }
@@ -105,4 +108,43 @@ export const metersToDisplayNameMap: Record<number, string> = {
   16093.4: '10 Mile',
   21097.5: '13.1',
   42195: '26.2',
+};
+
+export const getInitialRaceFormValues = ({ race, user }: { race?: Race | null; user?: User }) => {
+  if (race && user) {
+    const raceTime = secondsToRaceTime(race.timeInSeconds);
+    let hours = '',
+      minutes = '',
+      seconds = '';
+    const split = raceTime.split(':');
+    if (split.length > 2) {
+      [hours, minutes, seconds] = split;
+    } else {
+      [minutes, seconds] = split;
+    }
+
+    return {
+      userId: user.id?.toString() ?? '',
+      raceName: race.raceName,
+      firstName: '',
+      lastName: '',
+      hours,
+      minutes,
+      seconds,
+      date: parseISO(race.raceDate),
+      distance: race.distanceInMeters.toString(),
+    };
+  } else {
+    return {
+      userId: '',
+      firstName: '',
+      lastName: '',
+      hours: '',
+      minutes: '',
+      seconds: '',
+      raceName: '',
+      distance: '',
+      date: new Date(),
+    };
+  }
 };

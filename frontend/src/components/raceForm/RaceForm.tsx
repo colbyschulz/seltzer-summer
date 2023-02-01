@@ -1,8 +1,5 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 
-import { Race } from '../../types';
-import { raceTimeToSeconds } from '../../utils';
-import { useCreateRace } from '../../api/races';
 import { StyledInput, StyledSelect, StyledDatePicker, FormItem } from './raceForm.css';
 import Button from '../button/Button';
 import { useUsers } from '../../api/users';
@@ -11,18 +8,21 @@ import { Col, Form, FormInstance, Row, Select } from 'antd';
 interface RaceFormProps {
   formRef: FormInstance<FormValues>;
   handleClose: () => void;
+  initialValues?: FormValues;
+  handleSubmit: (values: FormValues) => void;
+  editMode?: boolean;
 }
 
 interface FormValues {
-  userId: string;
+  userId: string | null;
   firstName: string;
   lastName: string;
   raceName: string;
   hours: string;
   minutes: string;
   seconds: string;
-  date: string;
-  distance: string;
+  date: string | Date;
+  distance: string | null;
 }
 
 const DISTANCE_OPTIONS = [
@@ -34,11 +34,30 @@ const DISTANCE_OPTIONS = [
   { label: 'Marathon', value: '42195' },
 ];
 
-const RaceForm: FC<RaceFormProps> = ({ formRef, handleClose }) => {
-  const { mutate: createRaceMutation } = useCreateRace();
+const RaceForm: FC<RaceFormProps> = ({
+  formRef,
+  handleClose,
+  initialValues = {
+    userId: null,
+    firstName: '',
+    lastName: '',
+    hours: '',
+    minutes: '',
+    seconds: '',
+    raceName: '',
+    distance: null,
+    date: new Date(),
+  },
+  handleSubmit,
+  editMode,
+}) => {
   const { data: users } = useUsers();
   const reset = formRef.resetFields;
   const userId = Form.useWatch('userId', formRef);
+
+  useEffect(() => {
+    formRef.setFieldsValue(initialValues);
+  }, [initialValues]);
 
   const userFormOptions =
     users?.map((user) => (
@@ -63,36 +82,9 @@ const RaceForm: FC<RaceFormProps> = ({ formRef, handleClose }) => {
         string: { min: 'Must be 2 chars', max: 'Invalid format' },
         number: { max: '' },
       }}
-      initialValues={{
-        userId: null,
-        firstName: '',
-        lastName: '',
-        minutes: '',
-        seconds: '',
-        raceName: '',
-        distance: null,
-        date: new Date(),
-      }}
-      onFinish={({ date, raceName, hours, minutes, seconds, userId, firstName, lastName, distance }: FormValues) => {
-        const newRace: Race = {
-          raceDate: date,
-          raceName,
-          distanceInMeters: parseFloat(distance),
-          effectiveDistanceInmeters: 1,
-          effectiveTimeInSeconds: 1,
-          timeInSeconds: raceTimeToSeconds({ hours, minutes, seconds }),
-        };
-        if (userId === 'new') {
-          newRace.user = {
-            firstName,
-            lastName,
-            userFullName: `${firstName} ${lastName}`,
-          };
-        } else {
-          newRace.userId = parseInt(userId);
-        }
-
-        createRaceMutation(newRace);
+      initialValues={initialValues}
+      onFinish={(values) => {
+        handleSubmit(values);
         reset();
         handleClose();
       }}
@@ -110,6 +102,7 @@ const RaceForm: FC<RaceFormProps> = ({ formRef, handleClose }) => {
           dropdownStyle={{
             borderRadius: 2,
           }}
+          disabled={editMode}
           showSearch
           placeholder="Name"
           filterOption={(input, option) => {
@@ -200,7 +193,7 @@ const RaceForm: FC<RaceFormProps> = ({ formRef, handleClose }) => {
           <FormItem
             name="minutes"
             id="minutes"
-            rules={[{ required: true }, { pattern: new RegExp(/^[1-9]?[0-9]$/) }]}
+            rules={[{ required: true }, { pattern: new RegExp(/^[0-9]?[0-9]$/) }]}
             required={false}
             validateTrigger="onBlur"
           >
@@ -226,7 +219,7 @@ const RaceForm: FC<RaceFormProps> = ({ formRef, handleClose }) => {
           Cancel
         </Button>
         <Button style={{ marginTop: '20px' }} type="primary" htmlType="submit">
-          Submit
+          {editMode ? 'Update' : 'Submit'}
         </Button>
       </Row>
     </Form>

@@ -1,12 +1,12 @@
 import React, { FC, useMemo, useState } from 'react';
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { useNavigate } from 'react-router-dom';
-import { Form } from 'antd';
+import { Form, Modal } from 'antd';
 
 import ArrowRight from '../../assets/images/arrow-right.svg';
-import { racesByUserId } from '../../utils';
+import { racesByUserId, raceTimeToSeconds } from '../../utils';
 import Breadcrumbs from '../../components/breadcrumbs/Breadcrumbs';
-import { useRaces } from '../../api/races';
+import { useCreateRace, useRaces } from '../../api/races';
 import LeaderboardChart from '../../components/leaderboardChart/LeaderboardChart';
 import colors from '../../colors';
 import Card from '../../components/card/Card';
@@ -20,10 +20,10 @@ import {
   HeaderControls,
   LeaderboardScreenWrapper,
   LeaderboardTableWrapper,
-  StyledModal,
   StyledTableCell,
 } from './leaderboardScreen.css';
 import { Table, Tbody, Th, THead, Tr } from '../../components/table/table.css';
+import { Race } from '../../types';
 
 type LeaderboardData = {
   position: string;
@@ -77,6 +77,7 @@ const columns = [
 
 const LeaderboardScreen: FC = () => {
   const { data: races = [] } = useRaces();
+  const { mutate: createRaceMutation } = useCreateRace();
   const navigate = useNavigate();
   const [isRaceModalOpen, setIsRaceModalOpen] = React.useState(false);
   const [isAboutModalOpen, setIsAboutModalOpen] = React.useState(false);
@@ -97,12 +98,13 @@ const LeaderboardScreen: FC = () => {
       // Users fastest race not including base race
       const fastestRemainingRace = userRaceArrayMutable.find(
         (race) =>
-          race.effectiveTimeInSeconds === Math.min(...userRaceArrayMutable.map((race) => race.effectiveTimeInSeconds)),
+          race.effectiveTimeInSeconds ===
+          Math.min(...userRaceArrayMutable.map((race) => race.effectiveTimeInSeconds ?? 0)),
       );
       const deltaAsPercentage =
         (fastestRemainingRace?.effectiveTimeInSeconds &&
-          ((fastestRemainingRace?.effectiveTimeInSeconds - baseRace.effectiveTimeInSeconds) /
-            baseRace.effectiveTimeInSeconds) *
+          ((fastestRemainingRace?.effectiveTimeInSeconds - (baseRace.effectiveTimeInSeconds ?? 0)) /
+            (baseRace.effectiveTimeInSeconds ?? 0)) *
             100) ||
         0;
 
@@ -218,7 +220,7 @@ const LeaderboardScreen: FC = () => {
                         }}
                         style={{
                           color: cellColor,
-                          padding: '12px 8px',
+                          padding: '8px',
                           overflowWrap: 'break-word',
                           display: 'table-cell',
                           textAlign:
@@ -237,7 +239,7 @@ const LeaderboardScreen: FC = () => {
           </Tbody>
         </Table>
       </LeaderboardTableWrapper>
-      <StyledModal
+      <Modal
         okText="Submit"
         bodyStyle={{ marginTop: 20 }}
         open={isRaceModalOpen}
@@ -254,10 +256,29 @@ const LeaderboardScreen: FC = () => {
             setIsRaceModalOpen(false);
             formRef.resetFields();
           }}
+          handleSubmit={(formValues) => {
+            const { date, raceName, hours, minutes, seconds, userId, firstName, lastName, distance } = formValues;
+            const newRace: Race = {
+              raceDate: date.toString(),
+              raceName,
+              distanceInMeters: distance ? parseFloat(distance) : 0,
+              timeInSeconds: raceTimeToSeconds({ hours, minutes, seconds }),
+            };
+            if (userId === 'new') {
+              newRace.user = {
+                firstName,
+                lastName,
+                userFullName: `${firstName} ${lastName}`,
+              };
+            } else {
+              newRace.userId = userId ? parseInt(userId) : 0;
+            }
+            createRaceMutation(newRace);
+          }}
         />
-      </StyledModal>
+      </Modal>
 
-      <StyledModal
+      <Modal
         open={isAboutModalOpen}
         onCancel={() => {
           setIsAboutModalOpen(false);
@@ -287,7 +308,7 @@ const LeaderboardScreen: FC = () => {
 
           <AboutWrapper>
             <AboutLabel>Rules:</AboutLabel>
-            <AboutText>nOo RuLeSsS</AboutText>
+            <AboutText>Must be a measured race. Track time trials are fine.</AboutText>
           </AboutWrapper>
 
           <AboutWrapper>
@@ -307,7 +328,7 @@ const LeaderboardScreen: FC = () => {
             <AboutText>{`e.g  16:00 to 15:50 (-1.04%) vs 20:00 to 19:50(-.83%)`} </AboutText>
           </AboutWrapper>
         </div>
-      </StyledModal>
+      </Modal>
     </LeaderboardScreenWrapper>
   );
 };

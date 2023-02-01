@@ -3,7 +3,14 @@ import { useParams } from 'react-router-dom';
 import { format } from 'date-fns';
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 
-import { calcPaceDifference, metersToDisplayNameMap, secondsToPace, secondsToRaceTime } from '../../utils';
+import {
+  calcPaceDifference,
+  getInitialRaceFormValues,
+  metersToDisplayNameMap,
+  raceTimeToSeconds,
+  secondsToPace,
+  secondsToRaceTime,
+} from '../../utils';
 import Breadcrumbs from '../../components/breadcrumbs/Breadcrumbs';
 import colors from '../../colors';
 import RaceDetailChart from '../../components/raceDetailChart/RaceDetailChart';
@@ -14,6 +21,10 @@ import { Table, Tbody, Th, THead, Tr } from '../../components/table/table.css';
 import { Race } from '../../types';
 import { useUser } from '../../api/users';
 import SettingsPopover from './SettingsPopover';
+import { Form, Modal } from 'antd';
+import RaceForm from '../../components/raceForm/RaceForm';
+import { useDeleteRace, useUpdateRace } from '../../api/races';
+import Button from '../../components/button/Button';
 
 const columnHelper = createColumnHelper<DetailTableData>();
 
@@ -28,11 +39,14 @@ interface DetailTableData extends Race {
 
 const DetailScreen = () => {
   const { userId } = useParams();
-  const [activeRaceId, setActiveRaceId] = useState<number | null>(null);
+  const [activeEditId, setActiveEditId] = useState<number | null>(null);
+  const [activeDeleteId, setActiveDeleteId] = useState<number | null>(null);
+  const { mutate: updateRaceMutation } = useUpdateRace();
+  const { mutate: deleteRaceMutation } = useDeleteRace();
   const { data: user } = useUser(userId);
   const raceArray = user?.races ?? [];
-
-  const activeRaceToBeEdited = activeRaceId && raceArray.find((race) => race.id === activeRaceId);
+  const [formRef] = Form.useForm();
+  const activeRaceToBeEdited = !!activeEditId ? raceArray.find((race) => race.id === activeEditId) : null;
   const userFullName = user?.userFullName ?? 'Racer';
   const breadcrumbsconfig = [
     { route: '/', display: 'Leaderboard' },
@@ -70,7 +84,7 @@ const DetailScreen = () => {
           original: { id },
         },
       }) => {
-        return <SettingsPopover setActiveRaceId={setActiveRaceId} raceId={id} />;
+        return <SettingsPopover setActiveEditId={setActiveEditId} setActiveDeleteId={setActiveDeleteId} raceId={id} />;
       },
     }),
   ];
@@ -90,13 +104,13 @@ const DetailScreen = () => {
 
   // Add flag for best effort
   const remainingRacesSortedByTime = mutableSortedByDate.sort(
-    (a, b) => a.effectiveTimeInSeconds - b.effectiveTimeInSeconds,
+    (a, b) => (a.effectiveTimeInSeconds ?? 0) - (b.effectiveTimeInSeconds ?? 0),
   );
   const bestEffortRace = remainingRacesSortedByTime[0];
   if (bestEffortRace) {
     bestEffortRace.isBestEffort = true;
 
-    if (bestEffortRace.effectiveTimeInSeconds < baseRace.effectiveTimeInSeconds) {
+    if ((bestEffortRace.effectiveTimeInSeconds ?? 0) < (baseRace.effectiveTimeInSeconds ?? 0)) {
       bestEffortRace.isBestEffortBetterThanBaseline = true;
     }
   }
@@ -154,14 +168,16 @@ const DetailScreen = () => {
           <MetricValue>{bestEffortPace ? bestEffortPace : basePace}</MetricValue>
           <MetricValue
             color={
-              baseRace?.effectiveTimeInSeconds < remainingRacesSortedByTime[0]?.effectiveTimeInSeconds
+              (baseRace?.effectiveTimeInSeconds ?? 0) < (remainingRacesSortedByTime[0]?.effectiveTimeInSeconds ?? 0)
                 ? colors.red
                 : colors.green
             }
           >
             {bestEffortPace
               ? ` (${
-                  baseRace?.effectiveTimeInSeconds < remainingRacesSortedByTime[0]?.effectiveTimeInSeconds ? '' : '-'
+                  (baseRace?.effectiveTimeInSeconds ?? 0) < (remainingRacesSortedByTime[0]?.effectiveTimeInSeconds ?? 0)
+                    ? ''
+                    : '-'
                 }${paceDifference})`
               : ''}
           </MetricValue>
@@ -237,6 +253,74 @@ const DetailScreen = () => {
           </Tbody>
         </Table>
       </DetailTableWrapper>
+
+      <Modal
+        bodyStyle={{ marginTop: 20 }}
+        open={!!activeEditId}
+        onCancel={() => {
+          setActiveEditId(null);
+          formRef.resetFields();
+        }}
+        footer={null}
+        maskClosable={false}
+      >
+        <RaceForm
+          editMode
+          initialValues={getInitialRaceFormValues({ race: activeRaceToBeEdited, user })}
+          formRef={formRef}
+          handleClose={() => {
+            setActiveEditId(null);
+            formRef.resetFields();
+          }}
+          handleSubmit={(formValues) => {
+            const { date, raceName, hours, minutes, seconds, userId, firstName, lastName, distance } = formValues;
+            const updatedRace = {
+              ...activeRaceToBeEdited,
+              raceDate: date.toString(),
+              raceName,
+              distanceInMeters: distance ? parseFloat(distance) : 0,
+
+              timeInSeconds: raceTimeToSeconds({ hours, minutes, seconds }),
+            };
+            if (userId === 'new') {
+              updatedRace.user = {
+                firstName,
+                lastName,
+                userFullName: `${firstName} ${lastName}`,
+              };
+            } else {
+              updatedRace.userId = userId ? parseInt(userId) : 0;
+            }
+
+            updateRaceMutation(updatedRace);
+          }}
+        />
+      </Modal>
+      <Modal
+        title="Are you sure?"
+        bodyStyle={{ marginTop: 20 }}
+        open={!!activeDeleteId}
+        onCancel={() => {
+          setActiveDeleteId(null);
+          formRef.resetFields();
+        }}
+        footer={false}
+        maskClosable={false}
+      >
+        <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
+          <Button
+            style={{ margin: '20px 20px 0 0' }}
+            onClick={() => {
+              setActiveDeleteId(null);
+            }}
+          >
+            Cancel
+          </Button>
+          <Button style={{ marginTop: '20px' }} type="primary" onClick={() => deleteRaceMutation(activeDeleteId)}>
+            {"Put 'er down"}
+          </Button>
+        </div>
+      </Modal>
     </DetailScreenWrapper>
   );
 };

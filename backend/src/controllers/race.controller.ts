@@ -104,12 +104,34 @@ const findOneRace = async (req, res) => {
 const updateRace = async (req, res) => {
   const { id }: { id?: string } = req.params;
   const { raceDate, raceName, timeInSeconds, distanceInMeters, userId } = req.body;
+  // Validate request
+  if (!raceDate || !raceName || !timeInSeconds || !distanceInMeters) {
+    res.status(400).send({
+      message: 'Must include all fields',
+    });
+    return;
+  }
 
+  const parsedTimeInSeconds = Number(timeInSeconds);
+  const parsedDistanceInMeters = Number(distanceInMeters);
+  const effectiveTimeInSeconds =
+    parsedDistanceInMeters === EFFECTIVE_DISTANCE
+      ? parsedTimeInSeconds
+      : getEffectiveTime({
+          timeInSeconds: parsedTimeInSeconds,
+          distanceInMeters: parsedDistanceInMeters,
+          // use 10k as effective time
+          effectiveDistanceInMeters: EFFECTIVE_DISTANCE,
+        });
+
+  // update a Race with exsiting user
   const updatedRace = {
     raceDate: new Date(raceDate),
     raceName,
-    timeInSeconds: Number(timeInSeconds),
-    distanceInMeters: Number(distanceInMeters),
+    timeInSeconds: parsedTimeInSeconds,
+    effectiveTimeInSeconds,
+    distanceInMeters: parsedDistanceInMeters,
+    effectiveDistanceInMeters: EFFECTIVE_DISTANCE,
     user: { connect: { id: Number(userId) } },
   };
 
@@ -121,7 +143,7 @@ const updateRace = async (req, res) => {
 
     res.json(race);
   } catch (error) {
-    res.json({ error: `Error updating Race with ID ${id}` });
+    res.json({ error: `Error updating Race with ID ${id}, ${error}` });
   }
 };
 
