@@ -1,5 +1,7 @@
 export const baseUrl =
-  process.env.NODE_ENV === 'prod' ? 'https://api.airtable.com/v0/appusTcSy172j3GYs/prod' : 'http://localhost:3000/api';
+  process.env.NODE_ENV === 'prod'
+    ? 'https://dvpzzyyi05.execute-api.us-east-1.amazonaws.com/api'
+    : 'https://dvpzzyyi05.execute-api.us-east-1.amazonaws.com/api';
 
 export const queryKeys = {
   races: 'races',
