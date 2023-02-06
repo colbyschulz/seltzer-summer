@@ -1,5 +1,5 @@
 export const baseUrl =
-  process.env.NODE_ENV === 'production'
+  process.env.NODE_ENV === 'prod'
     ? 'https://dvpzzyyi05.execute-api.us-east-1.amazonaws.com/api'
     : 'https://dvpzzyyi05.execute-api.us-east-1.amazonaws.com/api';
 
