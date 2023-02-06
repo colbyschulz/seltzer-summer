@@ -31,7 +31,7 @@ const RaceComparisonChart: FC = () => {
   const { data: races = [] } = useRaces();
   const { data: user } = useUser(userIdFromParams);
   const { data: users = [] } = useUsers();
-  const allRaceTimes = races.map((race) => race.effectiveTimeInSeconds).sort((a, b) => a - b);
+  const allRaceTimes = races.map((race) => race.effectiveTimeInSeconds).sort((a, b) => (a ?? 0) - (b ?? 0));
 
   const userRaces = user?.races || [];
   const userRacesMutable = [...userRaces];
@@ -40,10 +40,10 @@ const RaceComparisonChart: FC = () => {
   );
   const baseRaceTime = userRacesMutableSortedByDate?.splice(0, 1)[0]?.effectiveTimeInSeconds;
   const fastestRemainingTime = userRacesMutable?.find(
-    (race) => race.effectiveTimeInSeconds === Math.min(...userRaces.map((race) => race.effectiveTimeInSeconds)),
+    (race) => race.effectiveTimeInSeconds === Math.min(...userRaces.map((race) => race.effectiveTimeInSeconds ?? 0)),
   )?.effectiveTimeInSeconds;
   const slowestRemainingTime = userRacesMutable?.find(
-    (race) => race.effectiveTimeInSeconds === Math.max(...userRaces.map((race) => race.effectiveTimeInSeconds)),
+    (race) => race.effectiveTimeInSeconds === Math.max(...userRaces.map((race) => race.effectiveTimeInSeconds ?? 0)),
   )?.effectiveTimeInSeconds;
 
   const racesNormalizedByDate = races.reduce((accum, race) => {
@@ -62,14 +62,14 @@ const RaceComparisonChart: FC = () => {
       };
     }
     return accum;
-  }, {} as { [date: string]: { [name: string]: number | string } });
+  }, {} as { [date: string]: { [name: string]: number | string | undefined } });
 
   const chartData = Object.values(racesNormalizedByDate);
 
   const upperBound = allRaceTimes[allRaceTimes.length - 1];
   const lowerBound = allRaceTimes[0];
-  const floor = Math.floor(lowerBound / 60);
-  const ceiling = Math.ceil(upperBound / 60);
+  const floor = Math.floor(lowerBound ?? 0 / 60);
+  const ceiling = Math.ceil(upperBound ?? 0 / 60);
   const floorTime = floor * 60;
   const ceilingTime = ceiling * 60;
   const ticks = [];
