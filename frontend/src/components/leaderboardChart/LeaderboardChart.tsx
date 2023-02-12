@@ -15,7 +15,7 @@ const LeaderboardChart: FC<LeaderboardChartProps> = ({ activeDataKey, setActiveD
   const { data: races = [] } = useRaces();
   const { data: users = [] } = useUsers();
 
-  const allEffectiveRaceTimes = races.map((race) => race.effectiveTimeInSeconds).sort((a, b) => a - b);
+  const allEffectiveRaceTimes = races.map((race) => race.effectiveTimeInSeconds).sort((a, b) => (a ?? 0) - (b ?? 0));
 
   const racesNormalizedByDate = races.reduce((accum, race) => {
     const { user, effectiveTimeInSeconds, raceDate } = race;
@@ -33,14 +33,14 @@ const LeaderboardChart: FC<LeaderboardChartProps> = ({ activeDataKey, setActiveD
       };
     }
     return accum;
-  }, {} as { [date: string]: { [name: string]: number | string } });
+  }, {} as { [date: string]: { [name: string]: number | string | undefined } });
 
   const chartData = Object.values(racesNormalizedByDate);
 
   const upperBound = allEffectiveRaceTimes[allEffectiveRaceTimes.length - 1];
   const lowerBound = allEffectiveRaceTimes[0];
-  const floor = Math.floor(lowerBound / 60);
-  const ceiling = Math.ceil(upperBound / 60);
+  const floor = Math.floor((lowerBound ?? 0) / 60);
+  const ceiling = Math.ceil((upperBound ?? 0) / 60);
   const floorTime = floor * 60;
   const ceilingTime = ceiling * 60;
   const ticks = [];
