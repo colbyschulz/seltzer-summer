@@ -68,8 +68,8 @@ const RaceComparisonChart: FC = () => {
 
   const upperBound = allRaceTimes[allRaceTimes.length - 1];
   const lowerBound = allRaceTimes[0];
-  const floor = Math.floor(lowerBound ?? 0 / 60);
-  const ceiling = Math.ceil(upperBound ?? 0 / 60);
+  const floor = Math.floor((lowerBound ?? 0) / 60);
+  const ceiling = Math.ceil((upperBound ?? 0) / 60);
   const floorTime = floor * 60;
   const ceilingTime = ceiling * 60;
   const ticks = [];

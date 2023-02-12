@@ -39,8 +39,8 @@ const LeaderboardChart: FC<LeaderboardChartProps> = ({ activeDataKey, setActiveD
 
   const upperBound = allEffectiveRaceTimes[allEffectiveRaceTimes.length - 1];
   const lowerBound = allEffectiveRaceTimes[0];
-  const floor = Math.floor(lowerBound ?? 0 / 60);
-  const ceiling = Math.ceil(upperBound ?? 0 / 60);
+  const floor = Math.floor((lowerBound ?? 0) / 60);
+  const ceiling = Math.ceil((upperBound ?? 0) / 60);
   const floorTime = floor * 60;
   const ceilingTime = ceiling * 60;
   const ticks = [];
