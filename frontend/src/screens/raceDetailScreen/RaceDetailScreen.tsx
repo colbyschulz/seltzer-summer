@@ -199,6 +199,7 @@ const DetailScreen = () => {
                     key={header.id}
                     style={{
                       textAlign: 'left',
+                      zIndex: 2,
                     }}
                   >
                     {flexRender(header.column.columnDef.header, header.getContext())}
@@ -239,7 +240,6 @@ const DetailScreen = () => {
                           padding: '6px 5px',
                           overflowWrap: 'break-word',
                           fontSize: '12px',
-                          zIndex: 2,
                           color,
                           ...raceNameExtras,
                         }}
