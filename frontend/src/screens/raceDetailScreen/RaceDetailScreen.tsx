@@ -21,10 +21,11 @@ import { Table, Tbody, Th, THead, Tr } from '../../components/table/table.css';
 import { Race } from '../../types';
 import { useUser } from '../../api/users';
 import SettingsPopover from './SettingsPopover';
-import { Form, Modal } from 'antd';
+import { Form } from 'antd';
 import RaceForm from '../../components/raceForm/RaceForm';
 import { useDeleteRace, useUpdateRace } from '../../api/races';
 import Button from '../../components/button/Button';
+import Modal from '../../components/modal/Modal';
 
 const columnHelper = createColumnHelper<DetailTableData>();
 
@@ -255,14 +256,11 @@ const DetailScreen = () => {
       </DetailTableWrapper>
 
       <Modal
-        bodyStyle={{ marginTop: 20 }}
-        open={!!activeEditId}
-        onCancel={() => {
+        showModal={!!activeEditId}
+        onClose={() => {
           setActiveEditId(null);
           formRef.resetFields();
         }}
-        footer={null}
-        maskClosable={false}
       >
         <RaceForm
           editMode
@@ -297,15 +295,12 @@ const DetailScreen = () => {
         />
       </Modal>
       <Modal
-        title="Are you sure?"
-        bodyStyle={{ marginTop: 20 }}
-        open={!!activeDeleteId}
-        onCancel={() => {
+        header="Are you sure?"
+        showModal={!!activeDeleteId}
+        onClose={() => {
           setActiveDeleteId(null);
           formRef.resetFields();
         }}
-        footer={false}
-        maskClosable={false}
       >
         <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
           <Button

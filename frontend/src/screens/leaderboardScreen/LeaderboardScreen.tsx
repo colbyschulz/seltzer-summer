@@ -1,7 +1,7 @@
 import React, { FC, useMemo, useState } from 'react';
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { useNavigate } from 'react-router-dom';
-import { Form, Modal } from 'antd';
+import { Form } from 'antd';
 
 import ArrowRight from '../../assets/images/arrow-right.svg';
 import { racesByUserId, raceTimeToSeconds } from '../../utils';
@@ -24,6 +24,7 @@ import {
 } from './leaderboardScreen.css';
 import { Table, Tbody, Th, THead, Tr } from '../../components/table/table.css';
 import { Race } from '../../types';
+import Modal from '../../components/modal/Modal';
 
 type LeaderboardData = {
   position: string;
@@ -240,15 +241,11 @@ const LeaderboardScreen: FC = () => {
         </Table>
       </LeaderboardTableWrapper>
       <Modal
-        okText="Submit"
-        bodyStyle={{ marginTop: 20 }}
-        open={isRaceModalOpen}
-        onCancel={() => {
+        showModal={isRaceModalOpen}
+        onClose={() => {
           setIsRaceModalOpen(false);
           formRef.resetFields();
         }}
-        footer={null}
-        maskClosable={false}
       >
         <RaceForm
           formRef={formRef}
@@ -279,22 +276,10 @@ const LeaderboardScreen: FC = () => {
       </Modal>
 
       <Modal
-        open={isAboutModalOpen}
-        onCancel={() => {
+        showModal={isAboutModalOpen}
+        onClose={() => {
           setIsAboutModalOpen(false);
         }}
-        footer={[
-          <Button
-            key="ok"
-            type="primary"
-            onClick={() => {
-              setIsAboutModalOpen(false);
-            }}
-          >
-            Cool
-          </Button>,
-        ]}
-        maskClosable={false}
       >
         <div style={{ display: 'flex', flexDirection: 'column', fontSize: '13px' }}>
           <AboutHeader>Summer of Speed</AboutHeader>
@@ -327,6 +312,16 @@ const LeaderboardScreen: FC = () => {
             </AboutText>
             <AboutText>{`e.g  16:00 to 15:50 (-1.04%) vs 20:00 to 19:50(-.83%)`} </AboutText>
           </AboutWrapper>
+          <Button
+            key="ok"
+            type="primary"
+            onClick={() => {
+              setIsAboutModalOpen(false);
+            }}
+            style={{ marginTop: 20, alignSelf: 'flexEnd' }}
+          >
+            Cool
+          </Button>
         </div>
       </Modal>
     </LeaderboardScreenWrapper>

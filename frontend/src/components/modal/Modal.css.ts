@@ -47,7 +47,6 @@ export const HeaderRow = styled.div`
   align-items: center;
   border-color: grey;
   border-bottom-width: 1px;
-  padding-bottom: 20px;
   margin-bottom: 12px;
   width: 100%;
 `;

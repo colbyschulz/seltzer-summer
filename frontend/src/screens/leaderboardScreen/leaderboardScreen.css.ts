@@ -55,6 +55,7 @@ export const AboutText = styled.label`
 
 export const AboutHeader = styled.h3`
   font-size: 20px;
+  margin: 0 0 10px 0;
   @media (max-width: 415px) {
     font-size: 18px;
   }

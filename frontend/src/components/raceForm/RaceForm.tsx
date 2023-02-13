@@ -175,7 +175,7 @@ const RaceForm: FC<RaceFormProps> = ({
         <StyledInput type="text" placeholder="Seltzer Summer 5k" />
       </FormItem>
       <FormItem label="Date" name="date" rules={[{ required: true }]} required={false} validateTrigger="onBlur">
-        <StyledDatePicker format={'MM-DD-YYYY'} />
+        <StyledDatePicker inputReadOnly format={'MM-DD-YYYY'} />
       </FormItem>
       <Row gutter={0} align="bottom" wrap={false}>
         <Col>
