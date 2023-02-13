@@ -34,20 +34,22 @@ const DISTANCE_OPTIONS = [
   { label: 'Marathon', value: '42195' },
 ];
 
+const DEFAULT_INITIAL_VALUES = {
+  userId: null,
+  firstName: '',
+  lastName: '',
+  hours: '',
+  minutes: '',
+  seconds: '',
+  raceName: '',
+  distance: null,
+  date: new Date(),
+};
+
 const RaceForm: FC<RaceFormProps> = ({
   formRef,
   handleClose,
-  initialValues = {
-    userId: null,
-    firstName: '',
-    lastName: '',
-    hours: '',
-    minutes: '',
-    seconds: '',
-    raceName: '',
-    distance: null,
-    date: new Date(),
-  },
+  initialValues = DEFAULT_INITIAL_VALUES,
   handleSubmit,
   editMode,
 }) => {
