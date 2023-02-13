@@ -318,7 +318,7 @@ const LeaderboardScreen: FC = () => {
             onClick={() => {
               setIsAboutModalOpen(false);
             }}
-            style={{ marginTop: 20, alignSelf: 'flexEnd' }}
+            style={{ marginTop: 20, alignSelf: 'flex-end' }}
           >
             Cool
           </Button>

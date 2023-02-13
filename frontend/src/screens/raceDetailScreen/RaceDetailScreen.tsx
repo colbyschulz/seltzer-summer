@@ -236,9 +236,10 @@ const DetailScreen = () => {
                     return (
                       <StyledTableCell
                         style={{
-                          padding: '6px 10px',
+                          padding: '6px 5px',
                           overflowWrap: 'break-word',
                           fontSize: '12px',
+                          zIndex: 2,
                           color,
                           ...raceNameExtras,
                         }}
