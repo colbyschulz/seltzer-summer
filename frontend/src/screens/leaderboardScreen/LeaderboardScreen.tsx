@@ -159,6 +159,7 @@ const LeaderboardScreen: FC = () => {
                   <Th
                     key={header.id}
                     style={{
+                      fontSize: 12,
                       textAlign:
                         header.id === 'arrow' || header.id === 'numRaces' || header.id === 'position'
                           ? 'center'

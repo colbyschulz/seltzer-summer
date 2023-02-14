@@ -217,7 +217,7 @@ const RaceForm: FC<RaceFormProps> = ({
         </Col>
       </Row>
       <Row justify="end">
-        <Button style={{ margin: '20px 20px 0 0' }} onClick={handleClose}>
+        <Button style={{ margin: '20px 20px 0 0', backgroundColor: 'transparent' }} onClick={handleClose}>
           Cancel
         </Button>
         <Button style={{ marginTop: '20px' }} type="primary">
