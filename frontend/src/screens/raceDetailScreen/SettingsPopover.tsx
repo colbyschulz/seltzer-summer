@@ -1,5 +1,5 @@
 import { DeleteOutlined, EditOutlined, MoreOutlined } from '@ant-design/icons';
-import { Button, Menu, Popover } from 'antd';
+import { Menu, Popover } from 'antd';
 import React, { Dispatch, FC, SetStateAction, useState } from 'react';
 import styled from 'styled-components';
 import colors from '../../colors';
@@ -47,18 +47,18 @@ const SettingsPopover: FC<SettingsPopoverProps> = ({ setActiveEditId, setActiveD
       }
       trigger="click"
     >
-      <Button
-        ghost
+      <button
         style={{
           marginBottom: 0,
           padding: '2px 0px',
           width: 'auto',
           backgroundColor: 'transparent',
           borderColor: 'transparent',
+          cursor: 'pointer',
         }}
       >
         <MoreOutlined style={{ color: colors.black }} />
-      </Button>
+      </button>
     </StyledPopover>
   );
 };

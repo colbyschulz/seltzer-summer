@@ -62,7 +62,6 @@ const columns = [
           padding: '7px',
           minHeight: 'unset',
           maxWidth: '80px',
-          backgroundColor: colors.tan,
         }}
       >
         <img
@@ -77,7 +76,7 @@ const columns = [
 ];
 
 const LeaderboardScreen: FC = () => {
-  const { data: races = [] } = useRaces();
+  const { data: races = [], isLoading: isRacesLoading } = useRaces();
   const { mutate: createRaceMutation } = useCreateRace();
   const navigate = useNavigate();
   const [isRaceModalOpen, setIsRaceModalOpen] = React.useState(false);
@@ -140,20 +139,15 @@ const LeaderboardScreen: FC = () => {
       <HeaderControls>
         <Breadcrumbs config={[{ route: null, display: 'Leaderboard' }]} />
         <div style={{ display: 'flex' }}>
-          <Button
-            style={{ marginRight: 15, borderColor: colors.black, color: colors.black }}
-            onClick={() => setIsAboutModalOpen(true)}
-          >
+          <Button style={{ marginRight: 15, backgroundColor: 'transparent' }} onClick={() => setIsAboutModalOpen(true)}>
             About
           </Button>
-          <Button type="primary" onClick={() => setIsRaceModalOpen(true)}>
-            Add Race
-          </Button>
+          <Button onClick={() => setIsRaceModalOpen(true)}>Add Race</Button>
         </div>
       </HeaderControls>
 
       <Card style={{ padding: '10px 12px 0 10px' }}>
-        <LeaderboardChart activeDataKey={activeDataKey} setActiveDataKey={setActiveDataKey} />
+        <LeaderboardChart activeDataKey={activeDataKey} setActiveDataKey={setActiveDataKey} loading={isRacesLoading} />
       </Card>
 
       <LeaderboardTableWrapper>

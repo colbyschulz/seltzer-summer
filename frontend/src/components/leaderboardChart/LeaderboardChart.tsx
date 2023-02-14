@@ -6,11 +6,13 @@ import { useRaces } from '../../api/races';
 import { secondsToRaceTime } from '../../utils';
 import colors from '../../colors';
 import { useUsers } from '../../api/users';
+import { Spin } from 'antd';
 interface LeaderboardChartProps {
   activeDataKey: number | null;
   setActiveDataKey: Dispatch<SetStateAction<number | null>>;
+  loading: boolean;
 }
-const LeaderboardChart: FC<LeaderboardChartProps> = ({ activeDataKey, setActiveDataKey }) => {
+const LeaderboardChart: FC<LeaderboardChartProps> = ({ activeDataKey, setActiveDataKey, loading }) => {
   const { innerWidth } = window;
   const { data: races = [] } = useRaces();
   const { data: users = [] } = useUsers();
@@ -50,53 +52,59 @@ const LeaderboardChart: FC<LeaderboardChartProps> = ({ activeDataKey, setActiveD
 
   return (
     <ResponsiveContainer aspect={1.6} maxHeight={450} minHeight={innerWidth > 840 ? 450 : 206}>
-      <LineChart data={chartData} margin={{ top: 10, right: 10, left: -10, bottom: 5 }}>
-        <CartesianGrid />
-        <XAxis dataKey="raceDate" tick={{ fontSize: '12px' }} />
-        <YAxis
-          tick={{ fontSize: '12px' }}
-          ticks={ticks}
-          interval={1}
-          scale="linear"
-          type="number"
-          domain={[floorTime, ceilingTime]}
-          tickFormatter={(v) => {
-            return secondsToRaceTime(v);
-          }}
-        />
-        {users.map(({ userFullName, id }) => {
-          const isLineActive = activeDataKey === id;
-          const strokeColor = isLineActive ? colors.lightBrown : '#454545';
-          const fillColor = isLineActive ? colors.lightBrown : '#454545';
-          const radius = isLineActive ? 4 : 2;
-          const lineStrokeWidth = isLineActive ? 2 : 1;
-          return (
-            <Line
-              cursor="pointer"
-              onClick={() => {
-                setActiveDataKey(id ?? null);
-              }}
-              isAnimationActive={false}
-              key={id}
-              type="monotone"
-              dataKey={userFullName}
-              strokeWidth={lineStrokeWidth}
-              stroke={strokeColor}
-              dot={{
-                cursor: 'pointer',
-                fill: fillColor,
-                strokeWidth: 2,
-                r: radius,
-                stroke: strokeColor,
-                onClick: () => {
+      {loading ? (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+          <Spin size="large" />
+        </div>
+      ) : (
+        <LineChart data={chartData} margin={{ top: 10, right: 10, left: -10, bottom: 5 }}>
+          <CartesianGrid />
+          <XAxis dataKey="raceDate" tick={{ fontSize: '12px' }} />
+          <YAxis
+            tick={{ fontSize: '12px' }}
+            ticks={ticks}
+            interval={1}
+            scale="linear"
+            type="number"
+            domain={[floorTime, ceilingTime]}
+            tickFormatter={(v) => {
+              return secondsToRaceTime(v);
+            }}
+          />
+          {users.map(({ userFullName, id }) => {
+            const isLineActive = activeDataKey === id;
+            const strokeColor = isLineActive ? colors.lightBrown : '#454545';
+            const fillColor = isLineActive ? colors.lightBrown : '#454545';
+            const radius = isLineActive ? 4 : 2;
+            const lineStrokeWidth = isLineActive ? 2 : 1;
+            return (
+              <Line
+                cursor="pointer"
+                onClick={() => {
                   setActiveDataKey(id ?? null);
-                },
-              }}
-              connectNulls
-            />
-          );
-        })}
-      </LineChart>
+                }}
+                isAnimationActive={false}
+                key={id}
+                type="monotone"
+                dataKey={userFullName}
+                strokeWidth={lineStrokeWidth}
+                stroke={strokeColor}
+                dot={{
+                  cursor: 'pointer',
+                  fill: fillColor,
+                  strokeWidth: 2,
+                  r: radius,
+                  stroke: strokeColor,
+                  onClick: () => {
+                    setActiveDataKey(id ?? null);
+                  },
+                }}
+                connectNulls
+              />
+            );
+          })}
+        </LineChart>
+      )}
     </ResponsiveContainer>
   );
 };

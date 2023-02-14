@@ -103,6 +103,8 @@ const RaceComparisonChart: FC = () => {
           labelStyle={{ fontSize: '12px' }}
           content={<CustomTooltip />}
           formatter={(v: number) => secondsToRaceTime(v)}
+          isAnimationActive={false}
+          wrapperStyle={{ outline: 'none' }}
         />
 
         {users.map(({ userFullName, id }) => {

@@ -312,7 +312,7 @@ const DetailScreen = () => {
           >
             Cancel
           </Button>
-          <Button style={{ marginTop: '20px' }} type="primary" onClick={() => deleteRaceMutation(activeDeleteId)}>
+          <Button style={{ marginTop: '20px' }} onClick={() => deleteRaceMutation(activeDeleteId)}>
             {"Put 'er down"}
           </Button>
         </div>

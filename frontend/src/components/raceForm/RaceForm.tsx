@@ -220,7 +220,7 @@ const RaceForm: FC<RaceFormProps> = ({
         <Button style={{ margin: '20px 20px 0 0' }} onClick={handleClose}>
           Cancel
         </Button>
-        <Button style={{ marginTop: '20px' }} type="primary" htmlType="submit">
+        <Button style={{ marginTop: '20px' }} type="primary">
           {editMode ? 'Update' : 'Submit'}
         </Button>
       </Row>
