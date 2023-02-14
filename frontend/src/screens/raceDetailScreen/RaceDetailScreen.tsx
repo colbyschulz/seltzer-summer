@@ -193,7 +193,7 @@ const DetailScreen = () => {
         <Table cellSpacing="0" cellPadding="0" width="100%">
           <THead>
             {table.getHeaderGroups().map((headerGroup) => (
-              <Tr key={headerGroup.id}>
+              <Tr key={headerGroup.id} style={{ fontSize: 12 }}>
                 {headerGroup.headers.map((header) => (
                   <Th
                     key={header.id}
@@ -237,7 +237,7 @@ const DetailScreen = () => {
                     return (
                       <StyledTableCell
                         style={{
-                          padding: '6px 5px',
+                          padding: '7px 5px',
                           overflowWrap: 'break-word',
                           fontSize: '12px',
                           color,

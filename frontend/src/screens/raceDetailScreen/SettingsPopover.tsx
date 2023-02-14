@@ -50,7 +50,7 @@ const SettingsPopover: FC<SettingsPopoverProps> = ({ setActiveEditId, setActiveD
       <button
         style={{
           marginBottom: 0,
-          padding: '2px 0px',
+          padding: '2px 2px',
           width: 'auto',
           backgroundColor: 'transparent',
           borderColor: 'transparent',

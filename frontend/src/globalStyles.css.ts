@@ -4,6 +4,7 @@ import colors from './colors';
 export default createGlobalStyle`
   * {
     font-family: 'Walter Turncoat', Open-Sans, Helvetica, Sans-Serif !important;
+    animation-duration: 0s !important;
   }
   html, body {
     box-sizing: border-box;
