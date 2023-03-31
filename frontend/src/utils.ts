@@ -26,7 +26,7 @@ export const secondsToRaceTime = (timeInSeconds?: number) => {
   if (!timeInSeconds) {
     return '0:0:0';
   }
-  let secondsLeft = timeInSeconds;
+  let secondsLeft = Math.abs(timeInSeconds);
   const hours = Math.floor(Math.abs(timeInSeconds) / 3600);
   secondsLeft = secondsLeft - hours * 3600;
   const minutes = Math.floor(Math.abs(secondsLeft) / 60);

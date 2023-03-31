@@ -299,7 +299,6 @@ const DetailScreen = () => {
         header="Are you sure?"
         showModal={!!activeDeleteId}
         onClose={() => {
-          setActiveDeleteId(null);
           formRef.resetFields();
         }}
       >
@@ -312,7 +311,13 @@ const DetailScreen = () => {
           >
             Cancel
           </Button>
-          <Button style={{ marginTop: '20px' }} onClick={() => deleteRaceMutation(activeDeleteId)}>
+          <Button
+            style={{ marginTop: '20px' }}
+            onClick={() => {
+              deleteRaceMutation(activeDeleteId);
+              setActiveDeleteId(null);
+            }}
+          >
             {"Put 'er down"}
           </Button>
         </div>
